@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.hakandincturk.core.exception.ConflictException;
 import com.hakandincturk.core.exception.NotFoundException;
+import com.hakandincturk.core.exception.UnauthorizedException;
 import com.hakandincturk.dtos.auth.request.LoginRequestDto;
 import com.hakandincturk.dtos.auth.request.RegisterRequestDto;
 import com.hakandincturk.dtos.auth.response.LoginResponseDto;
@@ -35,14 +36,19 @@ public class AuthServiceImpl implements AuthService  {
 
 
   @Override
-  public LoginResponseDto login(LoginRequestDto body) {
-    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(body.getEmail(), body.getPassword());
-    authenticationProvider.authenticate(usernamePasswordAuthenticationToken);
+  public LoginResponseDto login(LoginRequestDto body) throws UnauthorizedException {
+    try{
+      UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(body.getEmail(), body.getPassword());
+      authenticationProvider.authenticate(usernamePasswordAuthenticationToken);
 
-    Optional<User> dbUser = userRepository.findByEmailAndIsRemovedFalse(body.getEmail());
-    String accessToken = jwtService.generateToken(dbUser.get());
+      Optional<User> dbUser = userRepository.findByEmailAndIsRemovedFalse(body.getEmail());
+      String accessToken = jwtService.generateToken(dbUser.get());
 
-    return new LoginResponseDto(accessToken);
+      return new LoginResponseDto(accessToken);
+    }
+    catch(Exception ex){
+      throw new UnauthorizedException("Kullanici adi veya sifre yanlis");
+    }
   }
 
 
