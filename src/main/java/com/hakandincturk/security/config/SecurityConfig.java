@@ -24,11 +24,12 @@ public class SecurityConfig {
     "/swagger-ui/**",
     "/swagger-ui.html",
     "/swagger-ui/index.html",
+    "/v3/api-docs",
     "/v3/api-docs/**",
     "/v3/api-docs.yaml",
     "/webjars/**",
     "/swagger-resources/**",
-    "/configuration/**"
+    "/configuration/**",
   };
 
   @Autowired
@@ -50,7 +51,8 @@ public class SecurityConfig {
           request
           .requestMatchers(LOGIN_PATH, REGISTER_PATH).permitAll()
           .requestMatchers(SWAGGER_PATHS).permitAll()
-          .anyRequest().authenticated()
+          .anyRequest().permitAll()
+          // .anyRequest().authenticated()
       )
       .exceptionHandling(exceptionHandler -> exceptionHandler.authenticationEntryPoint(authEntryPoint))
       .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
