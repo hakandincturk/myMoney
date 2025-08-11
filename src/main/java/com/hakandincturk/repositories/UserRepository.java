@@ -8,4 +8,6 @@ import com.hakandincturk.models.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
   Optional<User> findByEmailAndIsRemovedFalse(String email);
+  Optional<User> findByIdAndIsRemovedFalse(Long userId);
+
 }

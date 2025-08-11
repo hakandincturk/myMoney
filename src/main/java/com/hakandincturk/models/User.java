@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -21,12 +22,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class User extends BaseEntitiy implements UserDetails {
 
+  @Column(name = "fullName")
   private String fullName;
 
+  @Column(name = "email")
   private String email;
 
+  @Column(name = "password")
   private String password;
 
+  @Column(name = "phone")
   private String phone;
 
   @Override

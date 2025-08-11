@@ -16,6 +16,7 @@ import com.hakandincturk.webapi.controllers.concretes.AuthController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/api/auth")
@@ -28,15 +29,15 @@ public class AuthControllerImpl extends BaseController implements AuthController
   @Override
   @PostMapping(value = "/login")
   @Operation(summary = "Login", description = "Kullanıcının sisteme giriş yapmasını sağlar.")
-  public ApiResponse<LoginResponseDto> login(@RequestBody LoginRequestDto body) {
-    return success("Giris basarili", authService.login(body));
+  public ApiResponse<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto body) {
+    return success("Giriş başarılı", authService.login(body));
   }
 
   @Override
   @PostMapping(value = "/register")
-  public ApiResponse<?> register(RegisterRequestDto body) {
+  public ApiResponse<?> register(@Valid RegisterRequestDto body) {
     authService.register(body);
-    return success("Kayit basarili, lutfen giris yapiniz.", null);
+    return success("Kayıt başarılı, lütfen giriş yapınız.", null);
   }
   
 }

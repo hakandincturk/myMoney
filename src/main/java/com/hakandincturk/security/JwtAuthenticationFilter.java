@@ -3,13 +3,13 @@ package com.hakandincturk.security;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.hakandincturk.core.exception.UnauthorizedException;
 import com.hakandincturk.security.services.JwtService;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -44,7 +44,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           if(email != null && SecurityContextHolder.getContext().getAuthentication() == null){
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
             if(jwtService.isTokenDateValid(token)){
-              UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+              // UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+              Long userId = jwtService.exportToken(token, claims -> claims.get("userId", Long.class));
+              JwtAuthentication authenticationToken = new JwtAuthentication(email, userDetails, null, userId);
 
               authenticationToken.setDetails(userDetails);
               SecurityContextHolder.getContext().setAuthentication(authenticationToken);
@@ -55,7 +57,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         }
         catch(ExpiredJwtException ex){
-          throw new ExpiredJwtException(ex.getHeader(), ex.getClaims(), "JWT token has expired", ex);
+          throw new UnauthorizedException("Oturumunuzun süresi dolmuştur. Lütfen tekrar giriş yapınız.");
+          // throw new ExpiredJwtException(ex.getHeader(), ex.getClaims(), "JWT token has expired", ex);
         }
         catch(Exception ex){
           throw new ServletException("JWT processing failed", ex);
