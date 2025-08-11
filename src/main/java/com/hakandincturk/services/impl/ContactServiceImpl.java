@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.hakandincturk.dtos.contact.request.CreateContactRequestDto;
+import com.hakandincturk.dtos.contact.request.UpdateMyContactRequestDto;
 import com.hakandincturk.dtos.contact.response.ListMyContactsResponseDto;
 import com.hakandincturk.models.Contact;
 import com.hakandincturk.models.User;
@@ -53,6 +54,15 @@ public class ContactServiceImpl implements ContactService {
     return contacts;
   }
 
+  @Override
+  public void updateMyContact(Long userId, Long contactId, UpdateMyContactRequestDto body) {
+    Contact dbContact = contactRules.checkUserContactExistAndGet(userId, contactId);
+
+    dbContact.setFullName(body.getFullName());
+    dbContact.setNote(body.getNote());
+    contactRepository.save(dbContact);
+    return;
+  }
 
   @Override
   public void deleteContact(Long userId, Long contactId) {
@@ -61,5 +71,6 @@ public class ContactServiceImpl implements ContactService {
     contactRepository.save(dbContact);
     return;
   }
+
   
 }

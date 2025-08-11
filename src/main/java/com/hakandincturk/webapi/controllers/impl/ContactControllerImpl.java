@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.dtos.contact.request.CreateContactRequestDto;
+import com.hakandincturk.dtos.contact.request.UpdateMyContactRequestDto;
 import com.hakandincturk.dtos.contact.response.ListMyContactsResponseDto;
 import com.hakandincturk.security.JwtAuthentication;
 import com.hakandincturk.services.abstracts.ContactService;
@@ -55,6 +57,20 @@ public class ContactControllerImpl extends BaseController implements ContactCont
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
       return success("Kişi listeniz getirildi", contactService.listMyActiveContacts(userId));
+    }
+    else {
+      return error("Kullanıcı verilerine ulaşılamadı");
+    }
+  }
+
+  @Override
+  @PutMapping(value = "/my/{contactId}")
+  public ApiResponse<?> updateMyAccount(@RequestParam(value = "contactId") Long contactId, @RequestBody UpdateMyContactRequestDto body) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if(auth instanceof JwtAuthentication jwtAuth){
+      Long userId = jwtAuth.getUserId();
+      contactService.updateMyContact(userId, contactId, body);
+      return success("Kişi başarılı bir şekilde silindi", null);
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");
