@@ -22,12 +22,14 @@ import com.hakandincturk.webapi.controllers.BaseController;
 import com.hakandincturk.webapi.controllers.concretes.AccountController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/api/account")
+@Tag(name = "Account", description = "Hesap işlemleri")
 public class AccountControllerImpl extends BaseController implements AccountController {
 
   @Autowired
