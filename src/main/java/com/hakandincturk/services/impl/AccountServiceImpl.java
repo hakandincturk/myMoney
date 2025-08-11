@@ -49,6 +49,7 @@ public class AccountServiceImpl implements AccountService {
     List<Account> dbAccounts = accountRepository.findByUserIdAndIsRemovedFalseOrderByName(userId);
 
     List<ListMyAccountsResponseDto> accounts = dbAccounts.stream().map(account -> new ListMyAccountsResponseDto(
+      account.getId(),
       account.getName(),
       account.getTotalBalance(),
       account.getBalance(),

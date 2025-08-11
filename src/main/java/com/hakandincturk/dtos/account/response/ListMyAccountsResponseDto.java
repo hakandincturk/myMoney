@@ -16,6 +16,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ListMyAccountsResponseDto {
 
+  private Long id;
+  
   private String name;
 
   private BigDecimal totalBalance;

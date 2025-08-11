@@ -1,7 +1,6 @@
-package com.hakandincturk.dtos.auth.request;
+package com.hakandincturk.dtos.contact.request;
 
 import jakarta.validation.constraints.NotNull;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,11 +10,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequestDto {
+public class CreateContactRequestDto {
 
-  @NotNull
-  private String email;
+  @NotNull(message = "Ad boş olamaz")
+  private String fullName;
+
+  private String note;
   
-  @NotNull
-  private String password;
 }

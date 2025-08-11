@@ -17,7 +17,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CreateAccountRequestDto {
   
- @NotNull(message = "Ad boş olamaz")
+  @NotNull(message = "Ad boş olamaz")
   private String name;
 
   @NotNull(message = "Hesap tipi boş olamaz")
