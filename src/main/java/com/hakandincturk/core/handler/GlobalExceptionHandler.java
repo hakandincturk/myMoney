@@ -19,6 +19,7 @@ import com.hakandincturk.core.exception.BusinessException;
 import com.hakandincturk.core.exception.ConflictException;
 import com.hakandincturk.core.exception.NotFoundException;
 import com.hakandincturk.core.exception.UnauthorizedException;
+import com.hakandincturk.core.exception.ValidationException;
 import com.hakandincturk.core.payload.ApiResponse;
 
 @ControllerAdvice
@@ -69,6 +70,13 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(value = {BusinessException.class})
   public ResponseEntity<ApiResponse<?>> handleBusinessException(BusinessException ex, WebRequest request){
+    Map<String, String> errorDetails = new HashMap<>();
+    errorDetails.put("path", request.getDescription(false).substring(4));
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(createApiResponse(ex.getMessage(), errorDetails));
+  }
+
+  @ExceptionHandler(value = {ValidationException.class})
+  public ResponseEntity<ApiResponse<?>> handleBusinessException(ValidationException ex, WebRequest request){
     Map<String, String> errorDetails = new HashMap<>();
     errorDetails.put("path", request.getDescription(false).substring(4));
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(createApiResponse(ex.getMessage(), errorDetails));

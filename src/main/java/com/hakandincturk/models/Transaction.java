@@ -13,6 +13,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -36,10 +37,12 @@ public class Transaction extends BaseEntitiy {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JsonIgnore
+  @JoinColumn(name = "contact_id", nullable = true, unique = false)
   private Contact contact;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JsonIgnore
+  @JoinColumn(name = "account_id", nullable = false, unique = false)
   private Account account;
 
   @Column(name = "type")
@@ -51,7 +54,7 @@ public class Transaction extends BaseEntitiy {
   private TransactionStatuses status;
   
   @Column(name = "totalAmount")
-  private BigDecimal totalAmomunt;
+  private BigDecimal totalAmount;
 
   @Column(name = "paidAmount")
   private BigDecimal paidAmount;

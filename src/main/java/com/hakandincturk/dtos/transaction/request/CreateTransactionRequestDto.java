@@ -2,7 +2,6 @@ package com.hakandincturk.dtos.transaction.request;
 
 import java.math.BigDecimal;
 
-import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.core.enums.TransactionTypes;
 
 import jakarta.validation.constraints.Min;
