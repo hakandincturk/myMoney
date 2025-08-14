@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ import lombok.Setter;
 public class Installment extends BaseEntitiy {
 
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "transaction_id")
   private Transaction transaction;
 
   @Column(name = "installmentNumber")
@@ -35,6 +37,5 @@ public class Installment extends BaseEntitiy {
 
   @Column(name = "paidDate")
   private LocalDateTime paidDate;
-
   
 }
