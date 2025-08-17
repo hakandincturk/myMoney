@@ -9,6 +9,7 @@ import com.hakandincturk.factories.TransactionFactory;
 import com.hakandincturk.models.Account;
 import com.hakandincturk.models.Contact;
 import com.hakandincturk.models.Transaction;
+import com.hakandincturk.models.User;
 import com.hakandincturk.repositories.TransactionRepository;
 import com.hakandincturk.services.abstracts.TransactionService;
 import com.hakandincturk.services.rules.TransactionRules;
@@ -31,10 +32,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     transactionRules.validateCreateTransactionRequest(body);
 
+    User activeUser = transactionRules.getValidatedUser(userId);
     Account account = transactionRules.getValidatedAccount(userId, body.getAccountId());
     Contact contact = transactionRules.getValidatedContact(userId, body.getContactId());
 
-    Transaction newTransaction = transactionFactory.createTransaction(body, account, contact);    
+    Transaction newTransaction = transactionFactory.createTransaction(body, activeUser, account, contact);    
     transactionRepository.save(newTransaction);
   }
   

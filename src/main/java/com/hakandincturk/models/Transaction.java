@@ -1,6 +1,7 @@
 package com.hakandincturk.models;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,6 +31,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transaction extends BaseEntitiy {
+
+  @Column(name = "name")
+  private String name;
   
   @ManyToOne(fetch = FetchType.LAZY)
   @JsonIgnore
@@ -64,6 +68,9 @@ public class Transaction extends BaseEntitiy {
 
   @Column(name = "description")
   private String description;
+
+  @Column(name = "debtDate")
+  private LocalDate debtDate;
 
   @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonIgnore

@@ -4,14 +4,14 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.hakandincturk.core.exception.UnauthorizedException;
 import com.hakandincturk.security.services.JwtService;
-
+import com.hakandincturk.core.handler.UnauthorizedResponseWriter;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private UserDetailsService userDetailsService;
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+  protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
       throws ServletException, IOException {
         
         String header = request.getHeader("Authorization");
@@ -57,8 +57,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         }
         catch(ExpiredJwtException ex){
-          throw new UnauthorizedException("Oturumunuzun süresi dolmuştur. Lütfen tekrar giriş yapınız.");
-          // throw new ExpiredJwtException(ex.getHeader(), ex.getClaims(), "JWT token has expired", ex);
+          // Token expired: write consistent ApiResponse JSON and return
+          UnauthorizedResponseWriter.write(response, "Oturumunuzun süresi dolmuştur. Lütfen tekrar giriş yapınız.");
+          return;
         }
         catch(Exception ex){
           throw new ServletException("JWT processing failed", ex);

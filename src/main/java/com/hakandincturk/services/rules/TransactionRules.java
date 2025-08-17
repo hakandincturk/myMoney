@@ -9,16 +9,20 @@ import com.hakandincturk.core.exception.ValidationException;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
 import com.hakandincturk.models.Account;
 import com.hakandincturk.models.Contact;
+import com.hakandincturk.models.User;
 
 @Service
 public class TransactionRules {
+
+  @Autowired
+  private UserRules userRules;
 
   @Autowired
   private ContactRules contactRules;
 
   @Autowired
   private AccountRules accountRules;
-  
+
   public void validateCreateTransactionRequest(CreateTransactionRequestDto body){
     if(body.getAccountId() == null) {
       throw new ValidationException("Hesap boş olamaz");
@@ -37,6 +41,10 @@ public class TransactionRules {
 
   public Account getValidatedAccount(Long userId, Long accountId){
     return accountId != null ? accountRules.checkUserAccountExistAndGet(userId, accountId) : null;
+  }
+
+  public User getValidatedUser(Long userId){
+    return userId != null ? userRules.checkUserExistAndGet(userId) : null;
   }
 
 }

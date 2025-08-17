@@ -1,7 +1,7 @@
 package com.hakandincturk.models;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,9 +36,12 @@ public class Installment extends BaseEntitiy {
   private boolean isPaid = false;
 
   @Column(name = "paidDate")
-  private LocalDateTime paidDate;
+  private LocalDate paidDate;
 
   @Column(name = "description", nullable = true)
   private String descripton;
+
+  @Column(name = "debtDate")
+  private LocalDate debtDate;
   
 }

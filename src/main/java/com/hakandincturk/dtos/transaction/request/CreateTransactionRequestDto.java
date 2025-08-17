@@ -1,6 +1,7 @@
 package com.hakandincturk.dtos.transaction.request;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import com.hakandincturk.core.enums.TransactionTypes;
 
@@ -22,7 +23,7 @@ public class CreateTransactionRequestDto {
   @NotNull(message = "Hesap boş olamaz")
   private Long accountId;
 
-  @NotNull(message = "Tip boş olamaz")
+  @NotNull(message = "Borç türü boş olamaz")
   private TransactionTypes type;
 
   @NotNull(message = "Toplam tutar boş olamaz")
@@ -32,5 +33,8 @@ public class CreateTransactionRequestDto {
   private Integer totalInstallment;
 
   private String description;
+
+  @NotNull(message = "Tarih boş olamaz")
+  private LocalDate debtDate;
 
 }

@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService  {
       return new LoginResponseDto(accessToken);
     }
     catch(Exception ex){
-      throw new UnauthorizedException("Kullanici adi veya sifre yanlis");
+      throw new UnauthorizedException("Giriş başarısız. Lütfen bilgilerinizi kontrol edin");
     }
   }
 

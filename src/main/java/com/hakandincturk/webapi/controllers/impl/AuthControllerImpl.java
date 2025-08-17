@@ -35,7 +35,7 @@ public class AuthControllerImpl extends BaseController implements AuthController
 
   @Override
   @PostMapping(value = "/register")
-  public ApiResponse<?> register(@Valid RegisterRequestDto body) {
+  public ApiResponse<?> register(@Valid @RequestBody RegisterRequestDto body) {
     authService.register(body);
     return success("Kayıt başarılı, lütfen giriş yapınız.", null);
   }
