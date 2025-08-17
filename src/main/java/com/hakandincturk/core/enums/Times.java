@@ -1,6 +1,7 @@
 package com.hakandincturk.core.enums;
 
 public enum Times {
+  HALF_MINUTES(30* 1000L),
   THIRTY_MINUTES(30 * 60 * 1000L),
   ONE_HOUR(60 * 60 * 1000L),
   THREE_HOURS(3 * 60 * 60 * 1000L),

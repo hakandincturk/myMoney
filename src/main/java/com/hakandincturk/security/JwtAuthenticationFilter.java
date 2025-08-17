@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         catch(ExpiredJwtException ex){
           // Token expired: write consistent ApiResponse JSON and return
-          UnauthorizedResponseWriter.write(response, "Oturumunuzun süresi dolmuştur. Lütfen tekrar giriş yapınız.");
+          UnauthorizedResponseWriter.write(response, "Oturumunuzun süresi dolmuştur. Lütfen tekrar giriş yapınız");
           return;
         }
         catch(Exception ex){
