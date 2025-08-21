@@ -30,6 +30,7 @@ public class TransactionFactory {
     newTransaction.setStatus(TransactionStatuses.PENDING);
     newTransaction.setDescription(body.getDescription());
     newTransaction.setTotalAmount(body.getTotalAmount());
+    newTransaction.setTotalInstallment(body.getTotalInstallment());
     newTransaction.setPaidAmount(ZERO_AMOUNT);
     newTransaction.setDebtDate(body.getDebtDate());
     newTransaction.setUser(user);
@@ -46,9 +47,9 @@ public class TransactionFactory {
     BigDecimal installmentAmount = body.getTotalAmount().divide(BigDecimal.valueOf(body.getTotalInstallment()), 2, RoundingMode.HALF_UP);
 
     List<Installment> installments = new ArrayList<Installment>();
-    LocalDate installmentDate = body.getDebtDate();
+    LocalDate baseDate = body.getDebtDate();
     for (int i = 1; i <= body.getTotalInstallment(); i++) {
-      installmentDate.plusMonths(i);
+      LocalDate installmentDate = baseDate.plusMonths(i - 1);
       installments.add(new Installment(
         transaction,
         i,

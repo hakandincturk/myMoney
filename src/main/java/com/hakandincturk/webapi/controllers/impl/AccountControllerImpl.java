@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hakandincturk.core.payload.ApiResponse;
@@ -67,9 +67,9 @@ public class AccountControllerImpl extends BaseController implements AccountCont
   }
 
   @Override
-  @PutMapping(value = "/my/{id}")
+  @PutMapping(value = "/my/{accountId}")
   @Operation(summary = "Update my account", description = "Kullanıcının hesap bilgilerini ve bakiyesini günceller")
-  public ApiResponse<?> updateMyAccount(@RequestParam(value = "accountId") Long accountId, @Valid @RequestBody UpdateAccountRequestDto body) {
+  public ApiResponse<?> updateMyAccount(@PathVariable(value = "accountId") Long accountId, @Valid @RequestBody UpdateAccountRequestDto body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();

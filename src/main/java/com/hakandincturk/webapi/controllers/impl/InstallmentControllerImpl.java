@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hakandincturk.core.payload.ApiResponse;
@@ -31,11 +31,11 @@ public class InstallmentControllerImpl extends BaseController implements Install
   @Override
   @GetMapping(value = "/month/{month}/{year}")
   @Operation(summary = "Get monthly installments", description = "Aylık taksitleri listelemeyi sağlar")
-  public ApiResponse<List<ListMySpecisifDateInstallmentsResponseDto>> listMySpecisifDateInstallments(@RequestParam(value = "month") int month, @RequestParam(value = "year") int year) {
+  public ApiResponse<List<ListMySpecisifDateInstallmentsResponseDto>> listMySpecisifDateInstallments(@PathVariable(value = "month") int month, @PathVariable(value = "year") int year) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
-      return success("Aylık borçlarınız getirildi", installmentService.listMySpecisifDateInstallments(userId, 0, 0));
+      return success("Aylık borçlarınız getirildi", installmentService.listMySpecisifDateInstallments(userId, month, year));
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

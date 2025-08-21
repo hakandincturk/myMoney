@@ -1,10 +1,14 @@
 package com.hakandincturk.services.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
+import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 import com.hakandincturk.factories.TransactionFactory;
 import com.hakandincturk.models.Account;
 import com.hakandincturk.models.Contact;
@@ -38,6 +42,23 @@ public class TransactionServiceImpl implements TransactionService {
 
     Transaction newTransaction = transactionFactory.createTransaction(body, activeUser, account, contact);    
     transactionRepository.save(newTransaction);
+  }
+
+  @Override
+  public List<ListMyTransactionsResponseDto> listMyTransactions(Long userId) {
+    List<Transaction> dbTransactions = transactionRepository.findByUserIdAndIsRemovedFalseOrderByCreatedAtDesc(userId);
+
+    List<ListMyTransactionsResponseDto> transactions = dbTransactions.stream().map(transaction -> new ListMyTransactionsResponseDto(
+      transaction.getContact() != null ? transaction.getContact().getFullName() : null,
+      transaction.getAccount().getName(),
+      transaction.getType().name(),
+      transaction.getStatus().name(),
+      transaction.getTotalAmount(),
+      transaction.getPaidAmount(),
+      transaction.getTotalInstallment()
+    )).collect(Collectors.toList());
+
+    return transactions;
   }
   
 }

@@ -7,11 +7,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hakandincturk.core.payload.ApiResponse;
@@ -65,12 +65,12 @@ public class ContactControllerImpl extends BaseController implements ContactCont
 
   @Override
   @PutMapping(value = "/my/{contactId}")
-  public ApiResponse<?> updateMyAccount(@RequestParam(value = "contactId") Long contactId, @RequestBody UpdateMyContactRequestDto body) {
+  public ApiResponse<?> updateMyAccount(@PathVariable(value = "contactId") Long contactId, @RequestBody UpdateMyContactRequestDto body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
       contactService.updateMyContact(userId, contactId, body);
-      return success("Kişi başarılı bir şekilde silindi", null);
+      return success("Kişi başarılı bir şekilde güncellendi", null);
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");
@@ -79,7 +79,7 @@ public class ContactControllerImpl extends BaseController implements ContactCont
 
   @Override
   @DeleteMapping(value = "/my/{contactId}")
-  public ApiResponse<?> deleteContact(@RequestParam(name = "contactId") Long contactId) {
+  public ApiResponse<?> deleteContact(@PathVariable(name = "contactId") Long contactId) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();

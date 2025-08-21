@@ -62,7 +62,7 @@ public class AccountServiceImpl implements AccountService {
 
   @Override
   public void updateMyAccount(Long userId, Long accountId, UpdateAccountRequestDto body) {
-    Account dbAccount = accountRules.checkUserAccountExistAndGet(accountId, userId);
+    Account dbAccount = accountRules.checkUserAccountExistAndGet(userId, accountId);
     
     // if(dbAccount.getTotalBalance().compareTo(body.getTotalBalance()) > 0) {
     //   BigDecimal difference = dbAccount.getTotalBalance().subtract(body.getTotalBalance());
