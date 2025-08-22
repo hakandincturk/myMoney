@@ -9,4 +9,5 @@ import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto
 public interface TransactionController {
   public ApiResponse<?> createTransaction(CreateTransactionRequestDto body);
   public ApiResponse<List<ListMyTransactionsResponseDto>> listMyTransactions();
+  public ApiResponse<?> deleteMyTransaction(Long transactionId);
 }

@@ -5,7 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -50,10 +53,25 @@ public class TransactionControllerImpl extends BaseController implements Transac
   @GetMapping(value = "/my")
   @Operation(summary = "List my transactions", description = "Borçların listelenmesini sağlar")
   public ApiResponse<List<ListMyTransactionsResponseDto>> listMyTransactions() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
       return success("Borçlar başarıyla getirildi", transactionService.listMyTransactions(userId));
+    }
+    else {
+      return error("Kullanıcı verilerine ulaşılamadı");
+    }
+  }
+
+  @Override
+  @DeleteMapping(value = "/my/{transactionId}")
+  @Operation(summary = "Delete my transactions", description = "Borcun silinmesini sağlar")
+  public ApiResponse<?> deleteMyTransaction(@PathVariable(value = "transactionId") Long transactionId) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if(auth instanceof JwtAuthentication jwtAuth){
+      Long userId = jwtAuth.getUserId();
+      transactionService.deleteMyTransaction(userId, transactionId);
+      return success("Borç başarıyla silindi", null);
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

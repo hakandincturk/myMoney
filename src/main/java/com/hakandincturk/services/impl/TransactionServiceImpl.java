@@ -14,6 +14,7 @@ import com.hakandincturk.models.Account;
 import com.hakandincturk.models.Contact;
 import com.hakandincturk.models.Transaction;
 import com.hakandincturk.models.User;
+import com.hakandincturk.repositories.InstallmentRepository;
 import com.hakandincturk.repositories.TransactionRepository;
 import com.hakandincturk.services.abstracts.TransactionService;
 import com.hakandincturk.services.rules.TransactionRules;
@@ -25,10 +26,17 @@ public class TransactionServiceImpl implements TransactionService {
   private TransactionRepository transactionRepository;
 
   @Autowired
+  private InstallmentRepository installmentRepository;
+
+  @Autowired
   private TransactionRules transactionRules;
 
   @Autowired
   private TransactionFactory transactionFactory;
+
+    TransactionServiceImpl(InstallmentRepository installmentRepository) {
+        this.installmentRepository = installmentRepository;
+    }
 
   @Override
   @Transactional
@@ -49,6 +57,7 @@ public class TransactionServiceImpl implements TransactionService {
     List<Transaction> dbTransactions = transactionRepository.findByUserIdAndIsRemovedFalseOrderByCreatedAtDesc(userId);
 
     List<ListMyTransactionsResponseDto> transactions = dbTransactions.stream().map(transaction -> new ListMyTransactionsResponseDto(
+      transaction.getId(),
       transaction.getContact() != null ? transaction.getContact().getFullName() : null,
       transaction.getAccount().getName(),
       transaction.getType().name(),
@@ -59,6 +68,20 @@ public class TransactionServiceImpl implements TransactionService {
     )).collect(Collectors.toList());
 
     return transactions;
+  }
+
+  @Override
+  @Transactional
+  public void deleteMyTransaction(Long userId, Long transactionId) {
+    Transaction transaction = transactionRules.checkUserTransactionExistAndGet(userId, transactionId);
+    transaction.setRemoved(true);
+
+    if (transaction.getInstallments() != null && !transaction.getInstallments().isEmpty()) {
+      transaction.getInstallments().forEach(installment -> installment.setRemoved(true));
+      installmentRepository.saveAll(transaction.getInstallments());
+    }
+
+    transactionRepository.save(transaction);
   }
   
 }

@@ -13,6 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ListMyTransactionsResponseDto {
 
+  private Long id;
   private String contactName;
   private String accountName;
   private String type;
