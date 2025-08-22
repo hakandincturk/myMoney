@@ -14,6 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ListMySpecisifDateInstallmentsResponseDto {
 
+  private Long id;
   private TransactionDetailDto transactionDetail;
   private BigDecimal amount;
   private LocalDate date;

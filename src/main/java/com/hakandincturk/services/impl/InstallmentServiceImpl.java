@@ -1,5 +1,6 @@
 package com.hakandincturk.services.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
@@ -7,13 +8,18 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.hakandincturk.core.enums.TransactionStatuses;
+import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.response.ListMySpecisifDateInstallmentsResponseDto;
 import com.hakandincturk.dtos.installment.response.TransactionDetailDto;
 import com.hakandincturk.models.Installment;
-import com.hakandincturk.models.User;
+import com.hakandincturk.models.Transaction;
 import com.hakandincturk.repositories.InstallmentRepository;
+import com.hakandincturk.repositories.TransactionRepository;
 import com.hakandincturk.services.abstracts.InstallmentService;
 import com.hakandincturk.services.rules.InstallmentRules;
+
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class InstallmentServiceImpl implements InstallmentService {
@@ -22,19 +28,16 @@ public class InstallmentServiceImpl implements InstallmentService {
   private InstallmentRepository installmentRepository;
 
   @Autowired
+  private TransactionRepository transactionRepository;
+
+  @Autowired
   private InstallmentRules installmentRules;
 
   @Override
   public List<ListMySpecisifDateInstallmentsResponseDto> listMySpecisifDateInstallments(Long userId, int month, int year) {
-    // User user = installmentRules.getValidatedUser(userId);
-
     LocalDate startDate = LocalDate.of(year, month, 1);
     LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
-    List<Installment> dbInstallments = installmentRepository.findByTransactionUserIdAndDebtDateBetween(userId, startDate, endDate);
-
-    // dbInstallments.stream().map(installment -> {
-    //   System.out.println(installment);
-    // });
+    List<Installment> dbInstallments = installmentRepository.findByTransactionUserIdAndDebtDateBetweenOrderByDebtDateDesc(userId, startDate, endDate);
 
     List<ListMySpecisifDateInstallmentsResponseDto> installments = dbInstallments.stream().map(installment -> {
       TransactionDetailDto transactionDetail = new TransactionDetailDto(
@@ -43,6 +46,7 @@ public class InstallmentServiceImpl implements InstallmentService {
       );
 
       return new ListMySpecisifDateInstallmentsResponseDto(
+        installment.getId(),
         transactionDetail,
         installment.getAmount(),
         installment.getDebtDate(),
@@ -54,6 +58,26 @@ public class InstallmentServiceImpl implements InstallmentService {
     }).toList();
 
     return installments;
+  }
+
+  @Override
+  @Transactional
+  public void payInstallment(Long userId, Long installmentId, PayInstallmentRequestDto body) {
+    Installment installment = installmentRules.checkUserInstallmentExistAndGet(userId, installmentId);
+
+    installment.setPaid(true);
+    installment.setPaidDate(body.getPaidDate());
+    installmentRepository.save(installment);
+
+    
+    Transaction transaction = installment.getTransaction();
+
+    BigDecimal totalPaidAmount = installment.getTransaction().getPaidAmount().add(installment.getAmount());
+    TransactionStatuses transactionStatuses = transaction.getTotalAmount() == totalPaidAmount ? TransactionStatuses.PAID : TransactionStatuses.PARTIAL;
+
+    transaction.setPaidAmount(totalPaidAmount);
+    transaction.setStatus(transactionStatuses);
+    transactionRepository.save(transaction);
   }
   
 }
