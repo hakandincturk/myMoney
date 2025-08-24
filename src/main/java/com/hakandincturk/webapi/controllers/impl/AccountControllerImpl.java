@@ -1,23 +1,27 @@
 package com.hakandincturk.webapi.controllers.impl;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hakandincturk.core.enums.sort.AccountSortColumn;
 import com.hakandincturk.core.payload.ApiResponse;
+import com.hakandincturk.core.payload.PagedResponse;
+import com.hakandincturk.dtos.SortablePageRequest;
 import com.hakandincturk.dtos.account.request.CreateAccountRequestDto;
 import com.hakandincturk.dtos.account.request.UpdateAccountRequestDto;
 import com.hakandincturk.dtos.account.response.ListMyAccountsResponseDto;
 import com.hakandincturk.security.JwtAuthentication;
 import com.hakandincturk.services.abstracts.AccountService;
+import com.hakandincturk.utils.PaginationUtils;
 import com.hakandincturk.webapi.controllers.BaseController;
 import com.hakandincturk.webapi.controllers.concretes.AccountController;
 
@@ -55,11 +59,12 @@ public class AccountControllerImpl extends BaseController implements AccountCont
   @Override
   @GetMapping(value = "/my/active")
   @Operation(summary = "List my active accounts", description = "Kullanıcının aktif olan hesaplarını listeler")
-  public ApiResponse<List<ListMyAccountsResponseDto>> listMyActiveAccounts() {
+  public ApiResponse<PagedResponse<ListMyAccountsResponseDto>> listMyActiveAccounts(@ModelAttribute SortablePageRequest pageData) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
-      return success("Hesaplarınız getirildi", accountService.listMyActiveAccounts(userId));
+      Pageable pageable = PaginationUtils.toPageable(pageData, AccountSortColumn.class);
+      return successPaged("Hesaplarınız getirildi", accountService.listMyActiveAccounts(userId, pageable));
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

@@ -3,9 +3,10 @@ package com.hakandincturk.services.impl;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.hakandincturk.core.enums.TransactionStatuses;
@@ -34,12 +35,12 @@ public class InstallmentServiceImpl implements InstallmentService {
   private InstallmentRules installmentRules;
 
   @Override
-  public List<ListMySpecisifDateInstallmentsResponseDto> listMySpecisifDateInstallments(Long userId, int month, int year) {
+  public Page<ListMySpecisifDateInstallmentsResponseDto> listMySpecisifDateInstallments(Long userId, int month, int year, Pageable pageData) {
     LocalDate startDate = LocalDate.of(year, month, 1);
     LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
-    List<Installment> dbInstallments = installmentRepository.findByTransactionUserIdAndDebtDateBetweenOrderByDebtDateDesc(userId, startDate, endDate);
+    Page<Installment> dbInstallments = installmentRepository.findByTransactionUserIdAndDebtDateBetween(userId, startDate, endDate, pageData);
 
-    List<ListMySpecisifDateInstallmentsResponseDto> installments = dbInstallments.stream().map(installment -> {
+    Page<ListMySpecisifDateInstallmentsResponseDto> installments = dbInstallments.map(installment -> {
       TransactionDetailDto transactionDetail = new TransactionDetailDto(
         installment.getTransaction().getId(),
         installment.getTransaction().getName()
@@ -55,7 +56,7 @@ public class InstallmentServiceImpl implements InstallmentService {
         installment.isPaid(),
         installment.getPaidDate()
       );
-    }).toList();
+    });
 
     return installments;
   }

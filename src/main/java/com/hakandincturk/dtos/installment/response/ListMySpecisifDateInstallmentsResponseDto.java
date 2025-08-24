@@ -17,7 +17,7 @@ public class ListMySpecisifDateInstallmentsResponseDto {
   private Long id;
   private TransactionDetailDto transactionDetail;
   private BigDecimal amount;
-  private LocalDate date;
+  private LocalDate debtDate;
   private int installmentNumber;
   private String descripton;
   private boolean isPaid;

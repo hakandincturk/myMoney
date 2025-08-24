@@ -1,9 +1,10 @@
 package com.hakandincturk.services.impl;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.hakandincturk.dtos.account.request.CreateAccountRequestDto;
@@ -45,17 +46,17 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
-  public List<ListMyAccountsResponseDto> listMyActiveAccounts(Long userId) {
-    List<Account> dbAccounts = accountRepository.findByUserIdAndIsRemovedFalseOrderByName(userId);
+  public Page<ListMyAccountsResponseDto> listMyActiveAccounts(Long userId, Pageable pageData) {
+    Page<Account> dbAccounts = accountRepository.findByUserIdAndIsRemovedFalse(userId, pageData);
 
-    List<ListMyAccountsResponseDto> accounts = dbAccounts.stream().map(account -> new ListMyAccountsResponseDto(
+    Page<ListMyAccountsResponseDto> accounts = dbAccounts.map(account -> new ListMyAccountsResponseDto(
       account.getId(),
       account.getName(),
       account.getTotalBalance(),
       account.getBalance(),
       account.getCurrency(),
       account.getType()
-    )).toList();
+    ));
 
     return accounts;
   }

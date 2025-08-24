@@ -1,9 +1,10 @@
 package com.hakandincturk.services.impl;
 
-import java.util.List;
-import java.util.stream.Collectors;
+// ...existing code...
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,10 +54,10 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public List<ListMyTransactionsResponseDto> listMyTransactions(Long userId) {
-    List<Transaction> dbTransactions = transactionRepository.findByUserIdAndIsRemovedFalseOrderByCreatedAtDesc(userId);
+  public Page<ListMyTransactionsResponseDto> listMyTransactions(Long userId, Pageable pageData) {
+    Page<Transaction> dbTransactions = transactionRepository.findByUserIdAndIsRemovedFalse(userId, pageData);
 
-    List<ListMyTransactionsResponseDto> transactions = dbTransactions.stream().map(transaction -> new ListMyTransactionsResponseDto(
+    Page<ListMyTransactionsResponseDto> dtoPage = dbTransactions.map(transaction -> new ListMyTransactionsResponseDto(
       transaction.getId(),
       transaction.getContact() != null ? transaction.getContact().getFullName() : null,
       transaction.getAccount().getName(),
@@ -65,9 +66,9 @@ public class TransactionServiceImpl implements TransactionService {
       transaction.getTotalAmount(),
       transaction.getPaidAmount(),
       transaction.getTotalInstallment()
-    )).collect(Collectors.toList());
+    ));
 
-    return transactions;
+    return dtoPage;
   }
 
   @Override

@@ -1,8 +1,8 @@
 package com.hakandincturk.services.impl;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.hakandincturk.dtos.contact.request.CreateContactRequestDto;
@@ -43,13 +43,13 @@ public class ContactServiceImpl implements ContactService {
 
 
   @Override
-  public List<ListMyContactsResponseDto> listMyActiveContacts(Long userId) {
-    List<Contact> dbContacts = contactRepository.findByUserIdAndIsRemovedFalseOrderByFullName(userId);
-    List<ListMyContactsResponseDto> contacts = dbContacts.stream().map(contact -> new ListMyContactsResponseDto(
+  public Page<ListMyContactsResponseDto> listMyActiveContacts(Long userId, Pageable pageData) {
+    Page<Contact> dbContacts = contactRepository.findByUserIdAndIsRemovedFalse(userId, pageData);
+    Page<ListMyContactsResponseDto> contacts = dbContacts.map(contact -> new ListMyContactsResponseDto(
       contact.getId(),
       contact.getFullName(),
       contact.getNote()
-    )).toList();
+    ));
 
     return contacts;
   }
