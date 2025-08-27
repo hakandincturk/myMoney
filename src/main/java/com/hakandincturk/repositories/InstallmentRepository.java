@@ -16,5 +16,5 @@ public interface InstallmentRepository extends JpaRepository<Installment, Long> 
   
   Optional<Installment> findByIdAndTransactionUserIdAndIsRemovedFalse(Long id, Long userId);
   // start: 2025-08-01, end: 2025-08-31
-  Page<Installment> findByTransactionUserIdAndDebtDateBetween(Long userId, LocalDate start, LocalDate end, Pageable pageData);
+  Page<Installment> findByTransactionUserIdAndDebtDateBetweenAndIsRemovedFalse(Long userId, LocalDate start, LocalDate end, Pageable pageData);
 }

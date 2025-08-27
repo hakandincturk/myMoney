@@ -32,9 +32,14 @@ public class CreateTransactionRequestDto {
   @Min(value = 1, message = "Taksit sayısı en az 0 olmalıdır")
   private Integer totalInstallment;
 
+  @Min(value = 2, message = "Gelir/Gider ismi en az 2 karakterden oluşmalıdır")
+  private String name;
+  
   private String description;
 
   @NotNull(message = "Tarih boş olamaz")
   private LocalDate debtDate;
+
+  private boolean equalSharingBetweenInstallments = true;
 
 }

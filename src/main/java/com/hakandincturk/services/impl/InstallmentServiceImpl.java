@@ -38,12 +38,13 @@ public class InstallmentServiceImpl implements InstallmentService {
   public Page<ListMySpecisifDateInstallmentsResponseDto> listMySpecisifDateInstallments(Long userId, int month, int year, Pageable pageData) {
     LocalDate startDate = LocalDate.of(year, month, 1);
     LocalDate endDate = YearMonth.of(year, month).atEndOfMonth();
-    Page<Installment> dbInstallments = installmentRepository.findByTransactionUserIdAndDebtDateBetween(userId, startDate, endDate, pageData);
+    Page<Installment> dbInstallments = installmentRepository.findByTransactionUserIdAndDebtDateBetweenAndIsRemovedFalse(userId, startDate, endDate, pageData);
 
     Page<ListMySpecisifDateInstallmentsResponseDto> installments = dbInstallments.map(installment -> {
       TransactionDetailDto transactionDetail = new TransactionDetailDto(
         installment.getTransaction().getId(),
-        installment.getTransaction().getName()
+        installment.getTransaction().getName(),
+        installment.getTransaction().getType()
       );
 
       return new ListMySpecisifDateInstallmentsResponseDto(

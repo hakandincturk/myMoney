@@ -29,11 +29,14 @@ public class TransactionFactory {
     newTransaction.setType(body.getType());
     newTransaction.setStatus(TransactionStatuses.PENDING);
     newTransaction.setDescription(body.getDescription());
-    newTransaction.setTotalAmount(body.getTotalAmount());
     newTransaction.setTotalInstallment(body.getTotalInstallment());
     newTransaction.setPaidAmount(ZERO_AMOUNT);
     newTransaction.setDebtDate(body.getDebtDate());
     newTransaction.setUser(user);
+    newTransaction.setName(body.getName());
+
+    BigDecimal totalAmount = !body.isEqualSharingBetweenInstallments() ? body.getTotalAmount().multiply(BigDecimal.valueOf(body.getTotalInstallment())) : body.getTotalAmount();
+    newTransaction.setTotalAmount(totalAmount);
 
     if(body.getTotalInstallment() > 0) {
       List<Installment> installments = generateInstallments(newTransaction, body);
@@ -44,7 +47,7 @@ public class TransactionFactory {
   }
 
   private List<Installment> generateInstallments(Transaction transaction, CreateTransactionRequestDto body){
-    BigDecimal installmentAmount = body.getTotalAmount().divide(BigDecimal.valueOf(body.getTotalInstallment()), 2, RoundingMode.HALF_UP);
+    BigDecimal installmentAmount = !body.isEqualSharingBetweenInstallments() ? body.getTotalAmount() : body.getTotalAmount().divide(BigDecimal.valueOf(body.getTotalInstallment()), 2, RoundingMode.HALF_UP);
 
     List<Installment> installments = new ArrayList<Installment>();
     LocalDate baseDate = body.getDebtDate();

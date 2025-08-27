@@ -15,7 +15,7 @@ import lombok.Setter;
 public class ListMySpecisifDateInstallmentsResponseDto {
 
   private Long id;
-  private TransactionDetailDto transactionDetail;
+  private TransactionDetailDto transaction;
   private BigDecimal amount;
   private LocalDate debtDate;
   private int installmentNumber;
