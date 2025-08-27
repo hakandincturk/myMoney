@@ -5,8 +5,11 @@ import java.time.LocalDate;
 
 import com.hakandincturk.core.enums.TransactionTypes;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +35,8 @@ public class CreateTransactionRequestDto {
   @Min(value = 1, message = "Taksit sayısı en az 0 olmalıdır")
   private Integer totalInstallment;
 
-  @Min(value = 2, message = "Gelir/Gider ismi en az 2 karakterden oluşmalıdır")
+  @NotBlank(message = "Gelir/Gider ismi boş olamaz")
+  @Size(min = 2, message = "Gelir/Gider ismi en az 2 karakterden oluşmalıdır")
   private String name;
   
   private String description;

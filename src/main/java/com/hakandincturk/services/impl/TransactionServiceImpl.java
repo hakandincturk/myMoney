@@ -59,6 +59,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     Page<ListMyTransactionsResponseDto> dtoPage = dbTransactions.map(transaction -> new ListMyTransactionsResponseDto(
       transaction.getId(),
+      transaction.getName(),
       transaction.getContact() != null ? transaction.getContact().getFullName() : null,
       transaction.getAccount().getName(),
       transaction.getType().name(),

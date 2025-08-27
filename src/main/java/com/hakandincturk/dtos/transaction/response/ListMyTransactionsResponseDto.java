@@ -14,6 +14,7 @@ import lombok.Setter;
 public class ListMyTransactionsResponseDto {
 
   private Long id;
+  private String name;
   private String contactName;
   private String accountName;
   private String type;
