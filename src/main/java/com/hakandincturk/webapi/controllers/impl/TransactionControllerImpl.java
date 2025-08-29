@@ -1,5 +1,7 @@
 package com.hakandincturk.webapi.controllers.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -17,6 +19,7 @@ import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.SortablePageRequest;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
+import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 import com.hakandincturk.security.JwtAuthentication;
 import com.hakandincturk.services.abstracts.TransactionService;
@@ -76,6 +79,19 @@ public class TransactionControllerImpl extends BaseController implements Transac
       Long userId = jwtAuth.getUserId();
       transactionService.deleteMyTransaction(userId, transactionId);
       return success("Borç başarıyla silindi", null);
+    }
+    else {
+      return error("Kullanıcı verilerine ulaşılamadı");
+    }
+  }
+  
+  @Override
+  @GetMapping(value = "/{transactionId}/installments/")
+  public ApiResponse<List<ListInstallments>> listTransactionInstallments(@PathVariable(value = "transactionId") Long transactionId) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if(auth instanceof JwtAuthentication jwtAuth){
+      Long userId = jwtAuth.getUserId();
+      return success("Aylık taksitler getirildi", transactionService.listTransactionInstallments(userId, transactionId));
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

@@ -1,6 +1,5 @@
 package com.hakandincturk.webapi.controllers.concretes;
 
-
 import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.SortablePageRequest;

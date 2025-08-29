@@ -1,5 +1,9 @@
 package com.hakandincturk.services.impl;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+
 // ...existing code...
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +13,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
+import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 import com.hakandincturk.factories.TransactionFactory;
 import com.hakandincturk.models.Account;
 import com.hakandincturk.models.Contact;
+import com.hakandincturk.models.Installment;
 import com.hakandincturk.models.Transaction;
 import com.hakandincturk.models.User;
 import com.hakandincturk.repositories.InstallmentRepository;
@@ -35,9 +41,9 @@ public class TransactionServiceImpl implements TransactionService {
   @Autowired
   private TransactionFactory transactionFactory;
 
-    TransactionServiceImpl(InstallmentRepository installmentRepository) {
-        this.installmentRepository = installmentRepository;
-    }
+  TransactionServiceImpl(InstallmentRepository installmentRepository) {
+    this.installmentRepository = installmentRepository;
+  }
 
   @Override
   @Transactional
@@ -86,4 +92,22 @@ public class TransactionServiceImpl implements TransactionService {
     transactionRepository.save(transaction);
   }
   
+  @Override
+  public List<ListInstallments> listTransactionInstallments(Long userId, Long transactionId) {
+    Transaction transaction = transactionRules.checkUserTransactionExistAndGet(userId, transactionId);
+
+    List<ListInstallments> installments = transaction.getInstallments().stream()
+    .sorted(Comparator.comparing(Installment::getId))
+    .map(installment -> new ListInstallments(
+      installment.getId(),
+      installment.getAmount(),
+      installment.getDebtDate(),
+      installment.getInstallmentNumber(),
+      installment.getDescripton(),
+      installment.isPaid(),
+      installment.getPaidDate()
+    )).toList();
+
+    return installments;
+  }
 }
