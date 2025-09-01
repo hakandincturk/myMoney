@@ -24,19 +24,20 @@ public class TransactionSpecifaction {
       }
 
       if(request.getContactIds() != null){
-        boolean isNullCheck = request.getContactIds().stream().anyMatch(contactId -> contactId == 0);;
+        boolean isNullCheck = request.getContactIds().stream().anyMatch(contactId -> contactId == 0);
 
         if(request.getContactIds().size() == 1 && isNullCheck){
           predicates.add(criteriaBuilder.isNull(root.get("contact")));          
         }
-        else if(request.getContactIds().size() > 1 && !isNullCheck){
+        else if(request.getContactIds().size() > 0 && !isNullCheck){
           predicates.add(root.get("contact").get("id").in(request.getContactIds()));
         }
         else if(request.getContactIds().size() > 1 && isNullCheck){
+          List<Long> contactIds = request.getContactIds().stream().filter(x -> x != 0).toList();
           predicates.add(
-            criteriaBuilder.and(
+            criteriaBuilder.or(
               criteriaBuilder.isNull(root.get("contact")),
-              root.get("contact").get("id").in(request.getContactIds())
+              root.get("contact").get("id").in(contactIds)
             )
           );
         }
