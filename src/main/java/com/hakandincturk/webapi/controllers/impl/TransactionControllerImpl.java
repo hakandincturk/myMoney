@@ -19,6 +19,7 @@ import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.SortablePageRequest;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
+import com.hakandincturk.dtos.transaction.request.TransactionFilterRequest;
 import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 import com.hakandincturk.security.JwtAuthentication;
@@ -58,12 +59,11 @@ public class TransactionControllerImpl extends BaseController implements Transac
   @Override
   @GetMapping(value = "/my")
   @Operation(summary = "List my transactions", description = "Borçların listelenmesini sağlar")
-  public ApiResponse<PagedResponse<ListMyTransactionsResponseDto>> listMyTransactions(@ModelAttribute SortablePageRequest pageData) {
+  public ApiResponse<PagedResponse<ListMyTransactionsResponseDto>> listMyTransactions(@ModelAttribute TransactionFilterRequest pageData) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
-      Pageable pageable = PaginationUtils.toPageable(pageData, TransactionSortColumn.class);
-      return successPaged("Borçlar başarıyla getirildi", transactionService.listMyTransactions(userId, pageable));
+      return successPaged("Borçlar başarıyla getirildi", transactionService.listMyTransactions(userId, pageData));
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

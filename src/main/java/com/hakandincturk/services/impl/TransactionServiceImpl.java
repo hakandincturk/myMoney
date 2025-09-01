@@ -6,10 +6,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hakandincturk.core.enums.sort.TransactionSortColumn;
+import com.hakandincturk.core.specs.TransactionSpecifaction;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
+import com.hakandincturk.dtos.transaction.request.TransactionFilterRequest;
 import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 import com.hakandincturk.factories.TransactionFactory;
@@ -22,6 +26,7 @@ import com.hakandincturk.repositories.InstallmentRepository;
 import com.hakandincturk.repositories.TransactionRepository;
 import com.hakandincturk.services.abstracts.TransactionService;
 import com.hakandincturk.services.rules.TransactionRules;
+import com.hakandincturk.utils.PaginationUtils;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -57,8 +62,10 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Page<ListMyTransactionsResponseDto> listMyTransactions(Long userId, Pageable pageData) {
-    Page<Transaction> dbTransactions = transactionRepository.findByUserIdAndIsRemovedFalse(userId, pageData);
+  public Page<ListMyTransactionsResponseDto> listMyTransactions(Long userId, TransactionFilterRequest pageData) {
+    Pageable pageable = PaginationUtils.toPageable(pageData, TransactionSortColumn.class);
+    Specification<Transaction> specs = TransactionSpecifaction.filter(pageData, userId);
+    Page<Transaction> dbTransactions = transactionRepository.findAll(specs, pageable);
 
     Page<ListMyTransactionsResponseDto> dtoPage = dbTransactions.map(transaction -> new ListMyTransactionsResponseDto(
       transaction.getId(),
