@@ -16,6 +16,7 @@ import com.hakandincturk.core.enums.sort.InstallmentSortColumn;
 import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.SortablePageRequest;
+import com.hakandincturk.dtos.installment.request.FilterListMyInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.response.ListMySpecisifDateInstallmentsResponseDto;
 import com.hakandincturk.security.JwtAuthentication;
@@ -36,14 +37,13 @@ public class InstallmentControllerImpl extends BaseController implements Install
   private InstallmentService installmentService;
 
   @Override
-  @GetMapping(value = "/month/{month}/{year}")
+  @GetMapping(value = "/month")
   @Operation(summary = "Get monthly installments", description = "Aylık taksitleri listelemeyi sağlar")
-  public ApiResponse<PagedResponse<ListMySpecisifDateInstallmentsResponseDto>> listMySpecisifDateInstallments(@PathVariable(value = "month") int month, @PathVariable(value = "year") int year, @ModelAttribute SortablePageRequest pageData) {
+  public ApiResponse<PagedResponse<ListMySpecisifDateInstallmentsResponseDto>> listMySpecisifDateInstallments(FilterListMyInstallmentRequestDto pageData) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
-      Pageable pageable = PaginationUtils.toPageable(pageData, InstallmentSortColumn.class);
-      return successPaged("Aylık borçlarınız getirildi", installmentService.listMySpecisifDateInstallments(userId, month, year, pageable));
+      return successPaged("Aylık borçlarınız getirildi", installmentService.listMySpecisifDateInstallments(userId, pageData));
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.hakandincturk.dtos.transaction.request.TransactionFilterRequest;
+import com.hakandincturk.dtos.transaction.request.TransactionFilterRequestDto;
 import com.hakandincturk.models.Transaction;
 
 import jakarta.persistence.criteria.Predicate;
 
 public class TransactionSpecifaction {
-  public static Specification<Transaction> filter(TransactionFilterRequest request, Long userId){
+  public static Specification<Transaction> filter(Long userId, TransactionFilterRequestDto body){
     return (root, query, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
@@ -19,21 +19,21 @@ public class TransactionSpecifaction {
       predicates.add(criteriaBuilder.equal(root.get("user").get("id"), userId));
       predicates.add(criteriaBuilder.equal(root.get("isRemoved"), false));
 
-      if(request.getAccountIds() != null) {
-        predicates.add(root.get("account").get("id").in(request.getAccountIds()));
+      if(body.getAccountIds() != null) {
+        predicates.add(root.get("account").get("id").in(body.getAccountIds()));
       }
 
-      if(request.getContactIds() != null){
-        boolean isNullCheck = request.getContactIds().stream().anyMatch(contactId -> contactId == 0);
+      if(body.getContactIds() != null){
+        boolean isNullCheck = body.getContactIds().stream().anyMatch(contactId -> contactId == 0);
 
-        if(request.getContactIds().size() == 1 && isNullCheck){
+        if(body.getContactIds().size() == 1 && isNullCheck){
           predicates.add(criteriaBuilder.isNull(root.get("contact")));          
         }
-        else if(request.getContactIds().size() > 0 && !isNullCheck){
-          predicates.add(root.get("contact").get("id").in(request.getContactIds()));
+        else if(body.getContactIds().size() > 0 && !isNullCheck){
+          predicates.add(root.get("contact").get("id").in(body.getContactIds()));
         }
-        else if(request.getContactIds().size() > 1 && isNullCheck){
-          List<Long> contactIds = request.getContactIds().stream().filter(x -> x != 0).toList();
+        else if(body.getContactIds().size() > 1 && isNullCheck){
+          List<Long> contactIds = body.getContactIds().stream().filter(x -> x != 0).toList();
           predicates.add(
             criteriaBuilder.or(
               criteriaBuilder.isNull(root.get("contact")),
@@ -43,42 +43,42 @@ public class TransactionSpecifaction {
         }
       }
 
-      if(request.getMinAmount() != null && request.getMaxAmount() != null){
-        predicates.add(criteriaBuilder.between(root.get("totalAmount"), request.getMinAmount(), request.getMaxAmount()));
+      if(body.getMinAmount() != null && body.getMaxAmount() != null){
+        predicates.add(criteriaBuilder.between(root.get("totalAmount"), body.getMinAmount(), body.getMaxAmount()));
       }
-      else if(request.getMinAmount() != null && request.getMaxAmount() == null){
-        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("totalAmount"), request.getMinAmount()));
+      else if(body.getMinAmount() != null && body.getMaxAmount() == null){
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("totalAmount"), body.getMinAmount()));
       }
-      else if(request.getMinAmount() == null && request.getMaxAmount() != null){
-        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("totalAmount"), request.getMaxAmount()));
-      }
-
-      if(request.getMinInstallmentCount() != null && request.getMaxInstallmentCount() != null) {
-        predicates.add(criteriaBuilder.between(root.get("totalInstallment"), request.getMinInstallmentCount(), request.getMaxInstallmentCount()));
-      }
-      else if(request.getMinInstallmentCount() != null && request.getMaxInstallmentCount() == null){
-        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("totalInstallment"), request.getMinInstallmentCount()));
-      }
-      else if(request.getMinInstallmentCount() == null && request.getMaxInstallmentCount() != null){
-        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("totalInstallment"), request.getMaxInstallmentCount()));
+      else if(body.getMinAmount() == null && body.getMaxAmount() != null){
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("totalAmount"), body.getMaxAmount()));
       }
 
-      if(request.getStartDate() != null && request.getEndDate() != null){
-        predicates.add(criteriaBuilder.between(root.get("debtDate"), request.getStartDate(), request.getEndDate()));
+      if(body.getMinInstallmentCount() != null && body.getMaxInstallmentCount() != null) {
+        predicates.add(criteriaBuilder.between(root.get("totalInstallment"), body.getMinInstallmentCount(), body.getMaxInstallmentCount()));
       }
-      else if(request.getStartDate() != null && request.getEndDate() == null){
-        predicates.add(criteriaBuilder.greaterThan(root.get("debtDate"), request.getStartDate()));
+      else if(body.getMinInstallmentCount() != null && body.getMaxInstallmentCount() == null){
+        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("totalInstallment"), body.getMinInstallmentCount()));
       }
-      else if(request.getStartDate() == null && request.getEndDate() != null){
-        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("debtDate"), request.getEndDate()));
-      }
-
-      if(request.getTypes() != null){
-        predicates.add(root.get("type").in(request.getTypes()));
+      else if(body.getMinInstallmentCount() == null && body.getMaxInstallmentCount() != null){
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("totalInstallment"), body.getMaxInstallmentCount()));
       }
 
-      if(request.getName() != null && !request.getName().isEmpty()){
-        predicates.add(criteriaBuilder.like(root.get("name"), "%" + request.getName() + "%"));
+      if(body.getStartDate() != null && body.getEndDate() != null){
+        predicates.add(criteriaBuilder.between(root.get("debtDate"), body.getStartDate(), body.getEndDate()));
+      }
+      else if(body.getStartDate() != null && body.getEndDate() == null){
+        predicates.add(criteriaBuilder.greaterThan(root.get("debtDate"), body.getStartDate()));
+      }
+      else if(body.getStartDate() == null && body.getEndDate() != null){
+        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("debtDate"), body.getEndDate()));
+      }
+
+      if(body.getTypes() != null){
+        predicates.add(root.get("type").in(body.getTypes()));
+      }
+
+      if(body.getName() != null && !body.getName().isEmpty()){
+        predicates.add(criteriaBuilder.like(root.get("name"), "%" + body.getName() + "%"));
       }
 
 

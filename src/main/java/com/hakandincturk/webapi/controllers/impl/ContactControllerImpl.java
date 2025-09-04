@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.hakandincturk.core.enums.sort.ContactSortColumn;
 import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
-import com.hakandincturk.dtos.SortablePageRequest;
+import com.hakandincturk.dtos.contact.request.ContactFilterRequestDto;
 import com.hakandincturk.dtos.contact.request.CreateContactRequestDto;
 import com.hakandincturk.dtos.contact.request.UpdateMyContactRequestDto;
 import com.hakandincturk.dtos.contact.response.ListMyContactsResponseDto;
@@ -56,12 +56,11 @@ public class ContactControllerImpl extends BaseController implements ContactCont
 
   @Override
   @GetMapping(value = "/my/active")
-  public ApiResponse<PagedResponse<ListMyContactsResponseDto>> listMyActiveContacts(@ModelAttribute SortablePageRequest pageData) {
+  public ApiResponse<PagedResponse<ListMyContactsResponseDto>> listMyActiveContacts(@ModelAttribute ContactFilterRequestDto pageData) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
-      Pageable pageable = PaginationUtils.toPageable(pageData, ContactSortColumn.class);
-      return successPaged("Kişi listeniz getirildi", contactService.listMyActiveContacts(userId, pageable));
+      return successPaged("Kişi listeniz getirildi", contactService.listMyActiveContacts(userId, pageData));
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

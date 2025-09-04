@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hakandincturk.core.enums.sort.TransactionSortColumn;
 import com.hakandincturk.core.specs.TransactionSpecifaction;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
-import com.hakandincturk.dtos.transaction.request.TransactionFilterRequest;
+import com.hakandincturk.dtos.transaction.request.TransactionFilterRequestDto;
 import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 import com.hakandincturk.factories.TransactionFactory;
@@ -62,9 +62,9 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Page<ListMyTransactionsResponseDto> listMyTransactions(Long userId, TransactionFilterRequest pageData) {
+  public Page<ListMyTransactionsResponseDto> listMyTransactions(Long userId, TransactionFilterRequestDto pageData) {
     Pageable pageable = PaginationUtils.toPageable(pageData, TransactionSortColumn.class);
-    Specification<Transaction> specs = TransactionSpecifaction.filter(pageData, userId);
+    Specification<Transaction> specs = TransactionSpecifaction.filter(userId, pageData);
     Page<Transaction> dbTransactions = transactionRepository.findAll(specs, pageable);
 
     Page<ListMyTransactionsResponseDto> dtoPage = dbTransactions.map(transaction -> new ListMyTransactionsResponseDto(

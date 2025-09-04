@@ -3,8 +3,12 @@ package com.hakandincturk.services.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.hakandincturk.core.enums.sort.ContactSortColumn;
+import com.hakandincturk.core.specs.ContactSpecification;
+import com.hakandincturk.dtos.contact.request.ContactFilterRequestDto;
 import com.hakandincturk.dtos.contact.request.CreateContactRequestDto;
 import com.hakandincturk.dtos.contact.request.UpdateMyContactRequestDto;
 import com.hakandincturk.dtos.contact.response.ListMyContactsResponseDto;
@@ -14,6 +18,7 @@ import com.hakandincturk.repositories.ContactRepository;
 import com.hakandincturk.services.abstracts.ContactService;
 import com.hakandincturk.services.rules.ContactRules;
 import com.hakandincturk.services.rules.UserRules;
+import com.hakandincturk.utils.PaginationUtils;
 
 @Service
 public class ContactServiceImpl implements ContactService {
@@ -43,8 +48,12 @@ public class ContactServiceImpl implements ContactService {
 
 
   @Override
-  public Page<ListMyContactsResponseDto> listMyActiveContacts(Long userId, Pageable pageData) {
-    Page<Contact> dbContacts = contactRepository.findByUserIdAndIsRemovedFalse(userId, pageData);
+  public Page<ListMyContactsResponseDto> listMyActiveContacts(Long userId, ContactFilterRequestDto pageData) {
+
+    Pageable pageable = PaginationUtils.toPageable(pageData, ContactSortColumn.class);
+    Specification<Contact> specs = ContactSpecification.filter(userId, pageData);
+    Page<Contact> dbContacts = contactRepository.findAll(specs, pageable);
+    
     Page<ListMyContactsResponseDto> contacts = dbContacts.map(contact -> new ListMyContactsResponseDto(
       contact.getId(),
       contact.getFullName(),
