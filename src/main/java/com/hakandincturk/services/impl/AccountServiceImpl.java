@@ -2,7 +2,6 @@ package com.hakandincturk.services.impl;
 
 import java.math.BigDecimal;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,17 +16,15 @@ import com.hakandincturk.services.abstracts.AccountService;
 import com.hakandincturk.services.rules.AccountRules;
 import com.hakandincturk.services.rules.UserRules;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
-  @Autowired
-  private AccountRepository accountRepository;
-
-  @Autowired
-  private AccountRules accountRules;
-
-  @Autowired
-  private UserRules userRules;
+  private final AccountRepository accountRepository;
+  private final AccountRules accountRules;
+  private final UserRules userRules;
 
   @Override
   public void createAccount(CreateAccountRequestDto body, Long userId) {

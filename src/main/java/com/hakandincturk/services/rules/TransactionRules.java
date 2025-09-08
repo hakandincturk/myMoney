@@ -3,7 +3,6 @@ package com.hakandincturk.services.rules;
 import java.math.BigDecimal;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.hakandincturk.core.exception.NotFoundException;
@@ -15,20 +14,16 @@ import com.hakandincturk.models.Transaction;
 import com.hakandincturk.models.User;
 import com.hakandincturk.repositories.TransactionRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class TransactionRules {
-
-  @Autowired
-  private TransactionRepository transactionRepository;
-
-  @Autowired
-  private UserRules userRules;
-
-  @Autowired
-  private ContactRules contactRules;
-
-  @Autowired
-  private AccountRules accountRules;
+  
+  private final TransactionRepository transactionRepository;
+  private final UserRules userRules;
+  private final ContactRules contactRules;
+  private final AccountRules accountRules;
 
   public void validateCreateTransactionRequest(CreateTransactionRequestDto body){
     if(body.getAccountId() == null) {

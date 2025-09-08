@@ -2,7 +2,6 @@ package com.hakandincturk.webapi.controllers.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,14 +27,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/api/transaction")
 @Tag(name = "Transaction", description = "Transaction işlemleri")
 public class TransactionControllerImpl extends BaseController implements TransactionController {
 
-  @Autowired
-  private TransactionService transactionService;
+  private final TransactionService transactionService;
 
   @Override
   @PostMapping(value = "/")

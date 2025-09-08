@@ -2,7 +2,6 @@ package com.hakandincturk.services.impl;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,24 +17,17 @@ import com.hakandincturk.security.services.JwtService;
 import com.hakandincturk.services.abstracts.AuthService;
 import com.hakandincturk.services.rules.AuthRules;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService  {
 
-  @Autowired
-  private UserRepository userRepository;
-
-  @Autowired
-  private AuthenticationProvider authenticationProvider;
-
-  @Autowired
-  private JwtService jwtService;
-
-  @Autowired
-  private BCryptPasswordEncoder passwordEncoder;
-
-  @Autowired
-  private AuthRules authRules;
-
+  private final UserRepository userRepository;
+  private final AuthenticationProvider authenticationProvider;
+  private final JwtService jwtService;
+  private final BCryptPasswordEncoder passwordEncoder;
+  private final AuthRules authRules;
 
   @Override
   public LoginResponseDto login(LoginRequestDto body) throws UnauthorizedException {

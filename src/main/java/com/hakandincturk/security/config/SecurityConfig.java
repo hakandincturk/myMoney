@@ -1,6 +1,5 @@
 package com.hakandincturk.security.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -13,8 +12,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.hakandincturk.core.handler.AuthEntryPoint;
 import com.hakandincturk.security.JwtAuthenticationFilter;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
   
   private final String LOGIN_PATH = "/api/auth/login";
@@ -32,14 +34,9 @@ public class SecurityConfig {
     "/configuration/**",
   };
 
-  @Autowired
-  private AuthenticationProvider authenticationProvider;
-
-  @Autowired
-  private JwtAuthenticationFilter jwtAuthenticationFilter;
-
-  @Autowired
-  private AuthEntryPoint authEntryPoint;
+  private final AuthenticationProvider authenticationProvider;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final AuthEntryPoint authEntryPoint;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{

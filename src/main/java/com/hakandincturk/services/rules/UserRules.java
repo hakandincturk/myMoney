@@ -2,18 +2,19 @@ package com.hakandincturk.services.rules;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.hakandincturk.core.exception.NotFoundException;
 import com.hakandincturk.models.User;
 import com.hakandincturk.repositories.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UserRules {
 
-  @Autowired
-  private UserRepository userRepository;
+  private final UserRepository userRepository;
 
   public User checkUserExistAndGet(Long userId){
     Optional<User> dbUser = userRepository.findByIdAndIsRemovedFalse(userId);

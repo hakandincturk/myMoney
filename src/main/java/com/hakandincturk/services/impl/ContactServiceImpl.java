@@ -1,6 +1,5 @@
 package com.hakandincturk.services.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,18 +19,15 @@ import com.hakandincturk.services.rules.ContactRules;
 import com.hakandincturk.services.rules.UserRules;
 import com.hakandincturk.utils.PaginationUtils;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class ContactServiceImpl implements ContactService {
 
-  @Autowired
-  private ContactRepository contactRepository;
-
-  @Autowired
-  private ContactRules contactRules;
-
-  @Autowired
-  private UserRules userRules;
-
+  private final ContactRepository contactRepository;
+  private final ContactRules contactRules;
+  private final UserRules userRules;
 
   @Override
   public void createAccount(Long userId, CreateContactRequestDto body) {

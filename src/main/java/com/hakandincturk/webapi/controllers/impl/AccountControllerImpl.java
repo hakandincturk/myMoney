@@ -1,6 +1,5 @@
 package com.hakandincturk.webapi.controllers.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,14 +29,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/api/account")
 @Tag(name = "Account", description = "Hesap işlemleri")
 public class AccountControllerImpl extends BaseController implements AccountController {
 
-  @Autowired
-  private AccountService accountService;
+  private final AccountService accountService;
 
   @Override
   @PostMapping(value = "/my")

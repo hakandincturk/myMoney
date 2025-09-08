@@ -1,7 +1,5 @@
 package com.hakandincturk.webapi.controllers.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hakandincturk.core.enums.sort.ContactSortColumn;
 import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.contact.request.ContactFilterRequestDto;
@@ -23,21 +20,21 @@ import com.hakandincturk.dtos.contact.request.UpdateMyContactRequestDto;
 import com.hakandincturk.dtos.contact.response.ListMyContactsResponseDto;
 import com.hakandincturk.security.JwtAuthentication;
 import com.hakandincturk.services.abstracts.ContactService;
-import com.hakandincturk.utils.PaginationUtils;
 import com.hakandincturk.webapi.controllers.BaseController;
 import com.hakandincturk.webapi.controllers.concretes.ContactController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/api/contact")
 @Tag(name = "Contact", description = "Kullanıcı işlemleri")
 public class ContactControllerImpl extends BaseController implements ContactController {
 
-  @Autowired
-  private ContactService contactService;
+  private final ContactService contactService;
 
   @Override
   @PostMapping(value = "/my")

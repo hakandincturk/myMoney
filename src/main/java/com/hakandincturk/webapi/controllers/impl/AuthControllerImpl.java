@@ -1,6 +1,5 @@
 package com.hakandincturk.webapi.controllers.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,14 +16,15 @@ import com.hakandincturk.webapi.controllers.concretes.AuthController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/api/auth")
 @Tag(name = "Auth", description = "Kullanıcı giriş işlemleri")
 public class AuthControllerImpl extends BaseController implements AuthController {
 
-  @Autowired
-  private AuthService authService;
+  private final AuthService authService;
 
   @Override
   @PostMapping(value = "/login")
