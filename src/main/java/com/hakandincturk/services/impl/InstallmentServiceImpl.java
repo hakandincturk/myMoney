@@ -2,7 +2,6 @@ package com.hakandincturk.services.impl;
 
 import java.math.BigDecimal;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -15,27 +14,30 @@ import com.hakandincturk.dtos.installment.request.FilterListMyInstallmentRequest
 import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.response.ListMySpecisifDateInstallmentsResponseDto;
 import com.hakandincturk.dtos.installment.response.TransactionDetailDto;
+import com.hakandincturk.factories.AccountFactory;
+import com.hakandincturk.models.Account;
 import com.hakandincturk.models.Installment;
 import com.hakandincturk.models.Transaction;
+import com.hakandincturk.repositories.AccountRepository;
 import com.hakandincturk.repositories.InstallmentRepository;
 import com.hakandincturk.repositories.TransactionRepository;
 import com.hakandincturk.services.abstracts.InstallmentService;
 import com.hakandincturk.services.rules.InstallmentRules;
 import com.hakandincturk.utils.PaginationUtils;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class InstallmentServiceImpl implements InstallmentService {
 
-  @Autowired
-  private InstallmentRepository installmentRepository;
-
-  @Autowired
-  private TransactionRepository transactionRepository;
-
-  @Autowired
-  private InstallmentRules installmentRules;
+  private final InstallmentRepository installmentRepository;
+  private final TransactionRepository transactionRepository;
+  private final InstallmentRules installmentRules;
+  private final AccountFactory accountFactory;
+  private final AccountRepository accountRepository;
 
   @Override
   public Page<ListMySpecisifDateInstallmentsResponseDto> listMySpecisifDateInstallments(Long userId, FilterListMyInstallmentRequestDto pageData) {
@@ -79,11 +81,14 @@ public class InstallmentServiceImpl implements InstallmentService {
     Transaction transaction = installment.getTransaction();
 
     BigDecimal totalPaidAmount = installment.getTransaction().getPaidAmount().add(installment.getAmount());
-    TransactionStatuses transactionStatuses = transaction.getTotalAmount() == totalPaidAmount ? TransactionStatuses.PAID : TransactionStatuses.PARTIAL;
+    TransactionStatuses transactionStatuses = transaction.getTotalAmount().equals(totalPaidAmount) ? TransactionStatuses.PAID : TransactionStatuses.PARTIAL;
 
     transaction.setPaidAmount(totalPaidAmount);
     transaction.setStatus(transactionStatuses);
     transactionRepository.save(transaction);
+
+    Account account = accountFactory.reCalculateBalanceOnPayment(transaction.getAccount(), transaction.getType(), installment.getAmount());
+    accountRepository.save(account);
   }
   
 }

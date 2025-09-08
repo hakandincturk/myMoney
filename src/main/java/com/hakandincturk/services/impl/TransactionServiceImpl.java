@@ -10,42 +10,39 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hakandincturk.core.enums.TransactionTypes;
 import com.hakandincturk.core.enums.sort.TransactionSortColumn;
 import com.hakandincturk.core.specs.TransactionSpecifaction;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
 import com.hakandincturk.dtos.transaction.request.TransactionFilterRequestDto;
 import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
+import com.hakandincturk.factories.AccountFactory;
 import com.hakandincturk.factories.TransactionFactory;
 import com.hakandincturk.models.Account;
 import com.hakandincturk.models.Contact;
 import com.hakandincturk.models.Installment;
 import com.hakandincturk.models.Transaction;
 import com.hakandincturk.models.User;
+import com.hakandincturk.repositories.AccountRepository;
 import com.hakandincturk.repositories.InstallmentRepository;
 import com.hakandincturk.repositories.TransactionRepository;
 import com.hakandincturk.services.abstracts.TransactionService;
 import com.hakandincturk.services.rules.TransactionRules;
 import com.hakandincturk.utils.PaginationUtils;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
-  @Autowired
-  private TransactionRepository transactionRepository;
-
-  @Autowired
-  private InstallmentRepository installmentRepository;
-
-  @Autowired
-  private TransactionRules transactionRules;
-
-  @Autowired
-  private TransactionFactory transactionFactory;
-
-  TransactionServiceImpl(InstallmentRepository installmentRepository) {
-    this.installmentRepository = installmentRepository;
-  }
+  private final TransactionRepository transactionRepository;
+  private final InstallmentRepository installmentRepository;
+  private final TransactionRules transactionRules;
+  private final TransactionFactory transactionFactory;
+  private final AccountFactory accountFactory;
+  private final AccountRepository accountRepository;
 
   @Override
   @Transactional
@@ -59,6 +56,12 @@ public class TransactionServiceImpl implements TransactionService {
 
     Transaction newTransaction = transactionFactory.createTransaction(body, activeUser, account, contact);    
     transactionRepository.save(newTransaction);
+
+    if(newTransaction.getType().equals(TransactionTypes.DEBT)) {
+      account = accountFactory.reCalculateBalanceOnTransactionCreate(account, newTransaction.getType(), newTransaction.getTotalAmount());
+      accountRepository.save(account);
+    }
+
   }
 
   @Override
