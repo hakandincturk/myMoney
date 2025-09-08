@@ -18,6 +18,7 @@ import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 import com.hakandincturk.factories.AccountFactory;
 import com.hakandincturk.factories.TransactionFactory;
+import com.hakandincturk.mappers.TransactionMapper;
 import com.hakandincturk.models.Account;
 import com.hakandincturk.models.Contact;
 import com.hakandincturk.models.Installment;
@@ -42,6 +43,7 @@ public class TransactionServiceImpl implements TransactionService {
   private final TransactionFactory transactionFactory;
   private final AccountFactory accountFactory;
   private final AccountRepository accountRepository;
+  private final TransactionMapper transactionMapper;
 
   @Override
   @Transactional
@@ -68,20 +70,7 @@ public class TransactionServiceImpl implements TransactionService {
     Pageable pageable = PaginationUtils.toPageable(pageData, TransactionSortColumn.class);
     Specification<Transaction> specs = TransactionSpecifaction.filter(userId, pageData);
     Page<Transaction> dbTransactions = transactionRepository.findAll(specs, pageable);
-
-    Page<ListMyTransactionsResponseDto> dtoPage = dbTransactions.map(transaction -> new ListMyTransactionsResponseDto(
-      transaction.getId(),
-      transaction.getName(),
-      transaction.getContact() != null ? transaction.getContact().getFullName() : null,
-      transaction.getAccount().getName(),
-      transaction.getType().name(),
-      transaction.getStatus().name(),
-      transaction.getTotalAmount(),
-      transaction.getPaidAmount(),
-      transaction.getTotalInstallment()
-    ));
-
-    return dtoPage;
+    return dbTransactions.map(transactionMapper::toListMyTransactionsResponseDto);
   }
 
   @Override

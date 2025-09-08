@@ -7,7 +7,6 @@ import java.util.List;
 import com.hakandincturk.core.enums.TransactionTypes;
 import com.hakandincturk.dtos.SortablePageRequest;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 

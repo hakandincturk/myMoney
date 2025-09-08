@@ -11,6 +11,7 @@ import com.hakandincturk.dtos.contact.request.ContactFilterRequestDto;
 import com.hakandincturk.dtos.contact.request.CreateContactRequestDto;
 import com.hakandincturk.dtos.contact.request.UpdateMyContactRequestDto;
 import com.hakandincturk.dtos.contact.response.ListMyContactsResponseDto;
+import com.hakandincturk.mappers.ContactMapper;
 import com.hakandincturk.models.Contact;
 import com.hakandincturk.models.User;
 import com.hakandincturk.repositories.ContactRepository;
@@ -28,6 +29,7 @@ public class ContactServiceImpl implements ContactService {
   private final ContactRepository contactRepository;
   private final ContactRules contactRules;
   private final UserRules userRules;
+  private final ContactMapper contactMapper;
 
   @Override
   public void createAccount(Long userId, CreateContactRequestDto body) {
@@ -50,13 +52,13 @@ public class ContactServiceImpl implements ContactService {
     Specification<Contact> specs = ContactSpecification.filter(userId, pageData);
     Page<Contact> dbContacts = contactRepository.findAll(specs, pageable);
     
-    Page<ListMyContactsResponseDto> contacts = dbContacts.map(contact -> new ListMyContactsResponseDto(
-      contact.getId(),
-      contact.getFullName(),
-      contact.getNote()
-    ));
-
-    return contacts;
+    // Page<ListMyContactsResponseDto> contacts = dbContacts.map(contact -> new ListMyContactsResponseDto(
+    //   contact.getId(),
+    //   contact.getFullName(),
+    //   contact.getNote()
+    // ));
+    // return contacts;
+    return dbContacts.map(contactMapper::toListMyContactsResponseDto);
   }
 
   @Override

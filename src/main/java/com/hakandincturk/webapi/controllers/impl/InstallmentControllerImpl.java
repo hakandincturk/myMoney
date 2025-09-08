@@ -13,7 +13,7 @@ import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.installment.request.FilterListMyInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
-import com.hakandincturk.dtos.installment.response.ListMySpecisifDateInstallmentsResponseDto;
+import com.hakandincturk.dtos.installment.response.ListMySpecificDateInstallmentsResponseDto;
 import com.hakandincturk.security.JwtAuthentication;
 import com.hakandincturk.services.abstracts.InstallmentService;
 import com.hakandincturk.webapi.controllers.BaseController;
@@ -34,7 +34,7 @@ public class InstallmentControllerImpl extends BaseController implements Install
   @Override
   @GetMapping(value = "/month")
   @Operation(summary = "Get monthly installments", description = "Aylık taksitleri listelemeyi sağlar")
-  public ApiResponse<PagedResponse<ListMySpecisifDateInstallmentsResponseDto>> listMySpecisifDateInstallments(FilterListMyInstallmentRequestDto pageData) {
+  public ApiResponse<PagedResponse<ListMySpecificDateInstallmentsResponseDto>> listMySpecisifDateInstallments(FilterListMyInstallmentRequestDto pageData) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();

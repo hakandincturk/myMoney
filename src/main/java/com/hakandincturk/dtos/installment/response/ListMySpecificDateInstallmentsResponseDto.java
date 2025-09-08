@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ListMySpecisifDateInstallmentsResponseDto {
+public class ListMySpecificDateInstallmentsResponseDto {
 
   private Long id;
   private TransactionDetailDto transaction;

@@ -12,7 +12,7 @@ import com.hakandincturk.core.enums.sort.InstallmentSortColumn;
 import com.hakandincturk.core.specs.FilterListMyInstallmentSpecification;
 import com.hakandincturk.dtos.installment.request.FilterListMyInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
-import com.hakandincturk.dtos.installment.response.ListMySpecisifDateInstallmentsResponseDto;
+import com.hakandincturk.dtos.installment.response.ListMySpecificDateInstallmentsResponseDto;
 import com.hakandincturk.dtos.installment.response.TransactionDetailDto;
 import com.hakandincturk.factories.AccountFactory;
 import com.hakandincturk.models.Account;
@@ -40,20 +40,20 @@ public class InstallmentServiceImpl implements InstallmentService {
   private final AccountRepository accountRepository;
 
   @Override
-  public Page<ListMySpecisifDateInstallmentsResponseDto> listMySpecisifDateInstallments(Long userId, FilterListMyInstallmentRequestDto pageData) {
+  public Page<ListMySpecificDateInstallmentsResponseDto> listMySpecisifDateInstallments(Long userId, FilterListMyInstallmentRequestDto pageData) {
     Pageable pageable = PaginationUtils.toPageable(pageData, InstallmentSortColumn.class);
     Specification<Installment> specs = FilterListMyInstallmentSpecification.filter(userId, pageData);
 
     Page<Installment> dbInstallments = installmentRepository.findAll(specs, pageable);
 
-    Page<ListMySpecisifDateInstallmentsResponseDto> installments = dbInstallments.map(installment -> {
+    Page<ListMySpecificDateInstallmentsResponseDto> installments = dbInstallments.map(installment -> {
       TransactionDetailDto transactionDetail = new TransactionDetailDto(
         installment.getTransaction().getId(),
         installment.getTransaction().getName(),
         installment.getTransaction().getType()
       );
 
-      return new ListMySpecisifDateInstallmentsResponseDto(
+      return new ListMySpecificDateInstallmentsResponseDto(
         installment.getId(),
         transactionDetail,
         installment.getAmount(),

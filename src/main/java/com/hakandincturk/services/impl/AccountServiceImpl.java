@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.hakandincturk.dtos.account.request.CreateAccountRequestDto;
 import com.hakandincturk.dtos.account.request.UpdateAccountRequestDto;
 import com.hakandincturk.dtos.account.response.ListMyAccountsResponseDto;
+import com.hakandincturk.mappers.AccountMapper;
 import com.hakandincturk.models.Account;
 import com.hakandincturk.models.User;
 import com.hakandincturk.repositories.AccountRepository;
@@ -25,6 +26,7 @@ public class AccountServiceImpl implements AccountService {
   private final AccountRepository accountRepository;
   private final AccountRules accountRules;
   private final UserRules userRules;
+  private final AccountMapper accountMapper;
 
   @Override
   public void createAccount(CreateAccountRequestDto body, Long userId) {
@@ -45,17 +47,7 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public Page<ListMyAccountsResponseDto> listMyActiveAccounts(Long userId, Pageable pageData) {
     Page<Account> dbAccounts = accountRepository.findByUserIdAndIsRemovedFalse(userId, pageData);
-
-    Page<ListMyAccountsResponseDto> accounts = dbAccounts.map(account -> new ListMyAccountsResponseDto(
-      account.getId(),
-      account.getName(),
-      account.getTotalBalance(),
-      account.getBalance(),
-      account.getCurrency(),
-      account.getType()
-    ));
-
-    return accounts;
+    return dbAccounts.map(accountMapper::toListMyAccountsResponseDto);
   }
 
   @Override
