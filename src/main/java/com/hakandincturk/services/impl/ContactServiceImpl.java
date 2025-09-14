@@ -52,12 +52,6 @@ public class ContactServiceImpl implements ContactService {
     Specification<Contact> specs = ContactSpecification.filter(userId, pageData);
     Page<Contact> dbContacts = contactRepository.findAll(specs, pageable);
     
-    // Page<ListMyContactsResponseDto> contacts = dbContacts.map(contact -> new ListMyContactsResponseDto(
-    //   contact.getId(),
-    //   contact.getFullName(),
-    //   contact.getNote()
-    // ));
-    // return contacts;
     return dbContacts.map(contactMapper::toListMyContactsResponseDto);
   }
 

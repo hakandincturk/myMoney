@@ -1,4 +1,4 @@
-package com.hakandincturk.webapi.controllers.concretes;
+package com.hakandincturk.webapi.controllers.abstracts;
 
 import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.dtos.auth.request.LoginRequestDto;
@@ -6,6 +6,6 @@ import com.hakandincturk.dtos.auth.request.RegisterRequestDto;
 import com.hakandincturk.dtos.auth.response.LoginResponseDto;
 
 public interface AuthController {
-  public ApiResponse<LoginResponseDto> login(LoginRequestDto body);
-  public ApiResponse<?> register(RegisterRequestDto body);
+  ApiResponse<LoginResponseDto> login(LoginRequestDto body);
+  ApiResponse<?> register(RegisterRequestDto body);
 }

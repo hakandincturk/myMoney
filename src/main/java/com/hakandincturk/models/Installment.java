@@ -3,6 +3,8 @@ package com.hakandincturk.models;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -23,6 +25,7 @@ import lombok.Setter;
 public class Installment extends BaseEntitiy {
 
   @ManyToOne(fetch = FetchType.LAZY)
+  @JsonIgnore
   @JoinColumn(name = "transaction_id")
   private Transaction transaction;
 

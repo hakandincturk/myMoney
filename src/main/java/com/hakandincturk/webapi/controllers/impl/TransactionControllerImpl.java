@@ -21,7 +21,7 @@ import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto
 import com.hakandincturk.security.JwtAuthentication;
 import com.hakandincturk.services.abstracts.TransactionService;
 import com.hakandincturk.webapi.controllers.BaseController;
-import com.hakandincturk.webapi.controllers.concretes.TransactionController;
+import com.hakandincturk.webapi.controllers.abstracts.TransactionController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.RequestBody;

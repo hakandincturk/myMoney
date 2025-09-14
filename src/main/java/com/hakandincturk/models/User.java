@@ -1,13 +1,16 @@
 package com.hakandincturk.models;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,6 +37,9 @@ public class User extends BaseEntitiy implements UserDetails {
   @Column(name = "phone")
   private String phone;
 
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Category> categories;
+
   @Override
   public String getUsername() {
     return email;
@@ -41,7 +47,7 @@ public class User extends BaseEntitiy implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of();
+    return new ArrayList<>();
   }
   
 }

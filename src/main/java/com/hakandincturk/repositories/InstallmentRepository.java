@@ -11,7 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface InstallmentRepository extends JpaRepository<Installment, Long>, JpaSpecificationExecutor<Installment> {
-  
   Optional<Installment> findByIdAndTransactionUserIdAndIsRemovedFalse(Long id, Long userId);
   // start: 2025-08-01, end: 2025-08-31
   // Page<Installment> findByTransactionUserIdAndDebtDateBetweenAndIsRemovedFalse(Long userId, LocalDate start, LocalDate end, Pageable pageData);

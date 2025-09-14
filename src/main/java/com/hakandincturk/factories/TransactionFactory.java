@@ -11,9 +11,11 @@ import org.springframework.stereotype.Component;
 import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
 import com.hakandincturk.models.Account;
+import com.hakandincturk.models.Category;
 import com.hakandincturk.models.Contact;
 import com.hakandincturk.models.Installment;
 import com.hakandincturk.models.Transaction;
+import com.hakandincturk.models.TransactionCategory;
 import com.hakandincturk.models.User;
 
 @Component
@@ -21,8 +23,7 @@ public class TransactionFactory {
 
   private static final BigDecimal ZERO_AMOUNT = BigDecimal.ZERO;
 
-  public Transaction createTransaction(CreateTransactionRequestDto body, User user, Account account, Contact contact){
-
+  public Transaction createTransaction(CreateTransactionRequestDto body, User user, Account account, Contact contact, List<Category> categories){
     Transaction newTransaction = new Transaction();
     newTransaction.setAccount(account);
     newTransaction.setContact(contact);
@@ -41,6 +42,11 @@ public class TransactionFactory {
     if(body.getTotalInstallment() > 0) {
       List<Installment> installments = generateInstallments(newTransaction, body);
       newTransaction.setInstallments(installments);
+    }
+
+    if(categories.size() > 0){
+      List<TransactionCategory> newCategories = generateTransactionCategories(newTransaction, categories);
+      newTransaction.setTransactionCategories(newCategories);
     }
 
     return newTransaction;
@@ -67,6 +73,12 @@ public class TransactionFactory {
     return installments;
   }
 
+  private List<TransactionCategory> generateTransactionCategories(Transaction transaction, List<Category> categories){
+    List<TransactionCategory> transactionCategories = new ArrayList<TransactionCategory>();
+    for (Category category : categories) {
+      transactionCategories.add(new TransactionCategory(transaction, category));
+    }
 
-  
+    return transactionCategories;
+  }
 }

@@ -76,4 +76,8 @@ public class Transaction extends BaseEntitiy {
   @JsonIgnore
   private List<Installment> installments;
 
+  @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnore
+  private List<TransactionCategory> transactionCategories;
+
 }

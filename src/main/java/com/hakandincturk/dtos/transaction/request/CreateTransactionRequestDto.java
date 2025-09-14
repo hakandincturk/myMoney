@@ -45,4 +45,5 @@ public class CreateTransactionRequestDto {
 
   private boolean equalSharingBetweenInstallments = true;
 
+  private CreateTransactionCategoryDetail category;
 }

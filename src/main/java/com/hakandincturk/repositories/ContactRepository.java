@@ -12,8 +12,6 @@ import com.hakandincturk.models.Contact;
 
 @Repository
 public interface ContactRepository extends JpaRepository<Contact, Long>, JpaSpecificationExecutor<Contact> {
-
   Page<Contact> findByUserIdAndIsRemovedFalse(Long userId, Pageable pageData);
   Optional<Contact> findByIdAndUserIdAndIsRemovedFalse(Long contactId, Long userId);
-  
 }

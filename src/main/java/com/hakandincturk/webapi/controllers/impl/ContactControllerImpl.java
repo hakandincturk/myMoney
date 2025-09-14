@@ -21,7 +21,7 @@ import com.hakandincturk.dtos.contact.response.ListMyContactsResponseDto;
 import com.hakandincturk.security.JwtAuthentication;
 import com.hakandincturk.services.abstracts.ContactService;
 import com.hakandincturk.webapi.controllers.BaseController;
-import com.hakandincturk.webapi.controllers.concretes.ContactController;
+import com.hakandincturk.webapi.controllers.abstracts.ContactController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

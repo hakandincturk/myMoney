@@ -10,7 +10,7 @@ import com.hakandincturk.models.Transaction;
 
 import jakarta.persistence.criteria.Predicate;
 
-public class TransactionSpecifaction {
+public class TransactionSpecification {
   public static Specification<Transaction> filter(Long userId, TransactionFilterRequestDto body){
     return (root, query, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();

@@ -23,21 +23,5 @@ public class ApiResponse<T> {
   private LocalDateTime timestamp;
 
   private T data;
-
-  // public static <T> ApiResponse<T> success(String message) {
-  //   return new ApiResponse<>(true, message, LocalDateTime.now(), null);
-  // }
-
-  // public static <T> ApiResponse<T> success(String message, T data) {
-  //   return new ApiResponse<>(true, message, LocalDateTime.now(), data);
-  // }
-
-  // public static <T> ApiResponse<T> error(String message) {
-  //   return new ApiResponse<>(false, message, LocalDateTime.now(), null);
-  // }
-
-  // public static <T> ApiResponse<T> error(String message, T data) {
-  //   return new ApiResponse<>(false, message, LocalDateTime.now(), data);
-  // }
   
 }

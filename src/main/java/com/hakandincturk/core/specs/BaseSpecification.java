@@ -1,5 +1,5 @@
 package com.hakandincturk.core.specs;
 
-public class BaseSpecifaction {
+public class BaseSpecification {
   
 }

@@ -1,4 +1,4 @@
-package com.hakandincturk.webapi.controllers.concretes;
+package com.hakandincturk.webapi.controllers.abstracts;
 
 import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
@@ -8,9 +8,7 @@ import com.hakandincturk.dtos.account.request.UpdateAccountRequestDto;
 import com.hakandincturk.dtos.account.response.ListMyAccountsResponseDto;
 
 public interface AccountController {
-
-  public ApiResponse<?> createAccount(CreateAccountRequestDto body);
-  public ApiResponse<PagedResponse<ListMyAccountsResponseDto>> listMyActiveAccounts(SortablePageRequest pageData);
-  public ApiResponse<?> updateMyAccount(Long accountId, UpdateAccountRequestDto body);
-  
+  ApiResponse<?> createAccount(CreateAccountRequestDto body);
+  ApiResponse<PagedResponse<ListMyAccountsResponseDto>> listMyActiveAccounts(SortablePageRequest pageData);
+  ApiResponse<?> updateMyAccount(Long accountId, UpdateAccountRequestDto body);
 }

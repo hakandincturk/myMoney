@@ -1,5 +1,6 @@
 package com.hakandincturk.services.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -54,7 +55,8 @@ public class AuthServiceImpl implements AuthService  {
       body.getFullName(),
       body.getEmail(),
       passwordEncoder.encode(body.getPassword()),
-      body.getPhone()
+      body.getPhone(),
+      List.of()
     );
     userRepository.save(newUser);
   }

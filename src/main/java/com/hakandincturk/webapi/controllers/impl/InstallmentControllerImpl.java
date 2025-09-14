@@ -17,7 +17,7 @@ import com.hakandincturk.dtos.installment.response.ListMySpecificDateInstallment
 import com.hakandincturk.security.JwtAuthentication;
 import com.hakandincturk.services.abstracts.InstallmentService;
 import com.hakandincturk.webapi.controllers.BaseController;
-import com.hakandincturk.webapi.controllers.concretes.InstallmentController;
+import com.hakandincturk.webapi.controllers.abstracts.InstallmentController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -11,8 +11,6 @@ import com.hakandincturk.models.Account;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
-
   Page<Account> findByUserIdAndIsRemovedFalse(Long userId, Pageable pageData);
   Optional<Account> findByIdAndUserIdAndIsRemovedFalse(Long accountId, Long userId);
-  
 }

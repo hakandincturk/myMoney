@@ -11,7 +11,7 @@ import com.hakandincturk.dtos.auth.request.RegisterRequestDto;
 import com.hakandincturk.dtos.auth.response.LoginResponseDto;
 import com.hakandincturk.services.abstracts.AuthService;
 import com.hakandincturk.webapi.controllers.BaseController;
-import com.hakandincturk.webapi.controllers.concretes.AuthController;
+import com.hakandincturk.webapi.controllers.abstracts.AuthController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -1,4 +1,4 @@
-package com.hakandincturk.webapi.controllers.concretes;
+package com.hakandincturk.webapi.controllers.abstracts;
 
 import java.util.List;
 
@@ -10,8 +10,8 @@ import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 
 public interface TransactionController {
-  public ApiResponse<?> createTransaction(CreateTransactionRequestDto body);
-  public ApiResponse<?> deleteMyTransaction(Long transactionId);
-  public ApiResponse<PagedResponse<ListMyTransactionsResponseDto>> listMyTransactions(TransactionFilterRequestDto pageData);
-  public ApiResponse<List<ListInstallments>> listTransactionInstallments(Long transactionId);
+  ApiResponse<?> createTransaction(CreateTransactionRequestDto body);
+  ApiResponse<?> deleteMyTransaction(Long transactionId);
+  ApiResponse<PagedResponse<ListMyTransactionsResponseDto>> listMyTransactions(TransactionFilterRequestDto pageData);
+  ApiResponse<List<ListInstallments>> listTransactionInstallments(Long transactionId);
 }

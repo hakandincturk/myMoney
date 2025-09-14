@@ -22,7 +22,7 @@ import com.hakandincturk.security.JwtAuthentication;
 import com.hakandincturk.services.abstracts.AccountService;
 import com.hakandincturk.utils.PaginationUtils;
 import com.hakandincturk.webapi.controllers.BaseController;
-import com.hakandincturk.webapi.controllers.concretes.AccountController;
+import com.hakandincturk.webapi.controllers.abstracts.AccountController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
