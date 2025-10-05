@@ -26,7 +26,7 @@ import com.hakandincturk.models.Category;
 import com.hakandincturk.models.Contact;
 import com.hakandincturk.models.Installment;
 import com.hakandincturk.models.Transaction;
-import com.hakandincturk.models.User;
+import com.hakandincturk.models.Users;
 import com.hakandincturk.repositories.AccountRepository;
 import com.hakandincturk.repositories.CategoryRepository;
 import com.hakandincturk.repositories.InstallmentRepository;
@@ -59,7 +59,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     transactionRules.validateCreateTransactionRequest(body);
 
-    User activeUser = transactionRules.getValidatedUser(userId);
+    Users activeUser = transactionRules.getValidatedUser(userId);
     Account account = transactionRules.getValidatedAccount(userId, body.getAccountId());
     Contact contact = transactionRules.getValidatedContact(userId, body.getContactId());
     

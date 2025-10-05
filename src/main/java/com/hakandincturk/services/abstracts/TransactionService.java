@@ -10,8 +10,8 @@ import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 
 public interface TransactionService {
-  public void createTransaction(Long userId, CreateTransactionRequestDto body);
-  public void deleteMyTransaction(Long userId, Long transactionId);
-  public Page<ListMyTransactionsResponseDto> listMyTransactions(Long userId, TransactionFilterRequestDto pageData);
-  public List<ListInstallments> listTransactionInstallments(Long userId, Long transactionId);
+  void createTransaction(Long userId, CreateTransactionRequestDto body);
+  void deleteMyTransaction(Long userId, Long transactionId);
+  Page<ListMyTransactionsResponseDto> listMyTransactions(Long userId, TransactionFilterRequestDto pageData);
+  List<ListInstallments> listTransactionInstallments(Long userId, Long transactionId);
 }

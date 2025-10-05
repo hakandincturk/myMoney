@@ -37,7 +37,7 @@ public class Transaction extends BaseEntitiy {
   
   @ManyToOne(fetch = FetchType.LAZY)
   @JsonIgnore
-  private User user;
+  private Users user;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JsonIgnore

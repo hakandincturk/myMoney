@@ -12,7 +12,7 @@ import com.hakandincturk.core.exception.UnauthorizedException;
 import com.hakandincturk.dtos.auth.request.LoginRequestDto;
 import com.hakandincturk.dtos.auth.request.RegisterRequestDto;
 import com.hakandincturk.dtos.auth.response.LoginResponseDto;
-import com.hakandincturk.models.User;
+import com.hakandincturk.models.Users;
 import com.hakandincturk.repositories.UserRepository;
 import com.hakandincturk.security.services.JwtService;
 import com.hakandincturk.services.abstracts.AuthService;
@@ -36,7 +36,7 @@ public class AuthServiceImpl implements AuthService  {
       UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(body.getEmail(), body.getPassword());
       authenticationProvider.authenticate(usernamePasswordAuthenticationToken);
 
-      Optional<User> dbUser = userRepository.findByEmailAndIsRemovedFalse(body.getEmail());
+      Optional<Users> dbUser = userRepository.findByEmailAndIsRemovedFalse(body.getEmail());
       String accessToken = jwtService.generateToken(dbUser.get());
 
       return new LoginResponseDto(accessToken);
@@ -51,7 +51,7 @@ public class AuthServiceImpl implements AuthService  {
   public void register(RegisterRequestDto body) {
     authRules.checkUserEmailExist(body.getEmail());
 
-    User newUser = new User(
+    Users newUser = new Users(
       body.getFullName(),
       body.getEmail(),
       passwordEncoder.encode(body.getPassword()),

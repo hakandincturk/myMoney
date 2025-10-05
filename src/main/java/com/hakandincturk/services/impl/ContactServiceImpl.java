@@ -13,7 +13,7 @@ import com.hakandincturk.dtos.contact.request.UpdateMyContactRequestDto;
 import com.hakandincturk.dtos.contact.response.ListMyContactsResponseDto;
 import com.hakandincturk.mappers.ContactMapper;
 import com.hakandincturk.models.Contact;
-import com.hakandincturk.models.User;
+import com.hakandincturk.models.Users;
 import com.hakandincturk.repositories.ContactRepository;
 import com.hakandincturk.services.abstracts.ContactService;
 import com.hakandincturk.services.rules.ContactRules;
@@ -33,7 +33,7 @@ public class ContactServiceImpl implements ContactService {
 
   @Override
   public void createAccount(Long userId, CreateContactRequestDto body) {
-    User user = userRules.checkUserExistAndGet(userId);
+    Users user = userRules.checkUserExistAndGet(userId);
 
     Contact createdContact = new Contact(
       body.getFullName(),

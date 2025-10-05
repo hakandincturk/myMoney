@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.hakandincturk.core.exception.NotFoundException;
 import com.hakandincturk.models.Installment;
-import com.hakandincturk.models.User;
+import com.hakandincturk.models.Users;
 import com.hakandincturk.repositories.InstallmentRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class InstallmentRules {
   }
 
 
-  public User getValidatedUser(Long userId){
+  public Users getValidatedUser(Long userId){
     return userId != null ? userRules.checkUserExistAndGet(userId) : null;
   }
   

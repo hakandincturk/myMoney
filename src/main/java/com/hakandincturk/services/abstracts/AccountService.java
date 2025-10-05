@@ -1,5 +1,7 @@
 package com.hakandincturk.services.abstracts;
 
+import java.math.BigDecimal;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

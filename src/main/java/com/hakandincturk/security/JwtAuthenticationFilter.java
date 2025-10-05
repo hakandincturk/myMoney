@@ -32,6 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String header = request.getHeader("Authorization");
         if(header == null || !header.startsWith("Bearer ")){
           filterChain.doFilter(request, response);
+          // UnauthorizedResponseWriter.write(response, "Oturumunuzun süresi dolmuştur. Lütfen tekrar giriş yapınız");
           return;
         }
 
@@ -48,11 +49,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
               authenticationToken.setDetails(userDetails);
               SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-              
             }
-
           }
-
         }
         catch(ExpiredJwtException ex){
           // Token expired: write consistent ApiResponse JSON and return

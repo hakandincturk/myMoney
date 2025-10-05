@@ -1,7 +1,10 @@
 package com.hakandincturk.services.impl;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -9,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.core.enums.sort.InstallmentSortColumn;
+import com.hakandincturk.core.events.PayInstallmentEvent;
 import com.hakandincturk.core.specs.FilterListMyInstallmentSpecification;
 import com.hakandincturk.dtos.installment.request.FilterListMyInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
@@ -17,14 +21,17 @@ import com.hakandincturk.dtos.installment.response.TransactionDetailDto;
 import com.hakandincturk.factories.AccountFactory;
 import com.hakandincturk.models.Account;
 import com.hakandincturk.models.Installment;
+import com.hakandincturk.models.MonthlySummary;
 import com.hakandincturk.models.Transaction;
 import com.hakandincturk.repositories.AccountRepository;
 import com.hakandincturk.repositories.InstallmentRepository;
+import com.hakandincturk.repositories.MonthlySummaryRepository;
 import com.hakandincturk.repositories.TransactionRepository;
 import com.hakandincturk.services.abstracts.InstallmentService;
 import com.hakandincturk.services.rules.InstallmentRules;
 import com.hakandincturk.utils.PaginationUtils;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +45,9 @@ public class InstallmentServiceImpl implements InstallmentService {
   private final InstallmentRules installmentRules;
   private final AccountFactory accountFactory;
   private final AccountRepository accountRepository;
+  private final MonthlySummaryRepository monthlySummaryRepository;
+  private final EntityManager entityManager;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Override
   public Page<ListMySpecificDateInstallmentsResponseDto> listMySpecisifDateInstallments(Long userId, FilterListMyInstallmentRequestDto pageData) {
@@ -76,7 +86,6 @@ public class InstallmentServiceImpl implements InstallmentService {
     installment.setPaid(true);
     installment.setPaidDate(body.getPaidDate());
     installmentRepository.save(installment);
-
     
     Transaction transaction = installment.getTransaction();
 
@@ -89,6 +98,68 @@ public class InstallmentServiceImpl implements InstallmentService {
 
     Account account = accountFactory.reCalculateBalanceOnPayment(transaction.getAccount(), transaction.getType(), installment.getAmount());
     accountRepository.save(account);
+
+    int instalmentYear = installment.getDebtDate().getYear();
+    int installmentMonthValue = installment.getDebtDate().getMonthValue();
+    List<MonthlySummary> dbMonthlySummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndIsRemovedFalse(userId, instalmentYear, installmentMonthValue);
+    if(dbMonthlySummary.size() > 0){
+      for (MonthlySummary monthlySummary : dbMonthlySummary) {
+        monthlySummary.setRemoved(true);
+        monthlySummaryRepository.save(monthlySummary);
+      }
+    }
+
+    if (
+      (
+        installment.getDebtDate().getMonthValue() != body.getPaidDate().getMonthValue() &&
+        installment.getDebtDate().getYear() != body.getPaidDate().getYear()
+      ) || 
+      (
+        installment.getDebtDate().getMonthValue() != body.getPaidDate().getMonthValue() &&
+        installment.getDebtDate().getYear() == body.getPaidDate().getYear()
+      )
+    ) {
+      int paidDateYear = body.getPaidDate().getYear();
+      int paidDateMonthValue = body.getPaidDate().getMonthValue();
+      List<MonthlySummary> dbPaidDateSummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndIsRemovedFalse(userId, paidDateYear, paidDateMonthValue);
+      if(dbPaidDateSummary.size() > 0){
+        for (MonthlySummary monthlySummary : dbPaidDateSummary) {
+          monthlySummary.setRemoved(true);
+          monthlySummaryRepository.save(monthlySummary);
+        }
+      }
+
+      eventPublisher.publishEvent(new PayInstallmentEvent(transaction.getUser(), paidDateYear, paidDateMonthValue));
+    }
+
+    int instalmentPreviousYear = installment.getDebtDate().minusMonths(1).getYear();
+    int installmentPreviousMonthValue = installment.getDebtDate().minusMonths(1).getMonthValue();
+    if(
+      (
+        installmentPreviousMonthValue != body.getPaidDate().getMonthValue() &&
+        instalmentPreviousYear != body.getPaidDate().getYear()
+      ) || 
+      (
+        installmentPreviousMonthValue != body.getPaidDate().getMonthValue() &&
+        instalmentPreviousYear == body.getPaidDate().getYear()
+      )
+    ){
+      List<MonthlySummary> dbPreviousMonthlySummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndIsRemovedFalse(userId, instalmentPreviousYear, installmentPreviousMonthValue);
+      if(dbMonthlySummary.size() > 0){
+        for (MonthlySummary monthlySummary : dbPreviousMonthlySummary) {
+          monthlySummary.setRemoved(true);
+          monthlySummaryRepository.save(monthlySummary);
+        }
+      }
+      eventPublisher.publishEvent(new PayInstallmentEvent(transaction.getUser(), instalmentPreviousYear, installmentPreviousMonthValue));
+
+    }
+
+   
+
+    
+    
+    eventPublisher.publishEvent(new PayInstallmentEvent(transaction.getUser(), instalmentYear, installmentMonthValue));
   }
   
 }

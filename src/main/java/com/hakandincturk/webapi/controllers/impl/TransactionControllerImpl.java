@@ -93,5 +93,4 @@ public class TransactionControllerImpl extends BaseController implements Transac
       return error("Kullanıcı verilerine ulaşılamadı");
     }
   }
-  
 }

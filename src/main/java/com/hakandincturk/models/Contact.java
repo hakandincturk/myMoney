@@ -28,5 +28,5 @@ public class Contact extends BaseEntitiy {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JsonIgnore
-  private User user;
+  private Users user;
 }

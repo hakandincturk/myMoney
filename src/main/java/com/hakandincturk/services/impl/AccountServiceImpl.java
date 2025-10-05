@@ -11,7 +11,7 @@ import com.hakandincturk.dtos.account.request.UpdateAccountRequestDto;
 import com.hakandincturk.dtos.account.response.ListMyAccountsResponseDto;
 import com.hakandincturk.mappers.AccountMapper;
 import com.hakandincturk.models.Account;
-import com.hakandincturk.models.User;
+import com.hakandincturk.models.Users;
 import com.hakandincturk.repositories.AccountRepository;
 import com.hakandincturk.services.abstracts.AccountService;
 import com.hakandincturk.services.rules.AccountRules;
@@ -30,7 +30,7 @@ public class AccountServiceImpl implements AccountService {
 
   @Override
   public void createAccount(CreateAccountRequestDto body, Long userId) {
-    User user = userRules.checkUserExistAndGet(userId);
+    Users user = userRules.checkUserExistAndGet(userId);
     
     Account createdAccount = new Account(
       body.getName(),

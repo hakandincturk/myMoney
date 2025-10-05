@@ -11,7 +11,7 @@ import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
 import com.hakandincturk.models.Account;
 import com.hakandincturk.models.Contact;
 import com.hakandincturk.models.Transaction;
-import com.hakandincturk.models.User;
+import com.hakandincturk.models.Users;
 import com.hakandincturk.repositories.TransactionRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,7 @@ public class TransactionRules {
     return accountId != null ? accountRules.checkUserAccountExistAndGet(userId, accountId) : null;
   }
 
-  public User getValidatedUser(Long userId){
+  public Users getValidatedUser(Long userId){
     return userId != null ? userRules.checkUserExistAndGet(userId) : null;
   }
 

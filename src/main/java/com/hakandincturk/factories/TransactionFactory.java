@@ -16,14 +16,14 @@ import com.hakandincturk.models.Contact;
 import com.hakandincturk.models.Installment;
 import com.hakandincturk.models.Transaction;
 import com.hakandincturk.models.TransactionCategory;
-import com.hakandincturk.models.User;
+import com.hakandincturk.models.Users;
 
 @Component
 public class TransactionFactory {
 
   private static final BigDecimal ZERO_AMOUNT = BigDecimal.ZERO;
 
-  public Transaction createTransaction(CreateTransactionRequestDto body, User user, Account account, Contact contact, List<Category> categories){
+  public Transaction createTransaction(CreateTransactionRequestDto body, Users user, Account account, Contact contact, List<Category> categories){
     Transaction newTransaction = new Transaction();
     newTransaction.setAccount(account);
     newTransaction.setContact(contact);
@@ -52,7 +52,7 @@ public class TransactionFactory {
     return newTransaction;
   }
 
-  private List<Installment> generateInstallments(Transaction transaction, CreateTransactionRequestDto body){
+  public List<Installment> generateInstallments(Transaction transaction, CreateTransactionRequestDto body){
     BigDecimal installmentAmount = !body.isEqualSharingBetweenInstallments() ? body.getTotalAmount() : body.getTotalAmount().divide(BigDecimal.valueOf(body.getTotalInstallment()), 2, RoundingMode.HALF_UP);
 
     List<Installment> installments = new ArrayList<Installment>();

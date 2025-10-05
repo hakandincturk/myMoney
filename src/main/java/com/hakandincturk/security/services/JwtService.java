@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.hakandincturk.core.enums.Times;
-import com.hakandincturk.models.User;
+import com.hakandincturk.models.Users;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -33,7 +33,7 @@ public class JwtService {
 
   public String generateToken(UserDetails userDetail){
 
-    User user = (User) userDetail;
+    Users user = (Users) userDetail;
 
     Map<String, Object> claims = new HashMap<>();
     claims.put("userId", user.getId());

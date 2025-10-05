@@ -18,12 +18,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "\"User\"")
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends BaseEntitiy implements UserDetails {
+public class Users extends BaseEntitiy implements UserDetails {
 
   @Column(name = "fullName")
   private String fullName;

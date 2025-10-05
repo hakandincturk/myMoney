@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import com.hakandincturk.models.User;
+import com.hakandincturk.models.Users;
 import com.hakandincturk.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class AppConfig {
 
       @Override
       public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> dbUser = userRepository.findByEmailAndIsRemovedFalse(email);
+        Optional<Users> dbUser = userRepository.findByEmailAndIsRemovedFalse(email);
         if(dbUser.isEmpty()) {
           throw new UsernameNotFoundException("Kullanici bulunamadi");
         }
