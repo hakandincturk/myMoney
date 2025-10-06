@@ -2,7 +2,6 @@ package com.hakandincturk.services.impl;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -31,7 +30,6 @@ import com.hakandincturk.services.abstracts.InstallmentService;
 import com.hakandincturk.services.rules.InstallmentRules;
 import com.hakandincturk.utils.PaginationUtils;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -46,7 +44,6 @@ public class InstallmentServiceImpl implements InstallmentService {
   private final AccountFactory accountFactory;
   private final AccountRepository accountRepository;
   private final MonthlySummaryRepository monthlySummaryRepository;
-  private final EntityManager entityManager;
   private final ApplicationEventPublisher eventPublisher;
 
   @Override
@@ -155,10 +152,6 @@ public class InstallmentServiceImpl implements InstallmentService {
 
     }
 
-   
-
-    
-    
     eventPublisher.publishEvent(new PayInstallmentEvent(transaction.getUser(), instalmentYear, installmentMonthValue));
   }
   
