@@ -1,12 +1,15 @@
 package com.hakandincturk.security;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.hakandincturk.security.services.JwtService;
@@ -28,11 +31,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
       throws ServletException, IOException {
+
+        boolean shouldNotCheckPath = shouldNotFilter(request);
+        if(shouldNotCheckPath){
+          filterChain.doFilter(request, response);
+        }
         
         String header = request.getHeader("Authorization");
         if(header == null || !header.startsWith("Bearer ")){
-          filterChain.doFilter(request, response);
-          // UnauthorizedResponseWriter.write(response, "Oturumunuzun süresi dolmuştur. Lütfen tekrar giriş yapınız");
+          UnauthorizedResponseWriter.write(response, "Yetkisiz giriş. Lütfen tekrar giriş yapınız");
           return;
         }
 
@@ -63,6 +70,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     
+  }
+
+  @Override
+  protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+    String path = request.getServletPath();
+    List<String> notPermittedPaths = new ArrayList<>(List.of(
+      // Auth
+      "/api/auth/login",
+      "/api/auth/register",
+      // Swagger & OpenAPI
+      "/swagger-ui/**",
+      "/swagger-ui.html",
+      "/swagger-ui/index.html",
+      "/v3/api-docs",
+      "/v3/api-docs/**",
+      "/v3/api-docs.yaml",
+      "/webjars/**",
+      "/swagger-resources/**",
+      "/configuration/**"
+    ));
+    
+    AntPathMatcher pathMatcher = new AntPathMatcher();
+    return notPermittedPaths.stream().anyMatch(pattern -> pathMatcher.match(pattern, path));
   }
   
 }

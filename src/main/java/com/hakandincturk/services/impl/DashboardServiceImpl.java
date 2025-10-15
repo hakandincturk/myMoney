@@ -57,11 +57,23 @@ public class DashboardServiceImpl implements DashboardService {
       
       expenseDetail.setOccured(monthlPaymentSummary.getTotalExpense());
       expenseDetail.setWaiting(monthlPaymentSummary.getTotalWaitingExpense());
+
+      // if(!dbMonthlPaymentSummary.isEmpty()) {
+      //   MonthlySummary pastMonthlySummary = dbMonthlPaymentSummary.get();
+      //   BigDecimal incomeDiffrence = monthlPaymentSummary.getTotalWaitingIncome().subtract(pastMonthlySummary.getTotalIncome());
+      //   BigDecimal incomeChangeRate = incomeDiffrence.signum() == 0 ? BigDecimal.valueOf(0) : incomeDiffrence.divide(pastMonthlySummary.getTotalIncome());
+      //   incomeDetail.setLastMonthChangeRate(incomeChangeRate.doubleValue());
+
+
+      //   BigDecimal expenseDiffrence = monthlPaymentSummary.getTotalWaitingExpense().subtract(pastMonthlySummary.getTotalExpense());
+      //   BigDecimal expenseChangeRate = expenseDiffrence.signum() == 0 ? BigDecimal.valueOf(0) :expenseDiffrence.divide(pastMonthlySummary.getTotalExpense());
+      //   expenseDetail.setLastMonthChangeRate(Double.valueOf(expenseChangeRate.doubleValue()));
+      // }
     }
     
     BigDecimal totalIncome = incomeDetail.getWaiting().add(incomeDetail.getOccured());
     BigDecimal totalExpense = expenseDetail.getWaiting().add(expenseDetail.getOccured());
-    BigDecimal savingRate = !totalIncome.equals(BigDecimal.valueOf(0)) ? ((totalIncome.subtract(totalExpense)).divide(totalIncome,  4, RoundingMode.HALF_EVEN)).multiply(BigDecimal.valueOf(100)) : BigDecimal.valueOf(0);
+    BigDecimal savingRate = totalIncome.compareTo(BigDecimal.ZERO) != 0 ? ((totalIncome.subtract(totalExpense)).divide(totalIncome,  4, RoundingMode.HALF_EVEN)).multiply(BigDecimal.valueOf(100)) : BigDecimal.valueOf(0);
 
     QuickViewResponseDto quickViewResponse = new QuickViewResponseDto();
     quickViewResponse.setTotalBalance(totalBalance);

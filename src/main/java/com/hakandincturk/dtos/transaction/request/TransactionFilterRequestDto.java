@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.core.enums.TransactionTypes;
 import com.hakandincturk.dtos.SortablePageRequest;
 
@@ -23,4 +24,5 @@ public class TransactionFilterRequestDto extends SortablePageRequest {
     private LocalDate startDate;
     private LocalDate endDate;
     private List<TransactionTypes> types;
+    private List<TransactionStatuses> statuses;
 }

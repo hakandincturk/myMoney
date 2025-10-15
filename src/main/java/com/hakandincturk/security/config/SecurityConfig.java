@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.hakandincturk.core.handler.AuthEntryPoint;
 import com.hakandincturk.security.JwtAuthenticationFilter;
@@ -18,7 +19,9 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-  
+
+  private final CorsConfigurationSource corsConfigurationSource;
+
   private final String LOGIN_PATH = "/api/auth/login";
   private final String REGISTER_PATH = "/api/auth/register";
   
@@ -42,14 +45,14 @@ public class SecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
     http
       .csrf(csrf -> csrf.disable())
-      .cors(cors -> cors.disable())
+      .cors(cors -> cors.configurationSource(corsConfigurationSource))
       .authorizeHttpRequests(
         request ->
           request
           .requestMatchers(LOGIN_PATH, REGISTER_PATH).permitAll()
           .requestMatchers(SWAGGER_PATHS).permitAll()
-          .anyRequest().permitAll()
-          // .anyRequest().authenticated()
+          // .anyRequest().permitAll()
+          .anyRequest().authenticated()
       )
       .exceptionHandling(exceptionHandler -> exceptionHandler.authenticationEntryPoint(authEntryPoint))
       .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -77,82 +77,65 @@ public class InstallmentServiceImpl implements InstallmentService {
 
   @Override
   @Transactional
-  public void payInstallment(Long userId, Long installmentId, PayInstallmentRequestDto body) {
-    Installment installment = installmentRules.checkUserInstallmentExistAndGet(userId, installmentId);
-
-    installment.setPaid(true);
-    installment.setPaidDate(body.getPaidDate());
-    installmentRepository.save(installment);
-    
-    Transaction transaction = installment.getTransaction();
-
-    BigDecimal totalPaidAmount = installment.getTransaction().getPaidAmount().add(installment.getAmount());
-    TransactionStatuses transactionStatuses = transaction.getTotalAmount().equals(totalPaidAmount) ? TransactionStatuses.PAID : TransactionStatuses.PARTIAL;
-
-    transaction.setPaidAmount(totalPaidAmount);
-    transaction.setStatus(transactionStatuses);
-    transactionRepository.save(transaction);
-
-    Account account = accountFactory.reCalculateBalanceOnPayment(transaction.getAccount(), transaction.getType(), installment.getAmount());
-    accountRepository.save(account);
-
-    int instalmentYear = installment.getDebtDate().getYear();
-    int installmentMonthValue = installment.getDebtDate().getMonthValue();
-    List<MonthlySummary> dbMonthlySummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndIsRemovedFalse(userId, instalmentYear, installmentMonthValue);
-    if(dbMonthlySummary.size() > 0){
-      for (MonthlySummary monthlySummary : dbMonthlySummary) {
-        monthlySummary.setRemoved(true);
-        monthlySummaryRepository.save(monthlySummary);
-      }
-    }
-
-    if (
-      (
-        installment.getDebtDate().getMonthValue() != body.getPaidDate().getMonthValue() &&
-        installment.getDebtDate().getYear() != body.getPaidDate().getYear()
-      ) || 
-      (
-        installment.getDebtDate().getMonthValue() != body.getPaidDate().getMonthValue() &&
-        installment.getDebtDate().getYear() == body.getPaidDate().getYear()
-      )
-    ) {
-      int paidDateYear = body.getPaidDate().getYear();
-      int paidDateMonthValue = body.getPaidDate().getMonthValue();
-      List<MonthlySummary> dbPaidDateSummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndIsRemovedFalse(userId, paidDateYear, paidDateMonthValue);
-      if(dbPaidDateSummary.size() > 0){
-        for (MonthlySummary monthlySummary : dbPaidDateSummary) {
-          monthlySummary.setRemoved(true);
-          monthlySummaryRepository.save(monthlySummary);
-        }
-      }
-
-      eventPublisher.publishEvent(new PayInstallmentEvent(transaction.getUser(), paidDateYear, paidDateMonthValue));
-    }
-
-    int instalmentPreviousYear = installment.getDebtDate().minusMonths(1).getYear();
-    int installmentPreviousMonthValue = installment.getDebtDate().minusMonths(1).getMonthValue();
-    if(
-      (
-        installmentPreviousMonthValue != body.getPaidDate().getMonthValue() &&
-        instalmentPreviousYear != body.getPaidDate().getYear()
-      ) || 
-      (
-        installmentPreviousMonthValue != body.getPaidDate().getMonthValue() &&
-        instalmentPreviousYear == body.getPaidDate().getYear()
-      )
-    ){
-      List<MonthlySummary> dbPreviousMonthlySummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndIsRemovedFalse(userId, instalmentPreviousYear, installmentPreviousMonthValue);
-      if(dbMonthlySummary.size() > 0){
-        for (MonthlySummary monthlySummary : dbPreviousMonthlySummary) {
-          monthlySummary.setRemoved(true);
-          monthlySummaryRepository.save(monthlySummary);
-        }
-      }
-      eventPublisher.publishEvent(new PayInstallmentEvent(transaction.getUser(), instalmentPreviousYear, installmentPreviousMonthValue));
-
-    }
-
-    eventPublisher.publishEvent(new PayInstallmentEvent(transaction.getUser(), instalmentYear, installmentMonthValue));
-  }
+  public void payInstallments(Long userId, PayInstallmentRequestDto body) {
+    List<Installment> installments = installmentRules.checkUserInstallmentExistAndGet(userId, body.getIds());
+    for (Installment installment : installments) {
+      installment.setPaid(true);
+      installment.setPaidDate(body.getPaidDate());
+      installmentRepository.save(installment);
+      
+      Transaction transaction = installment.getTransaction();
   
+      BigDecimal totalPaidAmount = installment.getTransaction().getPaidAmount().add(installment.getAmount());
+      TransactionStatuses transactionStatuses = transaction.getTotalAmount().equals(totalPaidAmount) ? TransactionStatuses.PAID : TransactionStatuses.PARTIAL;
+  
+      transaction.setPaidAmount(totalPaidAmount);
+      transaction.setStatus(transactionStatuses);
+      transactionRepository.save(transaction);
+  
+      Account account = accountFactory.reCalculateBalanceOnPayment(transaction.getAccount(), transaction.getType(), installment.getAmount());
+      accountRepository.save(account);
+  
+      int instalmentYear = installment.getDebtDate().getYear();
+      int installmentMonthValue = installment.getDebtDate().getMonthValue();
+      List<MonthlySummary> dbMonthlySummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndIsRemovedFalse(userId, instalmentYear, installmentMonthValue);
+      monthlySummaryRepository.deleteAll(dbMonthlySummary);
+  
+      if (
+        (
+          installment.getDebtDate().getMonthValue() != body.getPaidDate().getMonthValue() &&
+          installment.getDebtDate().getYear() != body.getPaidDate().getYear()
+        ) || 
+        (
+          installment.getDebtDate().getMonthValue() != body.getPaidDate().getMonthValue() &&
+          installment.getDebtDate().getYear() == body.getPaidDate().getYear()
+        )
+      ) {
+        int paidDateYear = body.getPaidDate().getYear();
+        int paidDateMonthValue = body.getPaidDate().getMonthValue();
+        List<MonthlySummary> dbPaidDateSummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndIsRemovedFalse(userId, paidDateYear, paidDateMonthValue);
+        monthlySummaryRepository.deleteAll(dbPaidDateSummary); // delete or is_removed: true ?
+        eventPublisher.publishEvent(new PayInstallmentEvent(transaction.getUser(), paidDateYear, paidDateMonthValue));
+      }
+  
+      int instalmentPreviousYear = installment.getDebtDate().minusMonths(1).getYear();
+      int installmentPreviousMonthValue = installment.getDebtDate().minusMonths(1).getMonthValue();
+      if(
+        (
+          installmentPreviousMonthValue != body.getPaidDate().getMonthValue() &&
+          instalmentPreviousYear != body.getPaidDate().getYear()
+        ) || 
+        (
+          installmentPreviousMonthValue != body.getPaidDate().getMonthValue() &&
+          instalmentPreviousYear == body.getPaidDate().getYear()
+        )
+      ){
+        List<MonthlySummary> dbPreviousMonthlySummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndIsRemovedFalse(userId, instalmentPreviousYear, installmentPreviousMonthValue);
+        monthlySummaryRepository.deleteAll(dbPreviousMonthlySummary);
+        eventPublisher.publishEvent(new PayInstallmentEvent(transaction.getUser(), instalmentPreviousYear, installmentPreviousMonthValue));
+      }
+  
+      eventPublisher.publishEvent(new PayInstallmentEvent(transaction.getUser(), instalmentYear, installmentMonthValue));
+    }
+  }
 }

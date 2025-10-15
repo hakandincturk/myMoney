@@ -8,5 +8,5 @@ import com.hakandincturk.dtos.installment.response.ListMySpecificDateInstallment
 
 public interface InstallmentController {
   ApiResponse<PagedResponse<ListMySpecificDateInstallmentsResponseDto>> listMySpecisifDateInstallments(FilterListMyInstallmentRequestDto pageData);
-  ApiResponse<?> payInstallment(Long installmentId, PayInstallmentRequestDto body);
+  ApiResponse<?> payInstallment(PayInstallmentRequestDto body);
 }

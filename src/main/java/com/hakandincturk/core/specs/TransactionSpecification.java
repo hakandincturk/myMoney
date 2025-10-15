@@ -81,6 +81,9 @@ public class TransactionSpecification {
         predicates.add(criteriaBuilder.like(root.get("name"), "%" + body.getName() + "%"));
       }
 
+      if(body.getStatuses() != null) {
+        predicates.add(root.get("status").in(body.getStatuses()));
+      }
 
       return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     };

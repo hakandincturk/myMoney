@@ -8,5 +8,5 @@ import com.hakandincturk.dtos.installment.response.ListMySpecificDateInstallment
 
 public interface InstallmentService {
   public Page<ListMySpecificDateInstallmentsResponseDto> listMySpecisifDateInstallments(Long userId, FilterListMyInstallmentRequestDto pageData);
-  public void payInstallment(Long userId, Long installmentId, PayInstallmentRequestDto body);
+  public void payInstallments(Long userId, PayInstallmentRequestDto body);
 }

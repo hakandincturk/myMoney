@@ -4,6 +4,7 @@ public enum TransactionStatuses {
   PENDING(1), 
   PARTIAL(2),
   PAID(3);
+  
 
   private final int value;
 

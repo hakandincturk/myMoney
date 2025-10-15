@@ -46,12 +46,12 @@ public class InstallmentControllerImpl extends BaseController implements Install
   }
 
   @Override
-  @PatchMapping(value = "/pay/{installmentId}")
-  public ApiResponse<?> payInstallment(@PathVariable(value = "installmentId") Long installmentId, @RequestBody PayInstallmentRequestDto body) {
+  @PatchMapping(value = "/pay")
+  public ApiResponse<?> payInstallment(@RequestBody PayInstallmentRequestDto body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
-      installmentService.payInstallment(userId, installmentId, body);
+      installmentService.payInstallments(userId, body);
       return success("Aylık taksit ödendi");
     }
     else {

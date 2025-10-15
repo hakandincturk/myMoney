@@ -1,5 +1,6 @@
 package com.hakandincturk.services.rules;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -19,13 +20,13 @@ public class InstallmentRules {
 
   private final UserRules userRules;
 
-  public Installment checkUserInstallmentExistAndGet(Long userId, Long installmentId){
-  Optional<Installment> dbInstallment = installmentRepository.findByIdAndTransactionUserIdAndIsRemovedFalse(installmentId, userId);
-    if(dbInstallment.isEmpty()){
-      throw new NotFoundException("Taksit bulunamadı");
+  public List<Installment> checkUserInstallmentExistAndGet(Long userId, List<Long> installmentIds){
+    List<Installment> dbInstallment = installmentRepository.findByIdInAndTransactionUserIdAndIsRemovedFalse(installmentIds, userId);
+    if(dbInstallment.size() != installmentIds.size()){
+      throw new NotFoundException("Taksitler bulunamadı");
     }
 
-    return dbInstallment.get();
+    return dbInstallment;
   }
 
 
