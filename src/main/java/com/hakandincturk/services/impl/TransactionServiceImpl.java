@@ -82,6 +82,10 @@ public class TransactionServiceImpl implements TransactionService {
       accountRepository.save(account);
     }
 
+    for (int i = 0; i < newTransaction.getTotalInstallment(); i++) {
+      
+    }
+
   }
 
   @Override

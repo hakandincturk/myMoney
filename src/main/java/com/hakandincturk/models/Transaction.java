@@ -17,7 +17,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +24,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity()
-@Table(name = "Transaction")
+@Table(name = "transactions")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -39,14 +38,14 @@ public class Transaction extends BaseEntitiy {
   @JsonIgnore
   private Users user;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "contact_id", nullable = true)
   @JsonIgnore
-  @JoinColumn(name = "contact_id", nullable = true, unique = false)
   private Contact contact;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "account_id", nullable = false)
   @JsonIgnore
-  @JoinColumn(name = "account_id", nullable = false, unique = false)
   private Account account;
 
   @Column(name = "type")

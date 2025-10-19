@@ -78,6 +78,7 @@ public class InstallmentServiceImpl implements InstallmentService {
   @Override
   @Transactional
   public void payInstallments(Long userId, PayInstallmentRequestDto body) {
+
     List<Installment> installments = installmentRules.checkUserInstallmentExistAndGet(userId, body.getIds());
     for (Installment installment : installments) {
       installment.setPaid(true);
@@ -138,4 +139,9 @@ public class InstallmentServiceImpl implements InstallmentService {
       eventPublisher.publishEvent(new PayInstallmentEvent(transaction.getUser(), instalmentYear, installmentMonthValue));
     }
   }
+
+  public void reCalculateSummaryAccordingToInstallment(Installment installment){
+
+  }
+
 }

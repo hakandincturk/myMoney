@@ -144,5 +144,5 @@ public class MonthlySummaryServiceImpl implements MonthlySummaryService {
     MonthlySummary monthlySummaryByPaidDate = monthlySummeryFactory.calculateUserMonthlySummaryForSpecificMonthByPaidDate(user, dbUserInstallmentsByPaidDate, year, month);
     return monthlySummaryByPaidDate;
   }
-  
+
 }
