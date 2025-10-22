@@ -18,6 +18,7 @@ public class FilterListMyInstallmentSpecification {
       List<Predicate> predicates = new ArrayList<>();
 
       predicates.add(criteriaBuilder.equal(root.get("isRemoved"), false));
+      predicates.add(criteriaBuilder.equal(root.get("transaction").get("isRemoved"),false));
       predicates.add(criteriaBuilder.equal(root.get("transaction").get("user").get("id"), userId));
 
       LocalDate debtStartDate = LocalDate.of(body.getYear(), body.getMonth(), 1);
