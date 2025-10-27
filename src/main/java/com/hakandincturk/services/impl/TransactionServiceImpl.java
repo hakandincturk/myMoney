@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hakandincturk.core.enums.TransactionTypes;
 import com.hakandincturk.core.enums.sort.TransactionSortColumn;
+import com.hakandincturk.core.events.TransactionCreatedEvent;
 import com.hakandincturk.core.specs.TransactionSpecification;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
 import com.hakandincturk.dtos.transaction.request.TransactionFilterRequestDto;
@@ -52,6 +54,7 @@ public class TransactionServiceImpl implements TransactionService {
   private final CategoryFactory categoryFactory;
   private final CategoryRules categoryRules;
   private final CategoryRepository categoryRepository;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Override
   @Transactional
@@ -82,10 +85,7 @@ public class TransactionServiceImpl implements TransactionService {
       accountRepository.save(account);
     }
 
-    for (int i = 0; i < newTransaction.getTotalInstallment(); i++) {
-      
-    }
-
+    eventPublisher.publishEvent(new TransactionCreatedEvent(newTransaction));
   }
 
   @Override

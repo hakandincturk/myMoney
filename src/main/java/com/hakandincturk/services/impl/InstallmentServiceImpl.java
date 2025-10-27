@@ -1,6 +1,8 @@
 package com.hakandincturk.services.impl;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -11,7 +13,8 @@ import org.springframework.stereotype.Service;
 
 import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.core.enums.sort.InstallmentSortColumn;
-import com.hakandincturk.core.events.PayInstallmentEvent;
+import com.hakandincturk.core.events.InstallmentsPaidEvent;
+import com.hakandincturk.core.events.InstallmentPaidEvent;
 import com.hakandincturk.core.specs.FilterListMyInstallmentSpecification;
 import com.hakandincturk.dtos.installment.request.FilterListMyInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
@@ -81,63 +84,32 @@ public class InstallmentServiceImpl implements InstallmentService {
 
     List<Installment> installments = installmentRules.checkUserInstallmentExistAndGet(userId, body.getIds());
     for (Installment installment : installments) {
-      installment.setPaid(true);
-      installment.setPaidDate(body.getPaidDate());
-      installmentRepository.save(installment);
+      System.out.println("installment amount --> " + installment.getAmount());
+
+      // installment.setPaid(true);
+      // installment.setPaidDate(body.getPaidDate());
+      // installmentRepository.save(installment);
       
-      Transaction transaction = installment.getTransaction();
+      // Transaction transaction = installment.getTransaction();
   
-      BigDecimal totalPaidAmount = installment.getTransaction().getPaidAmount().add(installment.getAmount());
-      TransactionStatuses transactionStatuses = transaction.getTotalAmount().equals(totalPaidAmount) ? TransactionStatuses.PAID : TransactionStatuses.PARTIAL;
+      // BigDecimal totalPaidAmount = installment.getTransaction().getPaidAmount().add(installment.getAmount());
+      // TransactionStatuses transactionStatuses = transaction.getTotalAmount().equals(totalPaidAmount) ? TransactionStatuses.PAID : TransactionStatuses.PARTIAL;
   
-      transaction.setPaidAmount(totalPaidAmount);
-      transaction.setStatus(transactionStatuses);
-      transactionRepository.save(transaction);
+      // transaction.setPaidAmount(totalPaidAmount);
+      // transaction.setStatus(transactionStatuses);
+      // transactionRepository.save(transaction);
   
-      Account account = accountFactory.reCalculateBalanceOnPayment(transaction.getAccount(), transaction.getType(), installment.getAmount());
-      accountRepository.save(account);
-  
-      int instalmentYear = installment.getDebtDate().getYear();
-      int installmentMonthValue = installment.getDebtDate().getMonthValue();
-      List<MonthlySummary> dbMonthlySummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndIsRemovedFalse(userId, instalmentYear, installmentMonthValue);
-      monthlySummaryRepository.deleteAll(dbMonthlySummary);
-  
-      if (
-        (
-          installment.getDebtDate().getMonthValue() != body.getPaidDate().getMonthValue() &&
-          installment.getDebtDate().getYear() != body.getPaidDate().getYear()
-        ) || 
-        (
-          installment.getDebtDate().getMonthValue() != body.getPaidDate().getMonthValue() &&
-          installment.getDebtDate().getYear() == body.getPaidDate().getYear()
-        )
-      ) {
-        int paidDateYear = body.getPaidDate().getYear();
-        int paidDateMonthValue = body.getPaidDate().getMonthValue();
-        List<MonthlySummary> dbPaidDateSummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndIsRemovedFalse(userId, paidDateYear, paidDateMonthValue);
-        monthlySummaryRepository.deleteAll(dbPaidDateSummary); // delete or is_removed: true ?
-        eventPublisher.publishEvent(new PayInstallmentEvent(transaction.getUser(), paidDateYear, paidDateMonthValue));
-      }
-  
-      int instalmentPreviousYear = installment.getDebtDate().minusMonths(1).getYear();
-      int installmentPreviousMonthValue = installment.getDebtDate().minusMonths(1).getMonthValue();
-      if(
-        (
-          installmentPreviousMonthValue != body.getPaidDate().getMonthValue() &&
-          instalmentPreviousYear != body.getPaidDate().getYear()
-        ) || 
-        (
-          installmentPreviousMonthValue != body.getPaidDate().getMonthValue() &&
-          instalmentPreviousYear == body.getPaidDate().getYear()
-        )
-      ){
-        List<MonthlySummary> dbPreviousMonthlySummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndIsRemovedFalse(userId, instalmentPreviousYear, installmentPreviousMonthValue);
-        monthlySummaryRepository.deleteAll(dbPreviousMonthlySummary);
-        eventPublisher.publishEvent(new PayInstallmentEvent(transaction.getUser(), instalmentPreviousYear, installmentPreviousMonthValue));
-      }
-  
-      eventPublisher.publishEvent(new PayInstallmentEvent(transaction.getUser(), instalmentYear, installmentMonthValue));
+      // Account account = accountFactory.reCalculateBalanceOnPayment(transaction.getAccount(), transaction.getType(), installment.getAmount());
+      // accountRepository.save(account);
     }
+
+    eventPublisher.publishEvent(
+      new InstallmentsPaidEvent(
+        installments.get(0).getTransaction().getUser(),
+        installments,
+        body.getPaidDate()
+      )
+    );
   }
 
   public void reCalculateSummaryAccordingToInstallment(Installment installment){
