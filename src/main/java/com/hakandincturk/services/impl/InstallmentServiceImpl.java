@@ -84,23 +84,21 @@ public class InstallmentServiceImpl implements InstallmentService {
 
     List<Installment> installments = installmentRules.checkUserInstallmentExistAndGet(userId, body.getIds());
     for (Installment installment : installments) {
-      System.out.println("installment amount --> " + installment.getAmount());
-
-      // installment.setPaid(true);
-      // installment.setPaidDate(body.getPaidDate());
-      // installmentRepository.save(installment);
+      installment.setPaid(true);
+      installment.setPaidDate(body.getPaidDate());
+      installmentRepository.save(installment);
       
-      // Transaction transaction = installment.getTransaction();
+      Transaction transaction = installment.getTransaction();
   
-      // BigDecimal totalPaidAmount = installment.getTransaction().getPaidAmount().add(installment.getAmount());
-      // TransactionStatuses transactionStatuses = transaction.getTotalAmount().equals(totalPaidAmount) ? TransactionStatuses.PAID : TransactionStatuses.PARTIAL;
+      BigDecimal totalPaidAmount = installment.getTransaction().getPaidAmount().add(installment.getAmount());
+      TransactionStatuses transactionStatuses = transaction.getTotalAmount().equals(totalPaidAmount) ? TransactionStatuses.PAID : TransactionStatuses.PARTIAL;
   
-      // transaction.setPaidAmount(totalPaidAmount);
-      // transaction.setStatus(transactionStatuses);
-      // transactionRepository.save(transaction);
+      transaction.setPaidAmount(totalPaidAmount);
+      transaction.setStatus(transactionStatuses);
+      transactionRepository.save(transaction);
   
-      // Account account = accountFactory.reCalculateBalanceOnPayment(transaction.getAccount(), transaction.getType(), installment.getAmount());
-      // accountRepository.save(account);
+      Account account = accountFactory.reCalculateBalanceOnPayment(transaction.getAccount(), transaction.getType(), installment.getAmount());
+      accountRepository.save(account);
     }
 
     eventPublisher.publishEvent(

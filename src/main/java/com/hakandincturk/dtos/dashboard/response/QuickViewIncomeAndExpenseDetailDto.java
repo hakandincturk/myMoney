@@ -14,5 +14,6 @@ import lombok.Setter;
 public class QuickViewIncomeAndExpenseDetailDto {
   private BigDecimal occured;
   private BigDecimal waiting;
+  private BigDecimal planning;
   private Double lastMonthChangeRate;
 }

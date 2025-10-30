@@ -50,7 +50,6 @@ public class GlobalExceptionHandler {
     if(token != null){
       errorDetails.put("token", token);
     }
-      System.out.println(2);
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createApiResponse(ex.getMessage(), errorDetails));
   }
 
