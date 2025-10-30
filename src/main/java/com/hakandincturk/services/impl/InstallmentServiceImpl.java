@@ -1,8 +1,6 @@
 package com.hakandincturk.services.impl;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.core.enums.sort.InstallmentSortColumn;
 import com.hakandincturk.core.events.InstallmentsPaidEvent;
-import com.hakandincturk.core.events.InstallmentPaidEvent;
 import com.hakandincturk.core.specs.FilterListMyInstallmentSpecification;
 import com.hakandincturk.dtos.installment.request.FilterListMyInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
@@ -23,11 +20,9 @@ import com.hakandincturk.dtos.installment.response.TransactionDetailDto;
 import com.hakandincturk.factories.AccountFactory;
 import com.hakandincturk.models.Account;
 import com.hakandincturk.models.Installment;
-import com.hakandincturk.models.MonthlySummary;
 import com.hakandincturk.models.Transaction;
 import com.hakandincturk.repositories.AccountRepository;
 import com.hakandincturk.repositories.InstallmentRepository;
-import com.hakandincturk.repositories.MonthlySummaryRepository;
 import com.hakandincturk.repositories.TransactionRepository;
 import com.hakandincturk.services.abstracts.InstallmentService;
 import com.hakandincturk.services.rules.InstallmentRules;
@@ -46,7 +41,6 @@ public class InstallmentServiceImpl implements InstallmentService {
   private final InstallmentRules installmentRules;
   private final AccountFactory accountFactory;
   private final AccountRepository accountRepository;
-  private final MonthlySummaryRepository monthlySummaryRepository;
   private final ApplicationEventPublisher eventPublisher;
 
   @Override
@@ -109,9 +103,5 @@ public class InstallmentServiceImpl implements InstallmentService {
       )
     );
   }
-
-  public void reCalculateSummaryAccordingToInstallment(Installment installment){
-
-  }
-
+  
 }

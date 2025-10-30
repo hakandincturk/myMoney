@@ -16,7 +16,6 @@ import com.hakandincturk.core.enums.TransactionTypes;
 import com.hakandincturk.dtos.dashboard.response.QuickViewIncomeAndExpenseDetailDto;
 import com.hakandincturk.dtos.dashboard.response.QuickViewResponseDto;
 import com.hakandincturk.models.MonthlySummary;
-import com.hakandincturk.models.Transaction;
 import com.hakandincturk.repositories.AccountRepository;
 import com.hakandincturk.repositories.MonthlySummaryRepository;
 import com.hakandincturk.repositories.TransactionRepository;
