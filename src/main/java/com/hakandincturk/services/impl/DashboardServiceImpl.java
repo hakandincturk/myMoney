@@ -2,6 +2,7 @@ package com.hakandincturk.services.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import com.hakandincturk.core.enums.AccountTypes;
 import com.hakandincturk.core.enums.MonthlySummeryTypes;
 import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.core.enums.TransactionTypes;
+import com.hakandincturk.dtos.dashboard.response.MonthlyTrend;
 import com.hakandincturk.dtos.dashboard.response.QuickViewIncomeAndExpenseDetailDto;
 import com.hakandincturk.dtos.dashboard.response.QuickViewResponseDto;
 import com.hakandincturk.models.MonthlySummary;
@@ -30,6 +32,8 @@ public class DashboardServiceImpl implements DashboardService {
   private final AccountRepository accountRepository;
   private final TransactionRepository transactionRepository;
   private final MonthlySummaryRepository monthlySummaryRepository;
+
+  private static final BigDecimal ZERO = BigDecimal.ZERO;
 
   @Override
   public QuickViewResponseDto quickViewResponse(Long userId) {
@@ -52,12 +56,12 @@ public class DashboardServiceImpl implements DashboardService {
     // onceki ay paymentDate'e gore monthly summary
     Optional<MonthlySummary> dbPrevMonthlPaymentSummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndTypeAndIsRemovedFalse(userId, prevMonth.getYear(), prevMonth.getMonthValue(), MonthlySummeryTypes.PAYMENT);
 
-    incomeDetail.setOccured(BigDecimal.valueOf(0));
-    incomeDetail.setWaiting(BigDecimal.valueOf(0));
+    incomeDetail.setOccured(ZERO);
+    incomeDetail.setWaiting(ZERO);
     incomeDetail.setLastMonthChangeRate(Double.valueOf(0));
 
-    expenseDetail.setOccured(BigDecimal.valueOf(0));
-    expenseDetail.setWaiting(BigDecimal.valueOf(0));
+    expenseDetail.setOccured(ZERO);
+    expenseDetail.setWaiting(ZERO);
     expenseDetail.setLastMonthChangeRate(Double.valueOf(0));
 
     if(!dbMonthlyTransactionSummary.isEmpty()) {
@@ -86,12 +90,12 @@ public class DashboardServiceImpl implements DashboardService {
 
         // ((gecen ay gelir - bu ay gelir)/gecen ay gelir)*100
         BigDecimal incomeDiffrence = totalIncome.subtract(totalPrevIncome);
-        BigDecimal incomeChangeRate = incomeDiffrence.signum() == 0 || totalPrevIncome.signum() == 0 ? BigDecimal.valueOf(0) : incomeDiffrence.divide(totalPrevIncome, 2, RoundingMode.HALF_EVEN).multiply(BigDecimal.valueOf(100));;
+        BigDecimal incomeChangeRate = incomeDiffrence.signum() == 0 || totalPrevIncome.signum() == 0 ? ZERO : incomeDiffrence.divide(totalPrevIncome, 2, RoundingMode.HALF_EVEN).multiply(BigDecimal.valueOf(100));;
         incomeDetail.setLastMonthChangeRate(incomeChangeRate.doubleValue());
         
         // ((gecen ay gider - bu ay gider)/gecen ay gelir)*100
         BigDecimal expenseDiffrence = totalExpense.subtract(totalPrevMonthExpense);
-        BigDecimal expenseChangeRate = expenseDiffrence.signum() == 0 || totalPrevMonthExpense.signum() == 0 ? BigDecimal.valueOf(0) : expenseDiffrence.divide(totalPrevMonthExpense, 2, RoundingMode.HALF_EVEN).multiply(BigDecimal.valueOf(100));
+        BigDecimal expenseChangeRate = expenseDiffrence.signum() == 0 || totalPrevMonthExpense.signum() == 0 ? ZERO : expenseDiffrence.divide(totalPrevMonthExpense, 2, RoundingMode.HALF_EVEN).multiply(BigDecimal.valueOf(100));
         expenseDetail.setLastMonthChangeRate(Double.valueOf(expenseChangeRate.doubleValue()));
 
         expenseDetail.setOccured(prevMonthlyPaymentSummary.getTotalExpense());
@@ -102,30 +106,35 @@ public class DashboardServiceImpl implements DashboardService {
     BigDecimal totalExpense = expenseDetail.getWaiting();
 
     BigDecimal savingRate = totalIncome.compareTo(BigDecimal.ZERO) == 0 ? 
-      BigDecimal.valueOf(0) :
-        (
-          totalExpense.divide(totalIncome, 2, RoundingMode.HALF_UP)
-          .subtract(BigDecimal.valueOf(1))
-        )
-        .multiply(BigDecimal.valueOf(-1))
+      ZERO :
+        totalIncome.subtract(totalExpense)
+        .divide(totalIncome, 2, RoundingMode.HALF_UP)
         .multiply(BigDecimal.valueOf(100));
 
     QuickViewResponseDto quickViewResponse = new QuickViewResponseDto();
     quickViewResponse.setTotalBalance(totalBalance);
     quickViewResponse.setIncome(incomeDetail);
     quickViewResponse.setExpense(expenseDetail);
-    quickViewResponse.setSavingRate(Double.parseDouble(savingRate.toString()));
+    quickViewResponse.setSavingRate(savingRate.doubleValue());
 
-    List<TransactionStatuses> transactionStatuses = new ArrayList<TransactionStatuses>(
-      List.of(TransactionStatuses.PARTIAL, TransactionStatuses.PENDING)
-    );
-    List<TransactionTypes> transactionTypes = new ArrayList<TransactionTypes>(
-      List.of(TransactionTypes.DEBT, TransactionTypes.PAYMENT)
-    );
+    List<TransactionStatuses> transactionStatuses = List.of(TransactionStatuses.PARTIAL, TransactionStatuses.PENDING);
+    List<TransactionTypes> transactionTypes = List.of(TransactionTypes.DEBT, TransactionTypes.PAYMENT);
+
     Long waitingInstallments = transactionRepository.findWaitingTransactions(userId, transactionStatuses, transactionTypes);
     quickViewResponse.setWaitingInstallments(Integer.valueOf(waitingInstallments.toString()));
 
     return quickViewResponse;
   }
+
+  @Override
+  public MonthlyTrend monthlyTrend(Long userId) {
+    LocalDate currentDate = LocalDate.now();
+    LocalDate firstDate = currentDate.minusMonths(6);
+    LocalDate endDate = currentDate.plusMonths(6);
+
+    return null;
+  }
+  
+
   
 }
