@@ -1,6 +1,7 @@
 package com.hakandincturk.factories;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -57,7 +58,8 @@ public class MonthlySummeryFactory {
       thisMonthExpense,
       thisMonthWaitingIncome,
       totalWaitingExpense,
-      MonthlySummeryTypes.TRANSACTION
+      MonthlySummeryTypes.TRANSACTION,
+      LocalDate.of(year, month, 1)
     );
     return monthlySummary;
   }
@@ -94,7 +96,8 @@ public class MonthlySummeryFactory {
       totalExpenseForPaidDate,
       totalWaitingIncome,
       totalWaitingExpense,
-      MonthlySummeryTypes.PAYMENT
+      MonthlySummeryTypes.PAYMENT,
+      LocalDate.of(year, month, 1)
     );
 
     return monthlySummary;

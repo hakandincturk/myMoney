@@ -1,10 +1,12 @@
 package com.hakandincturk.models;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hakandincturk.core.enums.MonthlySummeryTypes;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -34,14 +36,21 @@ public class MonthlySummary extends BaseEntitiy {
   
   private Integer month;
 
+  @Column(name = "total_income")
   private BigDecimal totalIncome;
 
+  @Column(name = "total_expense")
   private BigDecimal totalExpense;
 
+  @Column(name = "total_waiting_income")
   private BigDecimal totalWaitingIncome;
 
+  @Column(name = "total_waiting_expense")
   private BigDecimal totalWaitingExpense;
 
   @Enumerated(EnumType.STRING)
   private MonthlySummeryTypes type;
+
+  @Column(name = "summary_date")
+  private LocalDate summaryDate;
 }
