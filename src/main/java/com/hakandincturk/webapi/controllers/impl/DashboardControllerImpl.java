@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hakandincturk.core.payload.ApiResponse;
+import com.hakandincturk.dtos.dashboard.response.MonthlyTrend;
 import com.hakandincturk.dtos.dashboard.response.QuickViewResponseDto;
 import com.hakandincturk.security.JwtAuthentication;
 import com.hakandincturk.services.abstracts.DashboardService;
@@ -33,6 +34,20 @@ public class DashboardControllerImpl extends BaseController implements Dashboard
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
       return success("Ana sayfa verileri başarılı bir şekilde getirildi", dashboardService.quickViewResponse(userId));
+    }
+    else {
+      return error("Kullanıcı verilerine ulaşılamadı");
+    }
+  }
+  
+  @Override
+  @GetMapping(value = "/monthly-trend")
+  @Operation(summary = "Monthly Trend", description = "Ana sayfa gelir/gider trendi grafigi verilerini getirir")
+  public ApiResponse<MonthlyTrend> monthlyTrend() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if(auth instanceof JwtAuthentication jwtAuth){
+      Long userId = jwtAuth.getUserId();
+      return success("Ana sayfa verileri başarılı bir şekilde getirildi", dashboardService.monthlyTrend(userId));
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

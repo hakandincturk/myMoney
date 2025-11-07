@@ -6,7 +6,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
@@ -15,6 +19,7 @@ import com.hakandincturk.core.enums.MonthlySummeryTypes;
 import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.core.enums.TransactionTypes;
 import com.hakandincturk.dtos.dashboard.response.MonthlyTrend;
+import com.hakandincturk.dtos.dashboard.response.MonthlyTrendData;
 import com.hakandincturk.dtos.dashboard.response.QuickViewIncomeAndExpenseDetailDto;
 import com.hakandincturk.dtos.dashboard.response.QuickViewResponseDto;
 import com.hakandincturk.models.MonthlySummary;
@@ -98,7 +103,7 @@ public class DashboardServiceImpl implements DashboardService {
         BigDecimal expenseChangeRate = expenseDiffrence.signum() == 0 || totalPrevMonthExpense.signum() == 0 ? ZERO : expenseDiffrence.divide(totalPrevMonthExpense, 2, RoundingMode.HALF_EVEN).multiply(BigDecimal.valueOf(100));
         expenseDetail.setLastMonthChangeRate(Double.valueOf(expenseChangeRate.doubleValue()));
 
-        expenseDetail.setOccured(prevMonthlyPaymentSummary.getTotalExpense());
+        // expenseDetail.setOccured(prevMonthlyPaymentSummary.getTotalExpense());
       }
     }
     
@@ -128,11 +133,45 @@ public class DashboardServiceImpl implements DashboardService {
 
   @Override
   public MonthlyTrend monthlyTrend(Long userId) {
-    LocalDate currentDate = LocalDate.now();
+    LocalDate currentDate = LocalDate.now().withDayOfMonth(1);
     LocalDate firstDate = currentDate.minusMonths(6);
     LocalDate endDate = currentDate.plusMonths(6);
 
-    return null;
+    List<MonthlySummary> oldSummaries = monthlySummaryRepository.findByUser_IdAndSummaryDateBetweenAndTypeAndIsRemovedFalse(userId, firstDate, currentDate.minusMonths(1), MonthlySummeryTypes.PAYMENT);
+    List<MonthlySummary> futureSummaries = monthlySummaryRepository.findByUser_IdAndSummaryDateBetweenAndTypeAndIsRemovedFalse(userId, currentDate, endDate, MonthlySummeryTypes.TRANSACTION);
+    List<MonthlySummary> allSummaries = Stream.concat(oldSummaries.stream(), futureSummaries.stream()).toList();
+
+    Map<LocalDate, MonthlySummary> summaryMap = allSummaries.stream()
+      .collect(Collectors.toMap(MonthlySummary::getSummaryDate, Function.identity()));
+
+    List<MonthlyTrendData> monthlyTrendDatas = new ArrayList<>();
+    LocalDate dateCursor = firstDate;
+    while(dateCursor.isBefore(endDate)){
+      MonthlySummary monthlySummary = summaryMap.get(dateCursor);
+      MonthlyTrendData monthlyTrendData = new MonthlyTrendData();
+
+      if(monthlySummary == null){
+        monthlyTrendData.setExpense(ZERO);
+        monthlyTrendData.setIncome(ZERO);
+        monthlyTrendData.setTitle(dateCursor.getMonth().toString());
+      }
+      else{
+        BigDecimal income = dateCursor.isBefore(currentDate) || dateCursor.isEqual(currentDate) ? monthlySummary.getTotalIncome() : monthlySummary.getTotalWaitingIncome();
+        BigDecimal expense = dateCursor.isBefore(currentDate) ? monthlySummary.getTotalExpense() : monthlySummary.getTotalWaitingExpense();
+
+        monthlyTrendData.setIncome(income);
+        monthlyTrendData.setExpense(expense);
+        monthlyTrendData.setTitle(monthlySummary.getSummaryDate().getMonth().toString());
+      }
+
+      monthlyTrendDatas.add(monthlyTrendData);
+      dateCursor = dateCursor.plusMonths(1);
+    }
+    MonthlyTrend responseData = new MonthlyTrend();
+    responseData.setMonthlyTrendData(monthlyTrendDatas);
+    System.out.println(1);
+
+    return responseData;
   }
   
 

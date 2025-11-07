@@ -1,6 +1,6 @@
 package com.hakandincturk.dtos.dashboard.response;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +11,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MonthlyTrend {
-  List<MonthlyTrendData> monthlyTrendData;
+public class MonthlyTrendData {
+  private String title;
+  private BigDecimal income;
+  private BigDecimal expense;
 }
