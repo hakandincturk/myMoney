@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: myMoney
+
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:5432/myMoney
+    driver-class-name: org.postgresql.Driver
+    username: hakandincturk
+    password: ""
+  
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+        format_sql: true
+      jakarta:
+        persistence:
+          validation:
+            mode: none
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+logging:
+  level:
+    org.hibernate.type.descriptor.sql: trace
+    # org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener: WARN
+    # org.springframework.boot: WARN
+    # org.springframework.security: WARN
+
+jwt:
+  secret:
+    key: Mz4mA1h2siTZWMgsDvldEVlUUKMRVC9E04os3UatieA=

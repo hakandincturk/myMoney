@@ -15,4 +15,5 @@ public interface TransactionMapper {
   ListMyTransactionsResponseDto toListMyTransactionsResponseDto(Transaction transaction);
 
   TransactionDetailDto toTransactionDetailDto(Transaction transaction);
+
 }

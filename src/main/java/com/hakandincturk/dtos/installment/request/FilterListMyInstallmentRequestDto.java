@@ -1,7 +1,6 @@
 package com.hakandincturk.dtos.installment.request;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 import com.hakandincturk.dtos.SortablePageRequest;
@@ -19,6 +18,4 @@ public class FilterListMyInstallmentRequestDto extends SortablePageRequest {
   private BigDecimal minTotalAmount;
   private BigDecimal maxTotalAmount;
   private List<Boolean> isPaid;
-  private LocalDate paidStartDate;
-  private LocalDate paidEndDate;
 }

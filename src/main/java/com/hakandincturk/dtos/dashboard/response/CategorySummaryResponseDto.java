@@ -1,6 +1,7 @@
 package com.hakandincturk.dtos.dashboard.response;
 
-import java.math.BigDecimal;
+import java.util.List;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,8 +12,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuickViewIncomeAndExpenseDetailDto {
-  private BigDecimal occured;
-  private BigDecimal waiting;
-  private Double lastMonthChangeRate;
+public class CategorySummaryResponseDto {
+  List<CategorySummaryDataDto> categorySummaryDatas;
 }

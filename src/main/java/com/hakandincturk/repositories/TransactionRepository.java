@@ -1,5 +1,6 @@
 package com.hakandincturk.repositories;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +32,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
         AND COALESCE(t.totalAmount, 0) > 0
         AND ((t.totalAmount - t.paidAmount) / t.totalAmount > 0.15)
       """)
-  Long findWaitingTransactions(
+  Long findWaitingTransactionCount(
     @Param("userId") Long userId,
     @Param("statuses") List<TransactionStatuses> statuses,
     @Param("types") List<TransactionTypes> types

@@ -22,6 +22,7 @@ import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto
 import com.hakandincturk.factories.AccountFactory;
 import com.hakandincturk.factories.CategoryFactory;
 import com.hakandincturk.factories.TransactionFactory;
+import com.hakandincturk.mappers.InstallmentMapper;
 import com.hakandincturk.mappers.TransactionMapper;
 import com.hakandincturk.models.Account;
 import com.hakandincturk.models.Category;
@@ -51,6 +52,7 @@ public class TransactionServiceImpl implements TransactionService {
   private final AccountFactory accountFactory;
   private final AccountRepository accountRepository;
   private final TransactionMapper transactionMapper;
+  private final InstallmentMapper installmentMapper;
   private final CategoryFactory categoryFactory;
   private final CategoryRules categoryRules;
   private final CategoryRepository categoryRepository;
@@ -116,15 +118,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     List<ListInstallments> installments = transaction.getInstallments().stream()
     .sorted(Comparator.comparing(Installment::getId))
-    .map(installment -> new ListInstallments(
-      installment.getId(),
-      installment.getAmount(),
-      installment.getDebtDate(),
-      installment.getInstallmentNumber(),
-      installment.getDescripton(),
-      installment.isPaid(),
-      installment.getPaidDate()
-    )).toList();
+    .map(installmentMapper::toListTransactionIntallments)
+    .toList();
 
     return installments;
   }

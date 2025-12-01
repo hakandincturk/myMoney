@@ -74,9 +74,8 @@ public class MonthlySummaryServiceImpl implements MonthlySummaryService {
     Installment userLastInstallment = dbUserFirstInstallemnt.getLast();
 
     YearMonth firstInstallmentDate = YearMonth.from(userFirstInstallment.getDebtDate());
-
   
-    LocalDate lastInstallmentDate = userLastInstallment.getDebtDate() == null ? LocalDate.of(LocalDate.now().getYear(), 12, 30) : userLastInstallment.getDebtDate();
+    LocalDate lastInstallmentDate = userLastInstallment.getDebtDate() == null ? LocalDate.of(LocalDate.now().getYear(), 12, 31) : userLastInstallment.getDebtDate();
     YearMonth lastInstallmentDates = YearMonth.from(lastInstallmentDate);
 
     YearMonth startDate = firstInstallmentDate;

@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MonthlyTrendData {
+public class MonthlyTrendDataDto {
   private String title;
   private BigDecimal income;
   private BigDecimal expense;

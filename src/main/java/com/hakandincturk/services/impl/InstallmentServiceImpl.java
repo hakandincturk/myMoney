@@ -64,8 +64,7 @@ public class InstallmentServiceImpl implements InstallmentService {
         installment.getDebtDate(),
         installment.getInstallmentNumber(),
         installment.getDescripton(),
-        installment.isPaid(),
-        installment.getPaidDate()
+        installment.isPaid()
       );
     });
 
@@ -79,7 +78,7 @@ public class InstallmentServiceImpl implements InstallmentService {
     List<Installment> installments = installmentRules.checkUserInstallmentExistAndGet(userId, body.getIds());
     for (Installment installment : installments) {
       installment.setPaid(true);
-      installment.setPaidDate(body.getPaidDate());
+      installment.setPaidDate(installment.getDebtDate());
       installmentRepository.save(installment);
       
       Transaction transaction = installment.getTransaction();

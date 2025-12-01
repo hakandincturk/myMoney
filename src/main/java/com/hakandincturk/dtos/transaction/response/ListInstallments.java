@@ -19,5 +19,4 @@ public class ListInstallments {
   private int installmentNumber;
   private String descripton;
   private boolean isPaid;
-  private LocalDate paidDate;
 }

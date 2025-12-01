@@ -53,16 +53,6 @@ public class FilterListMyInstallmentSpecification {
         predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("amount"), body.getMaxTotalAmount()));
       }
 
-      if(body.getPaidStartDate() != null && body.getPaidEndDate() != null){
-        predicates.add(criteriaBuilder.between(root.get("paidDate"), body.getPaidStartDate(), body.getPaidEndDate()));
-      }
-      else if(body.getPaidStartDate() != null && body.getPaidEndDate() == null){
-        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("paidDate"), body.getPaidStartDate()));
-      }
-      else if(body.getPaidStartDate() == null && body.getPaidEndDate() != null){
-        predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("paidDate"), body.getPaidEndDate()));
-      }
-
       return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     };
   }

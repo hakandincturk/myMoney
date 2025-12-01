@@ -21,6 +21,5 @@ public class ListMySpecificDateInstallmentsResponseDto {
   private int installmentNumber;
   private String descripton;
   private boolean isPaid;
-  private LocalDate paidDate;
   
 }
