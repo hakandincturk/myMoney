@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/account")
+@RequestMapping(value = "/account")
 @Tag(name = "Account", description = "Hesap işlemleri")
 public class AccountControllerImpl extends BaseController implements AccountController {
 

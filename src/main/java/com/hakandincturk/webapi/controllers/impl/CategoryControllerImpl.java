@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/category")
+@RequestMapping(value = "/category")
 @Tag(name = "Category", description = "Kategori işlemleri")
 public class CategoryControllerImpl extends BaseController implements CategoryController {
 

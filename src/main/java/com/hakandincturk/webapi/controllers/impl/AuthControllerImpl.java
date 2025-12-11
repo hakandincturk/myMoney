@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/auth")
+@RequestMapping(value = "/auth")
 @Tag(name = "Auth", description = "Kullanıcı giriş işlemleri")
 public class AuthControllerImpl extends BaseController implements AuthController {
 

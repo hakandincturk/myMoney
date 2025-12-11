@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/contact")
+@RequestMapping(value = "/contact")
 @Tag(name = "Contact", description = "Kullanıcı işlemleri")
 public class ContactControllerImpl extends BaseController implements ContactController {
 

@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/installment")
+@RequestMapping(value = "/installment")
 @Tag(name = "Installment", description = "Taksit işlemleri")
 public class InstallmentControllerImpl extends BaseController implements InstallmentController {
 

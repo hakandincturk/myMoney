@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/monthly-summery")
+@RequestMapping(value = "/monthly-summery")
 public class MonthlySummaryControllerImpl extends BaseController implements MonthlySummaryController {
 
   private final MonthlySummaryService monthlySummaryService;

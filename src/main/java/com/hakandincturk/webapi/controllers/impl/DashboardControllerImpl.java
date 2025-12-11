@@ -28,7 +28,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(value = "/api/dashboard")
+@RequestMapping(value = "/dashboard")
 @RequiredArgsConstructor
 @Tag(name = "Dashboard", description = "Ana sayfa işlemleri")
 public class DashboardControllerImpl extends BaseController implements DashboardController {

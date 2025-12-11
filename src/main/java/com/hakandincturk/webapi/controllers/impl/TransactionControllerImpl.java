@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/transaction")
+@RequestMapping(value = "/transaction")
 @Tag(name = "Transaction", description = "Transaction işlemleri")
 public class TransactionControllerImpl extends BaseController implements TransactionController {
 
