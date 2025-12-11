@@ -20,7 +20,12 @@ public class CorsConfig {
 			@Override
 			public void addCorsMappings(@NonNull CorsRegistry registry) {
 				registry.addMapping("/**")
-					.allowedOrigins("http://127.0.0.1:5173", "http://127.0.0.1:4173")
+					.allowedOrigins(
+						"http://127.0.0.1:5173",
+						"http://127.0.0.1:4173",
+						"https://hakandincturk-mymoney.tech",
+						"https://www.hakandincturk-mymoney.tech"
+					)
 					.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 					.allowedHeaders("*")
 					.allowCredentials(true);
@@ -31,7 +36,12 @@ public class CorsConfig {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://127.0.0.1:5173", "http://127.0.0.1:4173"));
+		configuration.setAllowedOrigins(List.of(
+			"http://127.0.0.1:5173",
+			"http://127.0.0.1:4173",
+			"https://hakandincturk-mymoney.tech",
+			"https://www.hakandincturk-mymoney.tech"
+		));
 		configuration.setAllowedMethods(List.of("GET","POST","PUT","PATCH", "DELETE","OPTIONS"));
 		configuration.setAllowedHeaders(List.of("*"));
 		configuration.setAllowCredentials(true);
