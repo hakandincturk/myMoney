@@ -77,8 +77,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     String path = request.getServletPath();
     List<String> notPermittedPaths = new ArrayList<>(List.of(
       // Auth
-      "/api/auth/login",
-      "/api/auth/register",
+      "/auth/login",
+      "/auth/register",
       // Swagger & OpenAPI
       "/swagger-ui/**",
       "/swagger-ui.html",

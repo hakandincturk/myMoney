@@ -22,8 +22,8 @@ public class SecurityConfig {
 
   private final CorsConfigurationSource corsConfigurationSource;
 
-  private final String LOGIN_PATH = "/api/auth/login";
-  private final String REGISTER_PATH = "/api/auth/register";
+  private final String LOGIN_PATH = "/auth/login";
+  private final String REGISTER_PATH = "/auth/register";
   
   public static final String[] SWAGGER_PATHS = {
     "/swagger-ui/**",
