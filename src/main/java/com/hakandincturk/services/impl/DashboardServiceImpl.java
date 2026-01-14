@@ -25,12 +25,19 @@ import com.hakandincturk.dtos.dashboard.response.MonthlyTrendResponseDto;
 import com.hakandincturk.dtos.dashboard.request.CategorySummaryRequestDto;
 import com.hakandincturk.dtos.dashboard.response.CategorySummaryDataDto;
 import com.hakandincturk.dtos.dashboard.response.CategorySummaryResponseDto;
+import com.hakandincturk.dtos.dashboard.response.IncomingInstallmentsDataDto;
+import com.hakandincturk.dtos.dashboard.response.IncomingInstallmentsResponseDto;
+import com.hakandincturk.dtos.dashboard.response.LastTransactionDataDto;
+import com.hakandincturk.dtos.dashboard.response.LastTransactionsResponseDto;
 import com.hakandincturk.dtos.dashboard.response.MonthlyTrendDataDto;
 import com.hakandincturk.dtos.dashboard.response.QuickViewIncomeAndExpenseDetailDto;
 import com.hakandincturk.dtos.dashboard.response.QuickViewResponseDto;
+import com.hakandincturk.mappers.InstallmentMapper;
+import com.hakandincturk.mappers.TransactionMapper;
 import com.hakandincturk.models.Category;
 import com.hakandincturk.models.Installment;
 import com.hakandincturk.models.MonthlySummary;
+import com.hakandincturk.models.Transaction;
 import com.hakandincturk.models.TransactionCategory;
 import com.hakandincturk.repositories.AccountRepository;
 import com.hakandincturk.repositories.InstallmentRepository;
@@ -52,6 +59,8 @@ public class DashboardServiceImpl implements DashboardService {
   private final TransactionRepository transactionRepository;
   private final InstallmentRepository installmentRepository;
   private final MonthlySummaryRepository monthlySummaryRepository;
+  private final TransactionMapper transactionMapper;
+  private final InstallmentMapper installmentMapper;
 
   private static final BigDecimal ZERO = BigDecimal.ZERO;
 
@@ -195,7 +204,8 @@ public class DashboardServiceImpl implements DashboardService {
     dashboardRules.categorySummaryDatesControl(body);
     dashboardRules.categorySummaryDatesOnly1MonthOr1Year(body);
 
-    List<TransactionTypes> transactionTypes = List.of(TransactionTypes.DEBT);
+    List<TransactionTypes> transactionTypes = List.of(TransactionTypes.DEBT, TransactionTypes.PAYMENT);
+    // List<TransactionTypes> transactionTypes = List.of(TransactionTypes.DEBT);
 
     BigDecimal totalAmount = ZERO;
     Map<String, BigDecimal> categorySummary = new HashMap<>();
@@ -241,5 +251,29 @@ public class DashboardServiceImpl implements DashboardService {
     return response;
   }
 
-  
+  @Override
+  public LastTransactionsResponseDto lastTransactions(Long userId) {
+    List<Transaction> dbTransactions = transactionRepository.findTop10ByUserIdAndIsRemovedFalseOrderByIdDesc(userId);
+    List<LastTransactionDataDto> mappedTransactions = dbTransactions.stream().map(transactionMapper::toLastTransactionDataDto).toList();
+    
+    LastTransactionsResponseDto transactions = new LastTransactionsResponseDto();
+    transactions.setLastTransactionData(mappedTransactions);
+
+    return transactions;
+  }
+
+  @Override
+  public IncomingInstallmentsResponseDto incomingInstallments(Long userId) {
+    LocalDate currenDate = LocalDate.now();
+    LocalDate startDate = currenDate.minusDays(1);
+    LocalDate endDate = currenDate.plusDays(30);
+
+    List<Installment> dbInstallments = installmentRepository.findTop10ByTransaction_UserIdAndDebtDateBetweenAndIsPaidFalseAndIsRemovedFalseOrderByDebtDate(userId, startDate, endDate);
+    List<IncomingInstallmentsDataDto> mappedInstallments = dbInstallments.stream().map(installmentMapper::toIncomingInstallmentsData).toList();
+
+    IncomingInstallmentsResponseDto installments = new IncomingInstallmentsResponseDto();
+    installments.setIncomingInstallmentsDatas(mappedInstallments);
+
+    return installments;
+  }
 }

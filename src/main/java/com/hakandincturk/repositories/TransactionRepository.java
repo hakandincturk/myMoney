@@ -36,4 +36,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
     @Param("statuses") List<TransactionStatuses> statuses,
     @Param("types") List<TransactionTypes> types
   );
+
+  List<Transaction> findTop10ByUserIdAndIsRemovedFalseOrderByIdDesc(Long userId);
 }

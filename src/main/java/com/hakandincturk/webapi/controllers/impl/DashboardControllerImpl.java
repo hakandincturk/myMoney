@@ -14,6 +14,8 @@ import com.hakandincturk.core.enums.DashboardCategorySummaryTypes;
 import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.dtos.dashboard.request.CategorySummaryRequestDto;
 import com.hakandincturk.dtos.dashboard.response.CategorySummaryResponseDto;
+import com.hakandincturk.dtos.dashboard.response.IncomingInstallmentsResponseDto;
+import com.hakandincturk.dtos.dashboard.response.LastTransactionsResponseDto;
 import com.hakandincturk.dtos.dashboard.response.MonthlyTrendResponseDto;
 import com.hakandincturk.dtos.dashboard.response.QuickViewResponseDto;
 import com.hakandincturk.security.JwtAuthentication;
@@ -41,7 +43,7 @@ public class DashboardControllerImpl extends BaseController implements Dashboard
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
-      return success("Ana sayfa verileri başarılı bir şekilde getirildi", dashboardService.quickViewResponse(userId));
+      return success("Ana sayfa hızlı bakış verilerini getirir", dashboardService.quickViewResponse(userId));
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");
@@ -55,7 +57,7 @@ public class DashboardControllerImpl extends BaseController implements Dashboard
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
-      return success("Ana sayfa verileri başarılı bir şekilde getirildi", dashboardService.monthlyTrend(userId));
+      return success("Ana sayfa gelir/gider trendi grafigi verilerini getirir", dashboardService.monthlyTrend(userId));
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");
@@ -69,7 +71,35 @@ public class DashboardControllerImpl extends BaseController implements Dashboard
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
-      return success("Ana sayfa verileri başarılı bir şekilde getirildi", dashboardService.categorySummary(userId, type, sumMode, body));
+      return success("Ana sayfa kategorisel harcamaları kategorisel olarak getirildi", dashboardService.categorySummary(userId, type, sumMode, body));
+    }
+    else {
+      return error("Kullanıcı verilerine ulaşılamadı");
+    }
+  }
+
+  @Override
+  @GetMapping(value = "/last-transactions")
+  @Operation(summary = "Last 10 Transactions", description = "En son kaydedilen gelir ve gider hareketleri")
+  public ApiResponse<LastTransactionsResponseDto> lastTransactions() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if(auth instanceof JwtAuthentication jwtAuth){
+      Long userId = jwtAuth.getUserId();
+      return success("En son kaydedilen gelir ve gider hareketleri getirildi", dashboardService.lastTransactions(userId));
+    }
+    else {
+      return error("Kullanıcı verilerine ulaşılamadı");
+    }
+  }
+
+  @Override
+  @GetMapping(value = "/incoming-transactions")
+  @Operation(summary = "Get the nearest installments", description = "Yaklaşan ödemeler getirildi")
+  public ApiResponse<IncomingInstallmentsResponseDto> incomingInstallments() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if(auth instanceof JwtAuthentication jwtAuth){
+      Long userId = jwtAuth.getUserId();
+      return success("Yaklaşan ödemeler getirildi", dashboardService.incomingInstallments(userId));
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

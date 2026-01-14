@@ -20,4 +20,6 @@ public interface InstallmentRepository extends JpaRepository<Installment, Long>,
   List<Installment> findByTransaction_UserIdAndPaidDateBetweenAndIsPaidTrueAndIsRemovedFalse(Long userId, LocalDate starDate, LocalDate endDate);
   // start: 2025-08-01, end: 2025-08-31
   // Page<Installment> findByTransactionUserIdAndDebtDateBetweenAndIsRemovedFalse(Long userId, LocalDate start, LocalDate end, Pageable pageData);
+
+  List<Installment> findTop10ByTransaction_UserIdAndDebtDateBetweenAndIsPaidFalseAndIsRemovedFalseOrderByDebtDate(Long userId, LocalDate startDate, LocalDate endDate);
 }

@@ -3,6 +3,7 @@ package com.hakandincturk.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import com.hakandincturk.dtos.dashboard.response.LastTransactionDataDto;
 import com.hakandincturk.dtos.installment.response.TransactionDetailDto;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 import com.hakandincturk.models.Transaction;
@@ -15,5 +16,7 @@ public interface TransactionMapper {
   ListMyTransactionsResponseDto toListMyTransactionsResponseDto(Transaction transaction);
 
   TransactionDetailDto toTransactionDetailDto(Transaction transaction);
+
+  LastTransactionDataDto toLastTransactionDataDto(Transaction transaction);
 
 }
