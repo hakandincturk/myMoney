@@ -1,6 +1,7 @@
 package com.hakandincturk.dtos.dashboard.response;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import com.hakandincturk.core.enums.TransactionTypes;
@@ -19,5 +20,5 @@ public class LastTransactionDataDto {
   private String description;
   private TransactionTypes type;
   private BigDecimal totalAmount;
-  private Date createdAt;
+  private LocalDateTime createdAt;
 }

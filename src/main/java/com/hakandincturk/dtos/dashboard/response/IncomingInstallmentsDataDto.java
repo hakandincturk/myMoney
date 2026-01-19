@@ -17,4 +17,5 @@ public class IncomingInstallmentsDataDto {
   private BigDecimal amount;
   private LocalDate debtDate; 
   private int installmentNumber;
+  private int totalInstallment;
 }

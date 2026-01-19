@@ -17,6 +17,7 @@ public interface InstallmentMapper {
   ListInstallments toListTransactionIntallments(Installment installment);
 
   @Mapping(target = "transaction", source = "transaction")
+  @Mapping(target = "totalInstallment", source = "transaction.totalInstallment")
   IncomingInstallmentsDataDto toIncomingInstallmentsData(Installment installment);
 
 }

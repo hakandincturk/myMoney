@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.hakandincturk.core.specs.CategorySpecification;
 import com.hakandincturk.dtos.category.request.FilterListUserCategories;
 import com.hakandincturk.dtos.category.response.ListUserCategoriesDto;
+import com.hakandincturk.dtos.category.response.ListUserCategoriesWithTransactionCountDto;
 import com.hakandincturk.mappers.CategoryMapper;
 import com.hakandincturk.models.Category;
 import com.hakandincturk.repositories.CategoryRepository;
@@ -32,5 +33,13 @@ public class CategoryServiceImpl implements CategoryService {
     Page<Category> categories = categoryRepository.findAll(specs, pageable);
 
     return categories.map(categoryMapper::toListUserCategoriesDto);
+  }
+
+  @Override
+  public Page<ListUserCategoriesWithTransactionCountDto> listUserCategoriesWithTransactionCount(Long userId, FilterListUserCategories body) {
+    Pageable pageable = PaginationUtils.toPageable(body);
+    Specification<Category> specs = CategorySpecification.filter(userId, body);
+    Page<ListUserCategoriesWithTransactionCountDto> result = categoryRepository.findWithTransactionCount(specs, pageable);
+    return result;
   }
 }

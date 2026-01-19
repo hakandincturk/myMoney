@@ -1,5 +1,6 @@
 package com.hakandincturk.models;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,12 +29,12 @@ public class BaseEntitiy {
 
   @Column(name = "createdAt")
   @DateTimeFormat(iso = ISO.DATE)
-  private Date createdAt;
+  private LocalDateTime createdAt;
 
   @PrePersist
   protected void onCreate() {
     if (createdAt == null) {
-      createdAt = new Date();
+      createdAt = LocalDateTime.now();
     }
   }
 }

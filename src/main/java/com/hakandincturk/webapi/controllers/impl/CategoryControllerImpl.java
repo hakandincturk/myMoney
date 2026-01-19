@@ -11,11 +11,13 @@ import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.category.request.FilterListUserCategories;
 import com.hakandincturk.dtos.category.response.ListUserCategoriesDto;
+import com.hakandincturk.dtos.category.response.ListUserCategoriesWithTransactionCountDto;
 import com.hakandincturk.security.JwtAuthentication;
 import com.hakandincturk.services.abstracts.CategoryService;
 import com.hakandincturk.webapi.controllers.BaseController;
 import com.hakandincturk.webapi.controllers.abstracts.CategoryController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -29,11 +31,26 @@ public class CategoryControllerImpl extends BaseController implements CategoryCo
 
   @Override
   @GetMapping(value = "/my/active")
+  @Operation(summary = "Get user categories", description = "Kullanıcıya ait kategorileri getirir")
   public ApiResponse<PagedResponse<ListUserCategoriesDto>> listUserCategories(@ModelAttribute FilterListUserCategories body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
       return successPaged("Kategoriler getirildi", categoryService.listUserCategories(userId, body));
+    }
+    else {
+      return error("Kullanıcı verilerine ulaşılamadı");
+    }
+  }
+
+  @Override
+  @GetMapping(value = "/my")
+  @Operation(summary = "Get user categories with transaction count", description = "Kullanıcıya ait kategorileri gelir/gider sayıları ile beraber getirir")
+  public ApiResponse<PagedResponse<ListUserCategoriesWithTransactionCountDto>> listUserCategoriesWithTransactionCount(FilterListUserCategories body) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if(auth instanceof JwtAuthentication jwtAuth){
+      Long userId = jwtAuth.getUserId();
+      return successPaged("Kullanıcı kategorileri getirildi", categoryService.listUserCategoriesWithTransactionCount(userId, body));
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

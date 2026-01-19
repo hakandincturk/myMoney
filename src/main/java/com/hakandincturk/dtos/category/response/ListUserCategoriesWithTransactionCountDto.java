@@ -1,6 +1,5 @@
 package com.hakandincturk.dtos.category.response;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
@@ -10,10 +9,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class ListUserCategoriesDto {
+@NoArgsConstructor
+public class ListUserCategoriesWithTransactionCountDto {
   private Long id;
   private String name;
   private LocalDateTime createdAt;
+  private Long transactionCount;
 }
