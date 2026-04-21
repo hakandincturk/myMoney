@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
+import com.hakandincturk.dtos.transaction.request.CategoryTransactionsFilterRequestDto;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
 import com.hakandincturk.dtos.transaction.request.TransactionFilterRequestDto;
+import com.hakandincturk.dtos.transaction.response.ListCategoryTransactionsResponseDto;
 import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 
@@ -14,4 +16,5 @@ public interface TransactionService {
   void deleteMyTransaction(Long userId, Long transactionId);
   Page<ListMyTransactionsResponseDto> listMyTransactions(Long userId, TransactionFilterRequestDto pageData);
   List<ListInstallments> listTransactionInstallments(Long userId, Long transactionId);
+  public Page<ListCategoryTransactionsResponseDto> listCategoryTransacions(Long userId, Long categoryId, CategoryTransactionsFilterRequestDto body);
 }

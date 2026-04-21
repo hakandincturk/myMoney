@@ -14,6 +14,7 @@ import com.hakandincturk.mappers.CategoryMapper;
 import com.hakandincturk.models.Category;
 import com.hakandincturk.repositories.CategoryRepository;
 import com.hakandincturk.services.abstracts.CategoryService;
+import com.hakandincturk.services.rules.CategoryRules;
 import com.hakandincturk.utils.PaginationUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class CategoryServiceImpl implements CategoryService {
   
   private final CategoryRepository categoryRepository;
   private final CategoryMapper categoryMapper;
+  private final CategoryRules categoryRules;
 
   @Override
   public Page<ListUserCategoriesDto> listUserCategories(Long userId, FilterListUserCategories body) {

@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
+import com.hakandincturk.dtos.transaction.request.CategoryTransactionsFilterRequestDto;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
 import com.hakandincturk.dtos.transaction.request.TransactionFilterRequestDto;
+import com.hakandincturk.dtos.transaction.response.ListCategoryTransactionsResponseDto;
 import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 import com.hakandincturk.security.JwtAuthentication;
@@ -83,11 +85,26 @@ public class TransactionControllerImpl extends BaseController implements Transac
   
   @Override
   @GetMapping(value = "/{transactionId}/installments/")
+  @Operation(summary = "List transaction installments", description = "Gelir/Gider'in taksitlerini listeler")
   public ApiResponse<List<ListInstallments>> listTransactionInstallments(@PathVariable(value = "transactionId") Long transactionId) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
       return success("Aylık taksitler getirildi", transactionService.listTransactionInstallments(userId, transactionId));
+    }
+    else {
+      return error("Kullanıcı verilerine ulaşılamadı");
+    }
+  }
+
+  @Override
+  @PostMapping(value = "/category/{categoryId}")
+  @Operation(summary = "List Category Transactions", description = "Bir kategorinin Gelir/Giderlerini listeler")
+  public ApiResponse<PagedResponse<ListCategoryTransactionsResponseDto>> listCategoryTransactions(@PathVariable(value = "categoryId") Long categoryId, @RequestBody CategoryTransactionsFilterRequestDto body) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if(auth instanceof JwtAuthentication jwtAuth){
+      Long userId = jwtAuth.getUserId();
+      return successPaged("Kategori taksitleri getirildi", transactionService.listCategoryTransacions(userId, categoryId, body));
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

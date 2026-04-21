@@ -35,6 +35,7 @@ public class Transaction extends BaseEntitiy {
   private String name;
   
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
   @JsonIgnore
   private Users user;
 

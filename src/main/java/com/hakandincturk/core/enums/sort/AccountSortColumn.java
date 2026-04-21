@@ -15,11 +15,11 @@ public enum AccountSortColumn implements BaseSortColumn {
   private final String displayName;
 
   AccountSortColumn(String entityProperty, String displayName) {
-      this.entityProperty = entityProperty;
-      this.displayName = displayName;
+    this.entityProperty = entityProperty;
+    this.displayName = displayName;
   }
 
   public static AccountSortColumn fromString(String columnName) {
-      return BaseSortColumn.fromString(AccountSortColumn.class, columnName);
+    return BaseSortColumn.fromString(AccountSortColumn.class, columnName);
   }
 }

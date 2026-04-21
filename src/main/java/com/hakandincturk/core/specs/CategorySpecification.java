@@ -2,6 +2,7 @@ package com.hakandincturk.core.specs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -19,7 +20,8 @@ public class CategorySpecification {
       predicates.add(criteriaBuilder.equal(root.get("user").get("id"), userId));
 
       if(body.getName() != null && !body.getName().isEmpty()){
-        predicates.add(criteriaBuilder.like(root.get("name"), "%" + body.getName() + "%"));
+        String name = body.getName().trim().toLowerCase(Locale.ROOT);
+        predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name + "%"));
       }
 
       if(body.getCreatedStartDate() != null && body.getCreatedEndDate() != null){
