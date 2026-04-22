@@ -26,6 +26,14 @@ public class CategoryRules {
     return dbCategory.get();
   }
 
+  public Category checkUserCategoryExistAndGet(Long userId, Long categoryId){
+    Optional<Category> dbCategory = categoryRepository.findByIdAndUserIdAndIsRemovedFalse(categoryId, userId);
+    if(dbCategory.isEmpty()){
+      throw new NotFoundException("Kategori bulunamadı");
+    }
+    return dbCategory.get();
+  }
+
   public List<Category> checkAllIdsAndGet(List<Long> ids){
     if(ids == null || ids.isEmpty()){
         return new ArrayList<>(); // Boş liste döndür, hata fırlatma

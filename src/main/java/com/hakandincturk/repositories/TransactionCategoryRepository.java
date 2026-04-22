@@ -1,5 +1,7 @@
 package com.hakandincturk.repositories;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,5 +14,7 @@ import com.hakandincturk.models.TransactionCategory;
 public interface TransactionCategoryRepository extends JpaRepository<TransactionCategory, Long>, JpaSpecificationExecutor<TransactionCategory>{
 
   Page<TransactionCategory> findAllByCategoryIdAndTransaction_UserIdAndIsRemovedFalse(Long categoryId, Long userId, Pageable page);
+
+  List<TransactionCategory> findAllByCategoryIdAndIsRemovedFalse(Long categoryId);
 
 }

@@ -9,4 +9,5 @@ import com.hakandincturk.dtos.category.response.ListUserCategoriesWithTransactio
 public interface CategoryService {
   public Page<ListUserCategoriesDto> listUserCategories(Long userId, FilterListUserCategories body);
   public Page<ListUserCategoriesWithTransactionCountDto> listUserCategoriesWithTransactionCount(Long userId, FilterListUserCategories body);
+  public void deleteCategory(Long userId, Long categoryId);
 }

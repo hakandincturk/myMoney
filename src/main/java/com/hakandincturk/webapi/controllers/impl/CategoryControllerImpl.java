@@ -2,8 +2,10 @@ package com.hakandincturk.webapi.controllers.impl;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -52,6 +54,21 @@ public class CategoryControllerImpl extends BaseController implements CategoryCo
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
       return successPaged("Kullanıcı kategorileri getirildi", categoryService.listUserCategoriesWithTransactionCount(userId, body));
+    }
+    else {
+      return error("Kullanıcı verilerine ulaşılamadı");
+    }
+  }
+
+  @Override
+  @DeleteMapping(value = "/my/{categoryId}")
+  @Operation(summary = "Delete category", description = "Kullanıcıya ait kategoriyi siler")
+  public ApiResponse<?> deleteCategory(@PathVariable(name = "categoryId") Long categoryId) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if(auth instanceof JwtAuthentication jwtAuth){
+      Long userId = jwtAuth.getUserId();
+      categoryService.deleteCategory(userId, categoryId);
+      return success("Kategori başarıyla silindi", null);
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

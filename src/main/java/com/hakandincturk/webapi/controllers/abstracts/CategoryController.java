@@ -9,4 +9,5 @@ import com.hakandincturk.dtos.category.response.ListUserCategoriesWithTransactio
 public interface CategoryController {
   ApiResponse<PagedResponse<ListUserCategoriesDto>> listUserCategories(FilterListUserCategories body);
   ApiResponse<PagedResponse<ListUserCategoriesWithTransactionCountDto>> listUserCategoriesWithTransactionCount(FilterListUserCategories body);
+  ApiResponse<?> deleteCategory(Long categoryId);
 }
