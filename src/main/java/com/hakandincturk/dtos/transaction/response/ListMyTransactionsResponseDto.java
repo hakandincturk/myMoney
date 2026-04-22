@@ -1,6 +1,9 @@
 package com.hakandincturk.dtos.transaction.response;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import com.hakandincturk.dtos.tag.response.TransactionTagInfoDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +24,7 @@ public class ListMyTransactionsResponseDto {
   private String status;
   private BigDecimal totalAmount;
   private BigDecimal paidAmount;
-  private int totalInstallment; 
-  
+  private int totalInstallment;
+  private List<TransactionTagInfoDto> tags;
+
 }
