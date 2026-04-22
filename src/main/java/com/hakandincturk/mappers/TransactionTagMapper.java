@@ -3,11 +3,11 @@ package com.hakandincturk.mappers;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import com.hakandincturk.dtos.transaction.response.ListCategoryTransactionsResponseDto;
-import com.hakandincturk.models.TransactionCategory;
+import com.hakandincturk.dtos.transaction.response.ListTagTransactionsResponseDto;
+import com.hakandincturk.models.TransactionTag;
 
 @Mapper(componentModel = "spring")
-public interface TransactionCategoryMapper {
+public interface TransactionTagMapper {
 
   @Mapping(target = "name", source = "transaction.name")
   @Mapping(target = "accountName", source = "transaction.account.name")
@@ -16,6 +16,6 @@ public interface TransactionCategoryMapper {
   @Mapping(target = "totalAmount", source = "transaction.totalAmount")
   @Mapping(target = "paidAmount", source = "transaction.paidAmount")
   @Mapping(target = "totalInstallment", source = "transaction.totalInstallment")
-  ListCategoryTransactionsResponseDto toListCategoryTransactionsResponseDto(TransactionCategory transactionCategory);
+  ListTagTransactionsResponseDto toListTagTransactionsResponseDto(TransactionTag transactionTag);
 
 }

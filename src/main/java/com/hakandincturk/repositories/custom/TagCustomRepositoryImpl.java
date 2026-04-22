@@ -9,9 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
-import com.hakandincturk.dtos.category.response.ListUserCategoriesWithTransactionCountDto;
-import com.hakandincturk.models.Category;
-import com.hakandincturk.models.TransactionCategory;
+import com.hakandincturk.dtos.tag.response.ListUserTagsWithTransactionCountDto;
+import com.hakandincturk.models.Tag;
+import com.hakandincturk.models.TransactionTag;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -27,25 +27,25 @@ import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
-public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
+public class TagCustomRepositoryImpl implements TagCustomRepository {
 
   private final EntityManager entityManager;
 
   @Override
-  public Page<ListUserCategoriesWithTransactionCountDto> findWithTransactionCount(Specification<Category> specs, Pageable pageable) {
+  public Page<ListUserTagsWithTransactionCountDto> findWithTransactionCount(Specification<Tag> specs, Pageable pageable) {
 
     CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-    CriteriaQuery<ListUserCategoriesWithTransactionCountDto> criteriaQuery = criteriaBuilder.createQuery(ListUserCategoriesWithTransactionCountDto.class);
+    CriteriaQuery<ListUserTagsWithTransactionCountDto> criteriaQuery = criteriaBuilder.createQuery(ListUserTagsWithTransactionCountDto.class);
 
-    Root<Category> root = criteriaQuery.from(Category.class);
-    Join<Category, TransactionCategory> transactionCategory = root.join("categoryTransactions", JoinType.LEFT);
+    Root<Tag> root = criteriaQuery.from(Tag.class);
+    Join<Tag, TransactionTag> transactionTag = root.join("tagTransactions", JoinType.LEFT);
 
     Predicate predicate = specs.toPredicate(root, criteriaQuery, criteriaBuilder);
 
-    Expression<Long> transactionCountExpression =  criteriaBuilder.countDistinct(transactionCategory.get("transaction").get("id"));
+    Expression<Long> transactionCountExpression =  criteriaBuilder.countDistinct(transactionTag.get("transaction").get("id"));
 
     criteriaQuery.select(criteriaBuilder.construct(
-        ListUserCategoriesWithTransactionCountDto.class,
+        ListUserTagsWithTransactionCountDto.class,
         root.get("id"),
         root.get("name"),
         root.get("createdAt"),
@@ -74,15 +74,15 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
     }
     // ------------------------------------------
 
-    TypedQuery<ListUserCategoriesWithTransactionCountDto> query = entityManager.createQuery(criteriaQuery);
+    TypedQuery<ListUserTagsWithTransactionCountDto> query = entityManager.createQuery(criteriaQuery);
     query.setFirstResult((int) pageable.getOffset());
     query.setMaxResults(pageable.getPageSize());
 
-    List<ListUserCategoriesWithTransactionCountDto> content = query.getResultList();
+    List<ListUserTagsWithTransactionCountDto> content = query.getResultList();
 
     // for totalElements
     CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
-    Root<Category> countRoot = countQuery.from(Category.class);
+    Root<Tag> countRoot = countQuery.from(Tag.class);
     Predicate countPredicate = specs.toPredicate(countRoot, countQuery, criteriaBuilder);
 
     countQuery.select(criteriaBuilder.countDistinct(countRoot.get("id")))
@@ -93,5 +93,5 @@ public class CategoryCustomRepositoryImpl implements CategoryCustomRepository {
 
     return new PageImpl<>(content, pageable, totalCount);
   }
-  
+
 }

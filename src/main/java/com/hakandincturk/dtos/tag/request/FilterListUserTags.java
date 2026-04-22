@@ -1,4 +1,4 @@
-package com.hakandincturk.dtos.category.request;
+package com.hakandincturk.dtos.tag.request;
 
 import java.time.LocalDate;
 
@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FilterListUserCategories extends SortablePageRequest {
+public class FilterListUserTags extends SortablePageRequest {
   private String name;
   private LocalDate createdStartDate;
   private LocalDate createdEndDate;

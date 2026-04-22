@@ -12,37 +12,37 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hakandincturk.core.enums.TransactionTypes;
-import com.hakandincturk.core.enums.sort.CategoryTransactionColumn;
+import com.hakandincturk.core.enums.sort.TagTransactionColumn;
 import com.hakandincturk.core.enums.sort.TransactionSortColumn;
 import com.hakandincturk.core.events.TransactionCreatedEvent;
-import com.hakandincturk.core.specs.CategoryTransactionFilterSpecification;
+import com.hakandincturk.core.specs.TagTransactionFilterSpecification;
 import com.hakandincturk.core.specs.TransactionSpecification;
-import com.hakandincturk.dtos.transaction.request.CategoryTransactionsFilterRequestDto;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
+import com.hakandincturk.dtos.transaction.request.TagTransactionsFilterRequestDto;
 import com.hakandincturk.dtos.transaction.request.TransactionFilterRequestDto;
-import com.hakandincturk.dtos.transaction.response.ListCategoryTransactionsResponseDto;
+import com.hakandincturk.dtos.transaction.response.ListTagTransactionsResponseDto;
 import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 import com.hakandincturk.factories.AccountFactory;
-import com.hakandincturk.factories.CategoryFactory;
+import com.hakandincturk.factories.TagFactory;
 import com.hakandincturk.factories.TransactionFactory;
 import com.hakandincturk.mappers.InstallmentMapper;
-import com.hakandincturk.mappers.TransactionCategoryMapper;
+import com.hakandincturk.mappers.TransactionTagMapper;
 import com.hakandincturk.mappers.TransactionMapper;
 import com.hakandincturk.models.Account;
-import com.hakandincturk.models.Category;
+import com.hakandincturk.models.Tag;
 import com.hakandincturk.models.Contact;
 import com.hakandincturk.models.Installment;
 import com.hakandincturk.models.Transaction;
-import com.hakandincturk.models.TransactionCategory;
+import com.hakandincturk.models.TransactionTag;
 import com.hakandincturk.models.Users;
 import com.hakandincturk.repositories.AccountRepository;
-import com.hakandincturk.repositories.CategoryRepository;
+import com.hakandincturk.repositories.TagRepository;
 import com.hakandincturk.repositories.InstallmentRepository;
-import com.hakandincturk.repositories.TransactionCategoryRepository;
+import com.hakandincturk.repositories.TransactionTagRepository;
 import com.hakandincturk.repositories.TransactionRepository;
 import com.hakandincturk.services.abstracts.TransactionService;
-import com.hakandincturk.services.rules.CategoryRules;
+import com.hakandincturk.services.rules.TagRules;
 import com.hakandincturk.services.rules.TransactionRules;
 import com.hakandincturk.utils.PaginationUtils;
 
@@ -54,23 +54,23 @@ public class TransactionServiceImpl implements TransactionService {
 
   // Repositories
   private final AccountRepository accountRepository;
-  private final CategoryRepository categoryRepository;
+  private final TagRepository tagRepository;
   private final TransactionRepository transactionRepository;
   private final InstallmentRepository installmentRepository;
-  private final TransactionCategoryRepository transactionCategoryRepository;
+  private final TransactionTagRepository transactionTagRepository;
 
   // Mappers
   private final TransactionMapper transactionMapper;
   private final InstallmentMapper installmentMapper;
-  private final TransactionCategoryMapper transactionCategoryMapper;
+  private final TransactionTagMapper transactionTagMapper;
 
   // Factories
   private final TransactionFactory transactionFactory;
-  private final CategoryFactory categoryFactory;
+  private final TagFactory tagFactory;
   private final AccountFactory accountFactory;
 
   // Rules
-  private final CategoryRules categoryRules;
+  private final TagRules tagRules;
   private final TransactionRules transactionRules;
 
   private final ApplicationEventPublisher eventPublisher;
@@ -84,19 +84,19 @@ public class TransactionServiceImpl implements TransactionService {
     Users activeUser = transactionRules.getValidatedUser(userId);
     Account account = transactionRules.getValidatedAccount(userId, body.getAccountId());
     Contact contact = transactionRules.getValidatedContact(userId, body.getContactId());
-    
-    List<Category> categories = new ArrayList<>();
-    if(body.getCategory().getCategoryIds().size() > 0){
-      List<Category> dbCategories = categoryRules.checkAllIdsAndGet(body.getCategory().getCategoryIds());
-      categories.addAll(dbCategories);
+
+    List<Tag> tags = new ArrayList<>();
+    if(body.getTag().getTagIds().size() > 0){
+      List<Tag> dbTags = tagRules.checkAllIdsAndGet(body.getTag().getTagIds());
+      tags.addAll(dbTags);
     }
 
-    List<Category> newCategories = body.getCategory().getNewCategories().stream().map(categoryName -> categoryFactory.createCategory(categoryName, activeUser)).toList();
-    categoryRepository.saveAll(newCategories);
-    categories.addAll(newCategories);
-    
+    List<Tag> newTags = body.getTag().getNewTags().stream().map(tagName -> tagFactory.createTag(tagName, activeUser)).toList();
+    tagRepository.saveAll(newTags);
+    tags.addAll(newTags);
 
-    Transaction newTransaction = transactionFactory.createTransaction(body, activeUser, account, contact, categories);    
+
+    Transaction newTransaction = transactionFactory.createTransaction(body, activeUser, account, contact, tags);
     transactionRepository.save(newTransaction);
 
     if(newTransaction.getType().equals(TransactionTypes.DEBT)) {
@@ -128,7 +128,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     transactionRepository.save(transaction);
   }
-  
+
   @Override
   public List<ListInstallments> listTransactionInstallments(Long userId, Long transactionId) {
     Transaction transaction = transactionRules.checkUserTransactionExistAndGet(userId, transactionId);
@@ -142,13 +142,13 @@ public class TransactionServiceImpl implements TransactionService {
   }
 
   @Override
-  public Page<ListCategoryTransactionsResponseDto> listCategoryTransacions(Long userId, Long categoryId, CategoryTransactionsFilterRequestDto pageData) {
-    categoryRules.checkCategoryExistAndGet(categoryId);
-    
-    Specification<TransactionCategory> specs = CategoryTransactionFilterSpecification.filter(userId, categoryId, pageData);
-    Pageable pageable = PaginationUtils.toPageable(pageData, CategoryTransactionColumn.class);
-    Page<TransactionCategory> dbTransactionCategories = transactionCategoryRepository.findAll(specs, pageable);
+  public Page<ListTagTransactionsResponseDto> listTagTransactions(Long userId, Long tagId, TagTransactionsFilterRequestDto pageData) {
+    tagRules.checkTagExistAndGet(tagId);
 
-    return dbTransactionCategories.map(transactionCategoryMapper::toListCategoryTransactionsResponseDto);
+    Specification<TransactionTag> specs = TagTransactionFilterSpecification.filter(userId, tagId, pageData);
+    Pageable pageable = PaginationUtils.toPageable(pageData, TagTransactionColumn.class);
+    Page<TransactionTag> dbTransactionTags = transactionTagRepository.findAll(specs, pageable);
+
+    return dbTransactionTags.map(transactionTagMapper::toListTagTransactionsResponseDto);
   }
 }

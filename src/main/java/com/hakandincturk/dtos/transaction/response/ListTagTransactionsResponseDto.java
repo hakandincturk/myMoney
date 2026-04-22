@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ListCategoryTransactionsResponseDto {
+public class ListTagTransactionsResponseDto {
   private Long id;
   private String name;
   private String accountName;
@@ -19,5 +19,5 @@ public class ListCategoryTransactionsResponseDto {
   private String status;
   private BigDecimal totalAmount;
   private BigDecimal paidAmount;
-  private int totalInstallment; 
+  private int totalInstallment;
 }

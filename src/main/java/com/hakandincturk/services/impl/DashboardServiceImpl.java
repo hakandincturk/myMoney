@@ -16,15 +16,15 @@ import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
 import com.hakandincturk.core.enums.AccountTypes;
-import com.hakandincturk.core.enums.DashboardCategorySummarySumMode;
-import com.hakandincturk.core.enums.DashboardCategorySummaryTypes;
+import com.hakandincturk.core.enums.DashboardTagSummarySumMode;
+import com.hakandincturk.core.enums.DashboardTagSummaryTypes;
 import com.hakandincturk.core.enums.MonthlySummeryTypes;
 import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.core.enums.TransactionTypes;
 import com.hakandincturk.dtos.dashboard.response.MonthlyTrendResponseDto;
-import com.hakandincturk.dtos.dashboard.request.CategorySummaryRequestDto;
-import com.hakandincturk.dtos.dashboard.response.CategorySummaryDataDto;
-import com.hakandincturk.dtos.dashboard.response.CategorySummaryResponseDto;
+import com.hakandincturk.dtos.dashboard.request.TagSummaryRequestDto;
+import com.hakandincturk.dtos.dashboard.response.TagSummaryDataDto;
+import com.hakandincturk.dtos.dashboard.response.TagSummaryResponseDto;
 import com.hakandincturk.dtos.dashboard.response.IncomingInstallmentsDataDto;
 import com.hakandincturk.dtos.dashboard.response.IncomingInstallmentsResponseDto;
 import com.hakandincturk.dtos.dashboard.response.LastTransactionDataDto;
@@ -34,11 +34,11 @@ import com.hakandincturk.dtos.dashboard.response.QuickViewIncomeAndExpenseDetail
 import com.hakandincturk.dtos.dashboard.response.QuickViewResponseDto;
 import com.hakandincturk.mappers.InstallmentMapper;
 import com.hakandincturk.mappers.TransactionMapper;
-import com.hakandincturk.models.Category;
+import com.hakandincturk.models.Tag;
 import com.hakandincturk.models.Installment;
 import com.hakandincturk.models.MonthlySummary;
 import com.hakandincturk.models.Transaction;
-import com.hakandincturk.models.TransactionCategory;
+import com.hakandincturk.models.TransactionTag;
 import com.hakandincturk.repositories.AccountRepository;
 import com.hakandincturk.repositories.InstallmentRepository;
 import com.hakandincturk.repositories.MonthlySummaryRepository;
@@ -118,7 +118,7 @@ public class DashboardServiceImpl implements DashboardService {
         BigDecimal incomeDiffrence = totalIncome.subtract(totalPrevIncome);
         BigDecimal incomeChangeRate = incomeDiffrence.signum() == 0 || totalPrevIncome.signum() == 0 ? ZERO : incomeDiffrence.divide(totalPrevIncome, 2, RoundingMode.HALF_EVEN).multiply(BigDecimal.valueOf(100));;
         incomeDetail.setLastMonthChangeRate(incomeChangeRate.doubleValue());
-        
+
         // ((gecen ay gider - bu ay gider)/gecen ay gelir)*100
         BigDecimal expenseDiffrence = totalExpense.subtract(totalPrevMonthExpense);
         BigDecimal expenseChangeRate = expenseDiffrence.signum() == 0 || totalPrevMonthExpense.signum() == 0 ? ZERO : expenseDiffrence.divide(totalPrevMonthExpense, 2, RoundingMode.HALF_EVEN).multiply(BigDecimal.valueOf(100));
@@ -127,11 +127,11 @@ public class DashboardServiceImpl implements DashboardService {
         // expenseDetail.setOccured(prevMonthlyPaymentSummary.getTotalExpense());
       }
     }
-    
+
     BigDecimal totalIncome = incomeDetail.getWaiting().add(incomeDetail.getOccured());
     BigDecimal totalExpense = expenseDetail.getWaiting();
 
-    BigDecimal savingRate = totalIncome.compareTo(BigDecimal.ZERO) == 0 ? 
+    BigDecimal savingRate = totalIncome.compareTo(BigDecimal.ZERO) == 0 ?
       ZERO :
         totalIncome.subtract(totalExpense)
         .divide(totalIncome, 2, RoundingMode.HALF_UP)
@@ -196,49 +196,48 @@ public class DashboardServiceImpl implements DashboardService {
   }
 
   @Override
-  public CategorySummaryResponseDto categorySummary(Long userId, DashboardCategorySummaryTypes type, DashboardCategorySummarySumMode sumMode, CategorySummaryRequestDto body) {
+  public TagSummaryResponseDto tagSummary(Long userId, DashboardTagSummaryTypes type, DashboardTagSummarySumMode sumMode, TagSummaryRequestDto body) {
     LocalDate currentDate = LocalDate.now();
     body.setStartDate(body.getStartDate() == null ? currentDate.withDayOfMonth(1) : body.getStartDate());
     body.setEndDate(body.getEndDate() == null ? currentDate.with(lastDayOfMonth()) : body.getEndDate());
 
-    dashboardRules.categorySummaryDatesControl(body);
-    dashboardRules.categorySummaryDatesOnly1MonthOr1Year(body);
+    dashboardRules.tagSummaryDatesControl(body);
+    dashboardRules.tagSummaryDatesOnly1MonthOr1Year(body);
 
     List<TransactionTypes> transactionTypes = List.of(TransactionTypes.DEBT, TransactionTypes.PAYMENT);
-    // List<TransactionTypes> transactionTypes = List.of(TransactionTypes.DEBT);
 
     BigDecimal totalAmount = ZERO;
-    Map<String, BigDecimal> categorySummary = new HashMap<>();
+    Map<String, BigDecimal> tagSummary = new HashMap<>();
     List<Installment> installments = installmentRepository.findByTransaction_UserIdAndTransactionTypeInAndDebtDateBetweenAndIsRemovedFalse(userId,  transactionTypes, body.getStartDate(), body.getEndDate());
     for (Installment installment : installments) {
       BigDecimal amount = installment.getAmount();
       totalAmount = totalAmount.add(amount);
 
-      if(installment.getTransaction().getTransactionCategories() == null || installment.getTransaction().getTransactionCategories().isEmpty()){
-        categorySummary.merge("-", amount, BigDecimal::add);
+      if(installment.getTransaction().getTransactionTags() == null || installment.getTransaction().getTransactionTags().isEmpty()){
+        tagSummary.merge("-", amount, BigDecimal::add);
         continue;
       }
 
-      List<Category> installmentCategories = installment.getTransaction().getTransactionCategories().stream().map(TransactionCategory::getCategory).toList();
+      List<Tag> installmentTags = installment.getTransaction().getTransactionTags().stream().map(TransactionTag::getTag).toList();
 
-      if(sumMode == DashboardCategorySummarySumMode.DISTRIBUTED){
-        int categorySize = installmentCategories.size();
-        amount = amount.divide(BigDecimal.valueOf(categorySize), 2, RoundingMode.HALF_UP);
+      if(sumMode == DashboardTagSummarySumMode.DISTRIBUTED){
+        int tagSize = installmentTags.size();
+        amount = amount.divide(BigDecimal.valueOf(tagSize), 2, RoundingMode.HALF_UP);
       }
-      
-      for (Category category : installmentCategories) {
-        categorySummary.merge(category.getName(), amount, BigDecimal::add);
+
+      for (Tag tag : installmentTags) {
+        tagSummary.merge(tag.getName(), amount, BigDecimal::add);
       }
     };
 
     // 0'a bolunme hatasi
     final BigDecimal total = totalAmount.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ONE : totalAmount;
 
-    CategorySummaryResponseDto response = new CategorySummaryResponseDto();
-    List<CategorySummaryDataDto> summaries = new ArrayList<>();
-    categorySummary.forEach((categoryName, amount) -> {
-      CategorySummaryDataDto summaryData = new CategorySummaryDataDto();
-      summaryData.setName(categoryName);
+    TagSummaryResponseDto response = new TagSummaryResponseDto();
+    List<TagSummaryDataDto> summaries = new ArrayList<>();
+    tagSummary.forEach((tagName, amount) -> {
+      TagSummaryDataDto summaryData = new TagSummaryDataDto();
+      summaryData.setName(tagName);
       summaryData.setAmount(amount);
 
       Double percentage = amount.divide(total, 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)).doubleValue();
@@ -246,7 +245,7 @@ public class DashboardServiceImpl implements DashboardService {
 
       summaries.add(summaryData);
     });
-    response.setCategorySummaryDatas(summaries);
+    response.setTagSummaryDatas(summaries);
 
     return response;
   }
@@ -255,7 +254,7 @@ public class DashboardServiceImpl implements DashboardService {
   public LastTransactionsResponseDto lastTransactions(Long userId) {
     List<Transaction> dbTransactions = transactionRepository.findTop10ByUserIdAndIsRemovedFalseOrderByIdDesc(userId);
     List<LastTransactionDataDto> mappedTransactions = dbTransactions.stream().map(transactionMapper::toLastTransactionDataDto).toList();
-    
+
     LastTransactionsResponseDto transactions = new LastTransactionsResponseDto();
     transactions.setLastTransactionData(mappedTransactions);
 

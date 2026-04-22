@@ -6,21 +6,21 @@ import java.util.Locale;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.hakandincturk.dtos.transaction.request.CategoryTransactionsFilterRequestDto;
-import com.hakandincturk.models.TransactionCategory;
+import com.hakandincturk.dtos.transaction.request.TagTransactionsFilterRequestDto;
+import com.hakandincturk.models.TransactionTag;
 
 import jakarta.persistence.criteria.Predicate;
 
-public class CategoryTransactionFilterSpecification {
-  public static Specification<TransactionCategory> filter(Long userId, Long categoryId, CategoryTransactionsFilterRequestDto body){
+public class TagTransactionFilterSpecification {
+  public static Specification<TransactionTag> filter(Long userId, Long tagId, TagTransactionsFilterRequestDto body){
     return (root, query, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
       predicates.add(criteriaBuilder.equal(root.get("isRemoved"), false));
       predicates.add(criteriaBuilder.equal(root.get("transaction").get("isRemoved"), false));
-      predicates.add(criteriaBuilder.equal(root.get("category").get("user").get("id"), userId));
-      predicates.add(criteriaBuilder.equal(root.get("category").get("id"), categoryId));
-      predicates.add(criteriaBuilder.equal(root.get("category").get("isRemoved"), false));
+      predicates.add(criteriaBuilder.equal(root.get("tag").get("user").get("id"), userId));
+      predicates.add(criteriaBuilder.equal(root.get("tag").get("id"), tagId));
+      predicates.add(criteriaBuilder.equal(root.get("tag").get("isRemoved"), false));
 
       // transaction name filter
       if(body.getTransactionName() != null && !body.getTransactionName().isBlank()){
@@ -68,5 +68,5 @@ public class CategoryTransactionFilterSpecification {
 
       return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     };
-  } 
+  }
 }

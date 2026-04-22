@@ -1,12 +1,12 @@
 package com.hakandincturk.core.enums;
 
-public enum DashboardCategorySummaryTypes {
+public enum DashboardTagSummaryTypes {
   MONTHLY(1),
   YEARLY(2);
 
   private final int value;
-  
-  DashboardCategorySummaryTypes(int value) {
+
+  DashboardTagSummaryTypes(int value) {
     this.value = value;
   }
 

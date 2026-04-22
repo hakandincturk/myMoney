@@ -1,7 +1,6 @@
 package com.hakandincturk.dtos.dashboard.response;
 
-import java.util.List;
-
+import java.math.BigDecimal;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +11,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategorySummaryResponseDto {
-  List<CategorySummaryDataDto> categorySummaryDatas;
+public class TagSummaryDataDto {
+  private String name;
+  private BigDecimal amount;
+  private Double percentage;
 }

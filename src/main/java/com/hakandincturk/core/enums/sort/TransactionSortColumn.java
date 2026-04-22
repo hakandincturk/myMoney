@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum TransactionSortColumn implements BaseSortColumn {
   CONTACT_NAME("contact.fullName", "contactName"),
-  CATEGORY_NAME("category.name", "categoryName"),
+  TAG_NAME("tag.name", "tagName"),
   ACCOUNT_NAME("account.name", "accountName"),
   TRANSACTION_DATE("date", "transactionDate"),
   TRANSACTION_AMOUNT("amount", "transactionAmount"),

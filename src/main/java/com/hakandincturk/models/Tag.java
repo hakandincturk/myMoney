@@ -20,12 +20,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Category")
+@Table(name = "Tag")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Category extends BaseEntitiy {
+public class Tag extends BaseEntitiy {
 
   @Column(name = "name")
   private String name;
@@ -35,9 +35,9 @@ public class Category extends BaseEntitiy {
   @JoinColumn(name = "user_id")
   private Users user;
 
-  @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonIgnore
   @SQLRestriction("is_removed = false")
-  private List<TransactionCategory> categoryTransactions;
-  
+  private List<TransactionTag> tagTransactions;
+
 }

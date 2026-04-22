@@ -11,19 +11,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "TransactionCategory")
+@Table(name = "TransactionTag")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionCategory extends BaseEntitiy {
+public class TransactionTag extends BaseEntitiy {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "transaction_id")
   private Transaction transaction;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "category_id")
-  private Category category;
-  
+  @JoinColumn(name = "tag_id")
+  private Tag tag;
+
 }

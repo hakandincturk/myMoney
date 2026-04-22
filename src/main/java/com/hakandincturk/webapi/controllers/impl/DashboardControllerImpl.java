@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hakandincturk.core.enums.DashboardCategorySummarySumMode;
-import com.hakandincturk.core.enums.DashboardCategorySummaryTypes;
+import com.hakandincturk.core.enums.DashboardTagSummarySumMode;
+import com.hakandincturk.core.enums.DashboardTagSummaryTypes;
 import com.hakandincturk.core.payload.ApiResponse;
-import com.hakandincturk.dtos.dashboard.request.CategorySummaryRequestDto;
-import com.hakandincturk.dtos.dashboard.response.CategorySummaryResponseDto;
+import com.hakandincturk.dtos.dashboard.request.TagSummaryRequestDto;
+import com.hakandincturk.dtos.dashboard.response.TagSummaryResponseDto;
 import com.hakandincturk.dtos.dashboard.response.IncomingInstallmentsResponseDto;
 import com.hakandincturk.dtos.dashboard.response.LastTransactionsResponseDto;
 import com.hakandincturk.dtos.dashboard.response.MonthlyTrendResponseDto;
@@ -49,7 +49,7 @@ public class DashboardControllerImpl extends BaseController implements Dashboard
       return error("Kullanıcı verilerine ulaşılamadı");
     }
   }
-  
+
   @Override
   @GetMapping(value = "/monthly-trend")
   @Operation(summary = "Monthly Trend", description = "Ana sayfa gelir/gider trendi grafigi verilerini getirir")
@@ -65,13 +65,13 @@ public class DashboardControllerImpl extends BaseController implements Dashboard
   }
 
   @Override
-  @PostMapping(value = "/category-summary")
-  @Operation(summary = "Category Summary", description = "Ana sayfada harcamalari kategorisel olarak getirir")
-  public ApiResponse<CategorySummaryResponseDto> categorySummary(@RequestParam(value = "type") DashboardCategorySummaryTypes type, DashboardCategorySummarySumMode sumMode, @Valid @RequestBody CategorySummaryRequestDto body) {
+  @PostMapping(value = "/tag-summary")
+  @Operation(summary = "Tag Summary", description = "Ana sayfada harcamalari etiket bazında getirir")
+  public ApiResponse<TagSummaryResponseDto> tagSummary(@RequestParam(value = "type") DashboardTagSummaryTypes type, DashboardTagSummarySumMode sumMode, @Valid @RequestBody TagSummaryRequestDto body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
-      return success("Ana sayfa kategorisel harcamaları kategorisel olarak getirildi", dashboardService.categorySummary(userId, type, sumMode, body));
+      return success("Ana sayfa etiket bazlı harcamalar getirildi", dashboardService.tagSummary(userId, type, sumMode, body));
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

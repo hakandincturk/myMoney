@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryTransactionsFilterRequestDto extends SortablePageRequest {
+public class TagTransactionsFilterRequestDto extends SortablePageRequest {
   private String transactionName;
   private List<Long> accountIds;
   private List<TransactionTypes> types;

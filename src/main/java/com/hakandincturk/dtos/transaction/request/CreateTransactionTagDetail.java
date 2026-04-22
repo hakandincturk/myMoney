@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateTransactionCategoryDetail {
-  private List<Long> categoryIds;
-  private List<String> newCategories;
+public class CreateTransactionTagDetail {
+  private List<Long> tagIds;
+  private List<String> newTags;
 }

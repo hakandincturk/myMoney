@@ -6,13 +6,13 @@ import java.util.Locale;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import com.hakandincturk.dtos.category.request.FilterListUserCategories;
-import com.hakandincturk.models.Category;
+import com.hakandincturk.dtos.tag.request.FilterListUserTags;
+import com.hakandincturk.models.Tag;
 
 import jakarta.persistence.criteria.Predicate;
 
-public class CategorySpecification {
-  public static Specification<Category> filter(Long userId, FilterListUserCategories body){
+public class TagSpecification {
+  public static Specification<Tag> filter(Long userId, FilterListUserTags body){
     return (root, query, criteriaBuilder) -> {
       List<Predicate> predicates = new ArrayList<>();
 
@@ -33,7 +33,7 @@ public class CategorySpecification {
       else if(body.getCreatedStartDate() == null && body.getCreatedEndDate() != null){
         predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdAt"), body.getCreatedEndDate()));
       }
-      
+
       return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     };
   }

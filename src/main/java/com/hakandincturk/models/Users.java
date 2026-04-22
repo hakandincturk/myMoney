@@ -38,7 +38,7 @@ public class Users extends BaseEntitiy implements UserDetails {
   private String phone;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Category> categories;
+  private List<Tag> tags;
 
   @Override
   public String getUsername() {

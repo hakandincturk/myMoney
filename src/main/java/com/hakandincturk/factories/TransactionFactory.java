@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
 import com.hakandincturk.models.Account;
-import com.hakandincturk.models.Category;
+import com.hakandincturk.models.Tag;
 import com.hakandincturk.models.Contact;
 import com.hakandincturk.models.Installment;
 import com.hakandincturk.models.Transaction;
-import com.hakandincturk.models.TransactionCategory;
+import com.hakandincturk.models.TransactionTag;
 import com.hakandincturk.models.Users;
 
 @Component
@@ -23,7 +23,7 @@ public class TransactionFactory {
 
   private static final BigDecimal ZERO_AMOUNT = BigDecimal.ZERO;
 
-  public Transaction createTransaction(CreateTransactionRequestDto body, Users user, Account account, Contact contact, List<Category> categories){
+  public Transaction createTransaction(CreateTransactionRequestDto body, Users user, Account account, Contact contact, List<Tag> tags){
     Transaction newTransaction = new Transaction();
     newTransaction.setAccount(account);
     newTransaction.setContact(contact);
@@ -44,9 +44,9 @@ public class TransactionFactory {
       newTransaction.setInstallments(installments);
     }
 
-    if(categories.size() > 0){
-      List<TransactionCategory> newCategories = generateTransactionCategories(newTransaction, categories);
-      newTransaction.setTransactionCategories(newCategories);
+    if(tags.size() > 0){
+      List<TransactionTag> newTags = generateTransactionTags(newTransaction, tags);
+      newTransaction.setTransactionTags(newTags);
     }
 
     return newTransaction;
@@ -69,16 +69,16 @@ public class TransactionFactory {
         installmentDate
       ));
     }
-    
+
     return installments;
   }
 
-  private List<TransactionCategory> generateTransactionCategories(Transaction transaction, List<Category> categories){
-    List<TransactionCategory> transactionCategories = new ArrayList<TransactionCategory>();
-    for (Category category : categories) {
-      transactionCategories.add(new TransactionCategory(transaction, category));
+  private List<TransactionTag> generateTransactionTags(Transaction transaction, List<Tag> tags){
+    List<TransactionTag> transactionTags = new ArrayList<TransactionTag>();
+    for (Tag tag : tags) {
+      transactionTags.add(new TransactionTag(transaction, tag));
     }
 
-    return transactionCategories;
+    return transactionTags;
   }
 }

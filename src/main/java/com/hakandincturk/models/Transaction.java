@@ -35,7 +35,7 @@ public class Transaction extends BaseEntitiy {
 
   @Column(name = "name")
   private String name;
-  
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   @JsonIgnore
@@ -58,7 +58,7 @@ public class Transaction extends BaseEntitiy {
   @Column(name = "status")
   @Enumerated(EnumType.STRING)
   private TransactionStatuses status;
-  
+
   @Column(name = "totalAmount")
   private BigDecimal totalAmount;
 
@@ -81,6 +81,6 @@ public class Transaction extends BaseEntitiy {
   @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonIgnore
   @SQLRestriction("is_removed = false")
-  private List<TransactionCategory> transactionCategories;
+  private List<TransactionTag> transactionTags;
 
 }

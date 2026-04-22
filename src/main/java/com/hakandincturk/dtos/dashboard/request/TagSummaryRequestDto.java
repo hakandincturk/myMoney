@@ -15,7 +15,7 @@ import static java.time.temporal.TemporalAdjusters.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategorySummaryRequestDto {
+public class TagSummaryRequestDto {
 
   @NotNull(message = "Başlangıç tarihi boş olamaz")
   private LocalDate startDate = LocalDate.now().with(firstDayOfMonth());
