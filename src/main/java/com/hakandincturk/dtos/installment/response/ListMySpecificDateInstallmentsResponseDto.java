@@ -19,7 +19,7 @@ public class ListMySpecificDateInstallmentsResponseDto {
   private BigDecimal amount;
   private LocalDate debtDate;
   private int installmentNumber;
-  private String descripton;
+  private String description;
   private boolean isPaid;
   
 }

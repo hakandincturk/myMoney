@@ -166,7 +166,7 @@ Users ─────────────┬──── 1:N ────→
                    │                      └──── 1:N ──→ Installment
                    │                                    (id, installmentNumber,
                    │                                     amount, isPaid, paidDate,
-                   │                                     debtDate, descripton)
+                   │                                     debtDate, description)
                    │
                    ├──── 1:N ────→ Contact
                    │                (id, fullName, note)

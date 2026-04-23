@@ -44,7 +44,8 @@ public class InstallmentServiceImpl implements InstallmentService {
   private final ApplicationEventPublisher eventPublisher;
 
   @Override
-  public Page<ListMySpecificDateInstallmentsResponseDto> listMySpecisifDateInstallments(Long userId, FilterListMyInstallmentRequestDto pageData) {
+  public Page<ListMySpecificDateInstallmentsResponseDto> listMySpecisifDateInstallments(Long userId,
+      FilterListMyInstallmentRequestDto pageData) {
     Pageable pageable = PaginationUtils.toPageable(pageData, InstallmentSortColumn.class);
     Specification<Installment> specs = FilterListMyInstallmentSpecification.filter(userId, pageData);
 
@@ -52,20 +53,18 @@ public class InstallmentServiceImpl implements InstallmentService {
 
     Page<ListMySpecificDateInstallmentsResponseDto> installments = dbInstallments.map(installment -> {
       TransactionDetailDto transactionDetail = new TransactionDetailDto(
-        installment.getTransaction().getId(),
-        installment.getTransaction().getName(),
-        installment.getTransaction().getType()
-      );
+          installment.getTransaction().getId(),
+          installment.getTransaction().getName(),
+          installment.getTransaction().getType());
 
       return new ListMySpecificDateInstallmentsResponseDto(
-        installment.getId(),
-        transactionDetail,
-        installment.getAmount(),
-        installment.getDebtDate(),
-        installment.getInstallmentNumber(),
-        installment.getDescripton(),
-        installment.isPaid()
-      );
+          installment.getId(),
+          transactionDetail,
+          installment.getAmount(),
+          installment.getDebtDate(),
+          installment.getInstallmentNumber(),
+          installment.getDescription(),
+          installment.isPaid());
     });
 
     return installments;
@@ -80,27 +79,28 @@ public class InstallmentServiceImpl implements InstallmentService {
       installment.setPaid(true);
       installment.setPaidDate(installment.getDebtDate());
       installmentRepository.save(installment);
-      
+
       Transaction transaction = installment.getTransaction();
-  
+
       BigDecimal totalPaidAmount = installment.getTransaction().getPaidAmount().add(installment.getAmount());
-      TransactionStatuses transactionStatuses = transaction.getTotalAmount().equals(totalPaidAmount) ? TransactionStatuses.PAID : TransactionStatuses.PARTIAL;
-  
+      TransactionStatuses transactionStatuses = transaction.getTotalAmount().equals(totalPaidAmount)
+          ? TransactionStatuses.PAID
+          : TransactionStatuses.PARTIAL;
+
       transaction.setPaidAmount(totalPaidAmount);
       transaction.setStatus(transactionStatuses);
       transactionRepository.save(transaction);
-  
-      Account account = accountFactory.reCalculateBalanceOnPayment(transaction.getAccount(), transaction.getType(), installment.getAmount());
+
+      Account account = accountFactory.reCalculateBalanceOnPayment(transaction.getAccount(), transaction.getType(),
+          installment.getAmount());
       accountRepository.save(account);
     }
 
     eventPublisher.publishEvent(
-      new InstallmentsPaidEvent(
-        installments.get(0).getTransaction().getUser(),
-        installments,
-        body.getPaidDate()
-      )
-    );
+        new InstallmentsPaidEvent(
+          installments.get(0).getTransaction().getUser(),
+          installments,
+          body.getPaidDate()));
   }
-  
+
 }

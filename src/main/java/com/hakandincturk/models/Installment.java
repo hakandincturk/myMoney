@@ -42,7 +42,7 @@ public class Installment extends BaseEntitiy {
   private LocalDate paidDate;
 
   @Column(name = "description", nullable = true)
-  private String descripton;
+  private String description;
 
   @Column(name = "debtDate")
   private LocalDate debtDate;
