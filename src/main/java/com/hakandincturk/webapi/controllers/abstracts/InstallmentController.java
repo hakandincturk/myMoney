@@ -4,9 +4,11 @@ import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.installment.request.FilterListMyInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
+import com.hakandincturk.dtos.installment.request.UpdateInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.response.ListMySpecificDateInstallmentsResponseDto;
 
 public interface InstallmentController {
   ApiResponse<PagedResponse<ListMySpecificDateInstallmentsResponseDto>> listMySpecisifDateInstallments(FilterListMyInstallmentRequestDto pageData);
   ApiResponse<?> payInstallment(PayInstallmentRequestDto body);
+  ApiResponse<?> updateInstallment(Long installmentId, UpdateInstallmentRequestDto body);
 }

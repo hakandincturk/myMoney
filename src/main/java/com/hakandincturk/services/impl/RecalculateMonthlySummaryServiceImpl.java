@@ -87,6 +87,18 @@ public class RecalculateMonthlySummaryServiceImpl implements RecalculateMonthlyS
   }
 
   /**
+   * Taksit güncellendikten sonra ilgili ayın özetini tekrar hesaplar
+   * @param user Kullanıcı
+   * @param installment Güncellenen installment
+  */
+  @Override
+  public void reCalculateAfterInstallmentUpdate(Users user, Installment installment){
+    LocalDate effectedDate = installment.getDebtDate().withDayOfMonth(1);
+    this.clearOldMonthlySummary(user, effectedDate.getYear(), effectedDate.getMonthValue());
+    eventPublisher.publishEvent(new InstallmentPaidEvent(user, effectedDate.getYear(), effectedDate.getMonthValue()));
+  }
+
+  /**
    * Belirtilen kullanıcının o ay ve yıldaki aylık özeti siler
    * @param user Aylık özeti silinecek olan kullanıcı
    * @param year Silinecek yıl

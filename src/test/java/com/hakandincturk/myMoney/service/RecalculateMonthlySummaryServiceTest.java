@@ -152,4 +152,42 @@ class RecalculateMonthlySummaryServiceTest {
 
     verify(monthlySummaryRepository).deleteAll(List.of(existingSummary));
   }
+
+  @Test
+  @DisplayName("Taksit güncellendikten sonra ilgili ayın özeti yeniden hesaplanmalı")
+  void reCalculateAfterInstallmentUpdate_shouldRecalculateAffectedMonth() {
+    Users user = new Users();
+    user.setId(1L);
+
+    Installment installment = new Installment();
+    installment.setDebtDate(LocalDate.of(2025, 8, 15));
+
+    when(monthlySummaryRepository.findByUser_IdAndYearAndMonthAndIsRemovedFalse(1L, 2025, 8))
+        .thenReturn(List.of());
+
+    service.reCalculateAfterInstallmentUpdate(user, installment);
+
+    verify(monthlySummaryRepository).deleteAll(any());
+    verify(eventPublisher).publishEvent(any(InstallmentPaidEvent.class));
+  }
+
+  @Test
+  @DisplayName("Taksit güncellendikten sonra mevcut aylık özet temizlenmeli")
+  void reCalculateAfterInstallmentUpdate_shouldClearExistingSummary() {
+    Users user = new Users();
+    user.setId(1L);
+
+    MonthlySummary existingSummary = new MonthlySummary();
+    existingSummary.setId(5L);
+
+    Installment installment = new Installment();
+    installment.setDebtDate(LocalDate.of(2025, 3, 10));
+
+    when(monthlySummaryRepository.findByUser_IdAndYearAndMonthAndIsRemovedFalse(1L, 2025, 3))
+        .thenReturn(List.of(existingSummary));
+
+    service.reCalculateAfterInstallmentUpdate(user, installment);
+
+    verify(monthlySummaryRepository).deleteAll(List.of(existingSummary));
+  }
 }

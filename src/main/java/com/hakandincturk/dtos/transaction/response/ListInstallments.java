@@ -3,6 +3,8 @@ package com.hakandincturk.dtos.transaction.response;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import com.hakandincturk.core.enums.InstallmentStatuses;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,4 +21,5 @@ public class ListInstallments {
   private int installmentNumber;
   private String description;
   private boolean isPaid;
+  private InstallmentStatuses status;
 }

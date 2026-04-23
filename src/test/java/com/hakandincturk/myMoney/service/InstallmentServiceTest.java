@@ -16,10 +16,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
+import com.hakandincturk.core.enums.InstallmentStatuses;
 import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.core.enums.TransactionTypes;
+import com.hakandincturk.core.events.InstallmentUpdatedEvent;
 import com.hakandincturk.core.events.InstallmentsPaidEvent;
 import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
+import com.hakandincturk.dtos.installment.request.UpdateInstallmentRequestDto;
 import com.hakandincturk.factories.AccountFactory;
 import com.hakandincturk.models.Account;
 import com.hakandincturk.models.Installment;
@@ -175,5 +178,186 @@ class InstallmentServiceTest {
     verify(installmentRepository, times(2)).save(any(Installment.class));
     verify(transactionRepository, times(2)).save(transaction);
     verify(accountRepository, times(2)).save(account);
+  }
+
+  // --- updateInstallment tests ---
+
+  private Transaction createTransactionWithInstallments(Users user, BigDecimal... amounts) {
+    Transaction transaction = new Transaction();
+    transaction.setId(100L);
+    transaction.setType(TransactionTypes.DEBT);
+    transaction.setUser(user);
+    transaction.setTotalAmount(BigDecimal.ZERO);
+    transaction.setPaidAmount(BigDecimal.ZERO);
+
+    List<Installment> installments = new java.util.ArrayList<>();
+    for (int i = 0; i < amounts.length; i++) {
+      Installment inst = new Installment();
+      inst.setId((long) (i + 1));
+      inst.setAmount(amounts[i]);
+      inst.setPaid(false);
+      inst.setRemoved(false);
+      inst.setStatus(InstallmentStatuses.ACTIVE);
+      inst.setDebtDate(LocalDate.of(2025, 6 + i, 15));
+      inst.setTransaction(transaction);
+      installments.add(inst);
+    }
+    transaction.setInstallments(installments);
+
+    BigDecimal total = java.util.Arrays.stream(amounts).reduce(BigDecimal.ZERO, BigDecimal::add);
+    transaction.setTotalAmount(total);
+
+    return transaction;
+  }
+
+  @Test
+  @DisplayName("Taksit tutarı güncellendiğinde transaction totalAmount yeniden hesaplanmalı")
+  void updateInstallment_shouldRecalculateTotalAmount_whenAmountChanged() {
+    Long userId = 1L;
+    Users user = new Users();
+    user.setId(userId);
+
+    Transaction transaction = createTransactionWithInstallments(user,
+        BigDecimal.valueOf(1000), BigDecimal.valueOf(1000), BigDecimal.valueOf(1000));
+
+    Installment targetInstallment = transaction.getInstallments().get(1);
+
+    UpdateInstallmentRequestDto body = new UpdateInstallmentRequestDto(BigDecimal.valueOf(800), null);
+
+    when(installmentRules.checkUserSingleInstallmentExistAndGet(userId, 2L))
+        .thenReturn(targetInstallment);
+
+    installmentService.updateInstallment(userId, 2L, body);
+
+    assertEquals(BigDecimal.valueOf(800), targetInstallment.getAmount());
+    assertEquals(BigDecimal.valueOf(2800), transaction.getTotalAmount());
+    verify(installmentRepository).save(targetInstallment);
+    verify(transactionRepository).save(transaction);
+    verify(eventPublisher).publishEvent(any(InstallmentUpdatedEvent.class));
+  }
+
+  @Test
+  @DisplayName("Taksit SKIPPED yapıldığında transaction totalAmount SKIPPED hariç hesaplanmalı")
+  void updateInstallment_shouldExcludeSkippedFromTotalAmount() {
+    Long userId = 1L;
+    Users user = new Users();
+    user.setId(userId);
+
+    Transaction transaction = createTransactionWithInstallments(user,
+        BigDecimal.valueOf(1000), BigDecimal.valueOf(1000), BigDecimal.valueOf(1000));
+
+    Installment targetInstallment = transaction.getInstallments().get(1);
+
+    UpdateInstallmentRequestDto body = new UpdateInstallmentRequestDto(null, InstallmentStatuses.SKIPPED);
+
+    when(installmentRules.checkUserSingleInstallmentExistAndGet(userId, 2L))
+        .thenReturn(targetInstallment);
+
+    installmentService.updateInstallment(userId, 2L, body);
+
+    assertEquals(InstallmentStatuses.SKIPPED, targetInstallment.getStatus());
+    assertEquals(BigDecimal.valueOf(2000), transaction.getTotalAmount());
+    assertEquals(TransactionStatuses.PENDING, transaction.getStatus());
+    verify(eventPublisher).publishEvent(any(InstallmentUpdatedEvent.class));
+  }
+
+  @Test
+  @DisplayName("SKIPPED taksit ACTIVE yapıldığında transaction totalAmount tekrar artmalı")
+  void updateInstallment_shouldIncludeReactivatedInTotalAmount() {
+    Long userId = 1L;
+    Users user = new Users();
+    user.setId(userId);
+
+    Transaction transaction = createTransactionWithInstallments(user,
+        BigDecimal.valueOf(1000), BigDecimal.valueOf(1000), BigDecimal.valueOf(1000));
+
+    Installment targetInstallment = transaction.getInstallments().get(1);
+    targetInstallment.setStatus(InstallmentStatuses.SKIPPED);
+
+    UpdateInstallmentRequestDto body = new UpdateInstallmentRequestDto(null, InstallmentStatuses.ACTIVE);
+
+    when(installmentRules.checkUserSingleInstallmentExistAndGet(userId, 2L))
+        .thenReturn(targetInstallment);
+
+    installmentService.updateInstallment(userId, 2L, body);
+
+    assertEquals(InstallmentStatuses.ACTIVE, targetInstallment.getStatus());
+    assertEquals(BigDecimal.valueOf(3000), transaction.getTotalAmount());
+  }
+
+  @Test
+  @DisplayName("Ödenmiş taksitler varken SKIPPED yapılınca transaction status doğru hesaplanmalı")
+  void updateInstallment_shouldCalculateCorrectStatus_whenSomePaidAndOneSkipped() {
+    Long userId = 1L;
+    Users user = new Users();
+    user.setId(userId);
+
+    Transaction transaction = createTransactionWithInstallments(user,
+        BigDecimal.valueOf(1000), BigDecimal.valueOf(1000), BigDecimal.valueOf(1000));
+
+    transaction.getInstallments().get(0).setPaid(true);
+
+    Installment targetInstallment = transaction.getInstallments().get(1);
+
+    UpdateInstallmentRequestDto body = new UpdateInstallmentRequestDto(null, InstallmentStatuses.SKIPPED);
+
+    when(installmentRules.checkUserSingleInstallmentExistAndGet(userId, 2L))
+        .thenReturn(targetInstallment);
+
+    installmentService.updateInstallment(userId, 2L, body);
+
+    assertEquals(BigDecimal.valueOf(2000), transaction.getTotalAmount());
+    assertEquals(BigDecimal.valueOf(1000), transaction.getPaidAmount());
+    assertEquals(TransactionStatuses.PARTIAL, transaction.getStatus());
+  }
+
+  @Test
+  @DisplayName("Tüm aktif taksitler ödenmişken kalan taksit SKIPPED yapılınca status PAID olmalı")
+  void updateInstallment_shouldSetStatusPaid_whenAllActiveInstallmentsPaid() {
+    Long userId = 1L;
+    Users user = new Users();
+    user.setId(userId);
+
+    Transaction transaction = createTransactionWithInstallments(user,
+        BigDecimal.valueOf(1000), BigDecimal.valueOf(1000));
+
+    transaction.getInstallments().get(0).setPaid(true);
+
+    Installment targetInstallment = transaction.getInstallments().get(1);
+
+    UpdateInstallmentRequestDto body = new UpdateInstallmentRequestDto(null, InstallmentStatuses.SKIPPED);
+
+    when(installmentRules.checkUserSingleInstallmentExistAndGet(userId, 2L))
+        .thenReturn(targetInstallment);
+
+    installmentService.updateInstallment(userId, 2L, body);
+
+    assertEquals(BigDecimal.valueOf(1000), transaction.getTotalAmount());
+    assertEquals(BigDecimal.valueOf(1000), transaction.getPaidAmount());
+    assertEquals(TransactionStatuses.PAID, transaction.getStatus());
+  }
+
+  @Test
+  @DisplayName("Hem tutar hem status aynı anda güncellenebilmeli")
+  void updateInstallment_shouldUpdateBothAmountAndStatus() {
+    Long userId = 1L;
+    Users user = new Users();
+    user.setId(userId);
+
+    Transaction transaction = createTransactionWithInstallments(user,
+        BigDecimal.valueOf(1000), BigDecimal.valueOf(1000));
+
+    Installment targetInstallment = transaction.getInstallments().get(0);
+
+    UpdateInstallmentRequestDto body = new UpdateInstallmentRequestDto(BigDecimal.valueOf(500), InstallmentStatuses.ACTIVE);
+
+    when(installmentRules.checkUserSingleInstallmentExistAndGet(userId, 1L))
+        .thenReturn(targetInstallment);
+
+    installmentService.updateInstallment(userId, 1L, body);
+
+    assertEquals(BigDecimal.valueOf(500), targetInstallment.getAmount());
+    assertEquals(InstallmentStatuses.ACTIVE, targetInstallment.getStatus());
+    assertEquals(BigDecimal.valueOf(1500), transaction.getTotalAmount());
   }
 }

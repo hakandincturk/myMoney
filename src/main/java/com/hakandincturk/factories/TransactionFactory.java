@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.hakandincturk.core.enums.InstallmentStatuses;
 import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
 import com.hakandincturk.models.Account;
@@ -66,7 +67,8 @@ public class TransactionFactory {
         false,
         null,
         null,
-        installmentDate
+        installmentDate,
+        InstallmentStatuses.ACTIVE
       ));
     }
 

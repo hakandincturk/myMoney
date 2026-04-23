@@ -4,9 +4,11 @@ import org.springframework.data.domain.Page;
 
 import com.hakandincturk.dtos.installment.request.FilterListMyInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
+import com.hakandincturk.dtos.installment.request.UpdateInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.response.ListMySpecificDateInstallmentsResponseDto;
 
 public interface InstallmentService {
   public Page<ListMySpecificDateInstallmentsResponseDto> listMySpecisifDateInstallments(Long userId, FilterListMyInstallmentRequestDto pageData);
   public void payInstallments(Long userId, PayInstallmentRequestDto body);
+  public void updateInstallment(Long userId, Long installmentId, UpdateInstallmentRequestDto body);
 }

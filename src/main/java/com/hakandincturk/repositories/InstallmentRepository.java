@@ -9,10 +9,12 @@ import com.hakandincturk.models.Installment;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
 public interface InstallmentRepository extends JpaRepository<Installment, Long>, JpaSpecificationExecutor<Installment> {
+  Optional<Installment> findByIdAndTransactionUserIdAndIsRemovedFalse(Long id, Long userId);
   List<Installment> findByIdInAndTransactionUserIdAndIsRemovedFalse(List<Long> ids, Long userId);
   List<Installment> findByTransaction_UserIdOrderByDebtDate(Long userId);
   List<Installment> findByTransaction_UserIdAndDebtDateBetweenAndIsRemovedFalse(Long userId, LocalDate starDate, LocalDate endDate);

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.hakandincturk.core.enums.InstallmentStatuses;
 import com.hakandincturk.core.enums.MonthlySummeryTypes;
 import com.hakandincturk.core.enums.TransactionTypes;
 import com.hakandincturk.models.Installment;
@@ -18,18 +19,21 @@ public class MonthlySummeryFactory {
   public MonthlySummary calculateUserMonthlySummaryForSpecificMonthByTransactionDate(Users user, List<Installment> thisMonthInstallments, List<Installment> nextMonthInstallments, int year, int month){
 
     BigDecimal thisMonthIncome = thisMonthInstallments.stream()
+      .filter(this::isActiveInstallment)
       .filter(this::isPaidInstallment)
       .filter(this::isIncomeInstallment)
       .map(Installment::getAmount)
       .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     BigDecimal thisMonthWaitingIncome = thisMonthInstallments.stream()
+      .filter(this::isActiveInstallment)
       .filter(this::isUnpaidInstallment)
       .filter(this::isIncomeInstallment)
       .map(Installment::getAmount)
       .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     BigDecimal thisMonthExpense = thisMonthInstallments.stream()
+      .filter(this::isActiveInstallment)
       .filter(this::isPaidInstallment)
       // .filter(installment -> installment.getTransaction().getType() == TransactionTypes.DEBT)
       .filter(this::isExpenseInstallment)
@@ -37,6 +41,7 @@ public class MonthlySummeryFactory {
       .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     BigDecimal thisMonthWaitingExpense = thisMonthInstallments.stream()
+      .filter(this::isActiveInstallment)
       .filter(this::isUnpaidInstallment)
       // .filter(installment -> installment.getTransaction().getType() == TransactionTypes.DEBT)
       .filter(this::isExpenseInstallment)
@@ -68,22 +73,26 @@ public class MonthlySummeryFactory {
   public MonthlySummary calculateUserMonthlySummaryForSpecificMonthByPaidDate(Users user, List<Installment> installments, int year, int month){
     
     BigDecimal totalIncomeForPaidDate = installments.stream()
+      .filter(this::isActiveInstallment)
       .filter(this::isIncomeInstallment)
       .map(Installment::getAmount)
       .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     BigDecimal totalExpenseForPaidDate = installments.stream()
+      .filter(this::isActiveInstallment)
       .filter(this::isExpenseInstallment)
       .map(Installment::getAmount)
       .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     BigDecimal totalWaitingIncome = installments.stream()
+      .filter(this::isActiveInstallment)
       .filter(this::isUnpaidInstallment)
       .filter(this::isIncomeInstallment)
       .map(Installment::getAmount)
       .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     BigDecimal totalWaitingExpense = installments.stream()
+      .filter(this::isActiveInstallment)
       .filter(this::isUnpaidInstallment)
       .filter(this::isExpenseInstallment)
       .map(Installment::getAmount)
@@ -118,5 +127,9 @@ public class MonthlySummeryFactory {
 
   private boolean isUnpaidInstallment(Installment installment){
     return installment.isPaid() == false;
+  }
+
+  private boolean isActiveInstallment(Installment installment){
+    return installment.getStatus() != InstallmentStatuses.SKIPPED;
   }
 }

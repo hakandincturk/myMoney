@@ -10,4 +10,5 @@ import com.hakandincturk.models.Users;
 public interface RecalculateMonthlySummaryService {
   void reCalculteAfterInstallmentPayment(Users installmentUser, List<Installment> installments, LocalDate paidDate);
   void reCalculateAfterTransactionCreate(Transaction transaction);
+  void reCalculateAfterInstallmentUpdate(Users user, Installment installment);
 }

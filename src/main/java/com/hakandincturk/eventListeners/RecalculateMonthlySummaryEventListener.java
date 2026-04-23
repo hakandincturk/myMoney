@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.hakandincturk.core.events.InstallmentUpdatedEvent;
 import com.hakandincturk.core.events.InstallmentsPaidEvent;
 import com.hakandincturk.core.events.TransactionCreatedEvent;
 import com.hakandincturk.services.abstracts.RecalculateMonthlySummaryService;
@@ -31,5 +32,11 @@ public class RecalculateMonthlySummaryEventListener {
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void handleTransactionCreatedEvent(TransactionCreatedEvent event){
     recalculateMonthlySummaryService.reCalculateAfterTransactionCreate(event.getTransaction());
+  }
+
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void handleInstallmentUpdatedEvent(InstallmentUpdatedEvent event){
+    recalculateMonthlySummaryService.reCalculateAfterInstallmentUpdate(event.getUser(), event.getInstallment());
   }
 }

@@ -9,12 +9,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.hakandincturk.core.enums.InstallmentStatuses;
 import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.core.enums.sort.InstallmentSortColumn;
+import com.hakandincturk.core.events.InstallmentUpdatedEvent;
 import com.hakandincturk.core.events.InstallmentsPaidEvent;
 import com.hakandincturk.core.specs.FilterListMyInstallmentSpecification;
 import com.hakandincturk.dtos.installment.request.FilterListMyInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
+import com.hakandincturk.dtos.installment.request.UpdateInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.response.ListMySpecificDateInstallmentsResponseDto;
 import com.hakandincturk.dtos.installment.response.TransactionDetailDto;
 import com.hakandincturk.factories.AccountFactory;
@@ -58,13 +61,15 @@ public class InstallmentServiceImpl implements InstallmentService {
           installment.getTransaction().getType());
 
       return new ListMySpecificDateInstallmentsResponseDto(
-          installment.getId(),
-          transactionDetail,
-          installment.getAmount(),
-          installment.getDebtDate(),
-          installment.getInstallmentNumber(),
-          installment.getDescription(),
-          installment.isPaid());
+        installment.getId(),
+        transactionDetail,
+        installment.getAmount(),
+        installment.getDebtDate(),
+        installment.getInstallmentNumber(),
+        installment.getDescription(),
+        installment.isPaid(),
+        installment.getStatus()
+      );
     });
 
     return installments;
@@ -101,6 +106,55 @@ public class InstallmentServiceImpl implements InstallmentService {
           installments.get(0).getTransaction().getUser(),
           installments,
           body.getPaidDate()));
+  }
+
+  @Override
+  @Transactional
+  public void updateInstallment(Long userId, Long installmentId, UpdateInstallmentRequestDto body) {
+    Installment installment = installmentRules.checkUserSingleInstallmentExistAndGet(userId, installmentId);
+    installmentRules.checkInstallmentCanBeUpdated(installment, body.getStatus());
+
+    if(body.getAmount() != null){
+      installment.setAmount(body.getAmount());
+    }
+
+    if(body.getStatus() != null){
+      installment.setStatus(body.getStatus());
+    }
+
+    installmentRepository.save(installment);
+
+    Transaction transaction = installment.getTransaction();
+    BigDecimal newTotalAmount = transaction.getInstallments().stream()
+      .filter(i -> !i.isRemoved())
+      .filter(i -> i.getStatus() != InstallmentStatuses.SKIPPED)
+      .map(Installment::getAmount)
+      .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    transaction.setTotalAmount(newTotalAmount);
+
+    BigDecimal paidAmount = transaction.getInstallments().stream()
+      .filter(i -> !i.isRemoved())
+      .filter(i -> i.getStatus() != InstallmentStatuses.SKIPPED)
+      .filter(Installment::isPaid)
+      .map(Installment::getAmount)
+      .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    transaction.setPaidAmount(paidAmount);
+
+    TransactionStatuses transactionStatus;
+    if(paidAmount.compareTo(BigDecimal.ZERO) == 0){
+      transactionStatus = TransactionStatuses.PENDING;
+    } else if(paidAmount.compareTo(newTotalAmount) >= 0){
+      transactionStatus = TransactionStatuses.PAID;
+    } else {
+      transactionStatus = TransactionStatuses.PARTIAL;
+    }
+
+    transaction.setStatus(transactionStatus);
+    transactionRepository.save(transaction);
+
+    eventPublisher.publishEvent(new InstallmentUpdatedEvent(transaction.getUser(), installment));
   }
 
 }

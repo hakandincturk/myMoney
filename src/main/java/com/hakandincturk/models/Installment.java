@@ -4,9 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hakandincturk.core.enums.InstallmentStatuses;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -46,5 +49,9 @@ public class Installment extends BaseEntitiy {
 
   @Column(name = "debtDate")
   private LocalDate debtDate;
-  
+
+  @Column(name = "status", nullable = false)
+  @Enumerated(EnumType.STRING)
+  private InstallmentStatuses status = InstallmentStatuses.ACTIVE;
+
 }

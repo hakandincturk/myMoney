@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.hakandincturk.core.enums.InstallmentStatuses;
+import com.hakandincturk.core.exception.BusinessException;
 import com.hakandincturk.core.exception.NotFoundException;
 import com.hakandincturk.models.Installment;
 import com.hakandincturk.models.Users;
@@ -88,5 +91,82 @@ class InstallmentRulesTest {
 
     assertNull(result);
     verifyNoInteractions(userRules);
+  }
+
+  @Test
+  @DisplayName("Tek taksit mevcut olduğunda döndürülmeli")
+  void checkUserSingleInstallmentExistAndGet_shouldReturnInstallment_whenExists() {
+    Long userId = 1L;
+    Long installmentId = 10L;
+    Installment installment = new Installment();
+    installment.setId(installmentId);
+
+    when(installmentRepository.findByIdAndTransactionUserIdAndIsRemovedFalse(installmentId, userId))
+        .thenReturn(Optional.of(installment));
+
+    Installment result = installmentRules.checkUserSingleInstallmentExistAndGet(userId, installmentId);
+
+    assertNotNull(result);
+    assertEquals(installmentId, result.getId());
+  }
+
+  @Test
+  @DisplayName("Tek taksit bulunamadığında NotFoundException fırlatılmalı")
+  void checkUserSingleInstallmentExistAndGet_shouldThrowNotFoundException_whenNotFound() {
+    Long userId = 1L;
+    Long installmentId = 10L;
+
+    when(installmentRepository.findByIdAndTransactionUserIdAndIsRemovedFalse(installmentId, userId))
+        .thenReturn(Optional.empty());
+
+    NotFoundException exception = assertThrows(NotFoundException.class,
+        () -> installmentRules.checkUserSingleInstallmentExistAndGet(userId, installmentId));
+
+    assertEquals("Taksit bulunamadı", exception.getMessage());
+  }
+
+  @Test
+  @DisplayName("Ödenmiş taksit SKIPPED yapılmak istendiğinde BusinessException fırlatılmalı")
+  void checkInstallmentCanBeUpdated_shouldThrow_whenPaidAndSkipped() {
+    Installment installment = new Installment();
+    installment.setPaid(true);
+
+    BusinessException exception = assertThrows(BusinessException.class,
+        () -> installmentRules.checkInstallmentCanBeUpdated(installment, InstallmentStatuses.SKIPPED));
+
+    assertEquals("Ödenmiş bir taksit ödenmeyecek olarak işaretlenemez", exception.getMessage());
+  }
+
+  @Test
+  @DisplayName("SKIPPED durumdaki taksidin tutarı değiştirilmek istendiğinde BusinessException fırlatılmalı")
+  void checkInstallmentCanBeUpdated_shouldThrow_whenSkippedAndAmountUpdate() {
+    Installment installment = new Installment();
+    installment.setPaid(false);
+    installment.setStatus(InstallmentStatuses.SKIPPED);
+
+    BusinessException exception = assertThrows(BusinessException.class,
+        () -> installmentRules.checkInstallmentCanBeUpdated(installment, null));
+
+    assertEquals("Ödenmeyecek durumdaki bir taksidin tutarı değiştirilemez, önce aktif yapınız", exception.getMessage());
+  }
+
+  @Test
+  @DisplayName("Aktif ve ödenmemiş taksit güncellenebilmeli - hata fırlatmamalı")
+  void checkInstallmentCanBeUpdated_shouldNotThrow_whenActiveAndUnpaid() {
+    Installment installment = new Installment();
+    installment.setPaid(false);
+    installment.setStatus(InstallmentStatuses.ACTIVE);
+
+    assertDoesNotThrow(() -> installmentRules.checkInstallmentCanBeUpdated(installment, InstallmentStatuses.SKIPPED));
+  }
+
+  @Test
+  @DisplayName("SKIPPED taksit ACTIVE yapılabilmeli - hata fırlatmamalı")
+  void checkInstallmentCanBeUpdated_shouldNotThrow_whenSkippedToActive() {
+    Installment installment = new Installment();
+    installment.setPaid(false);
+    installment.setStatus(InstallmentStatuses.SKIPPED);
+
+    assertDoesNotThrow(() -> installmentRules.checkInstallmentCanBeUpdated(installment, InstallmentStatuses.ACTIVE));
   }
 }

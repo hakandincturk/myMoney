@@ -4,6 +4,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +13,7 @@ import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.installment.request.FilterListMyInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
+import com.hakandincturk.dtos.installment.request.UpdateInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.response.ListMySpecificDateInstallmentsResponseDto;
 import com.hakandincturk.security.JwtAuthentication;
 import com.hakandincturk.services.abstracts.InstallmentService;
@@ -52,6 +54,21 @@ public class InstallmentControllerImpl extends BaseController implements Install
       Long userId = jwtAuth.getUserId();
       installmentService.payInstallments(userId, body);
       return success("Aylık taksit ödendi");
+    }
+    else {
+      return error("Kullanıcı verilerine ulaşılamadı");
+    }
+  }
+
+  @Override
+  @PatchMapping(value = "/{installmentId}")
+  @Operation(summary = "Update installment", description = "Taksit tutarını veya durumunu günceller")
+  public ApiResponse<?> updateInstallment(@PathVariable Long installmentId, @RequestBody UpdateInstallmentRequestDto body) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if(auth instanceof JwtAuthentication jwtAuth){
+      Long userId = jwtAuth.getUserId();
+      installmentService.updateInstallment(userId, installmentId, body);
+      return success("Taksit güncellendi");
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

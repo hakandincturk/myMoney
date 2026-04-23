@@ -1,10 +1,10 @@
-package com.hakandincturk.dtos.installment.response;
+package com.hakandincturk.dtos.installment.request;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import com.hakandincturk.core.enums.InstallmentStatuses;
 
+import jakarta.validation.constraints.DecimalMin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,15 +14,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ListMySpecificDateInstallmentsResponseDto {
+public class UpdateInstallmentRequestDto {
 
-  private Long id;
-  private TransactionDetailDto transaction;
+  @DecimalMin(value = "0.01", message = "Taksit tutarı 0'dan büyük olmalıdır")
   private BigDecimal amount;
-  private LocalDate debtDate;
-  private int installmentNumber;
-  private String description;
-  private boolean isPaid;
+
   private InstallmentStatuses status;
 
 }

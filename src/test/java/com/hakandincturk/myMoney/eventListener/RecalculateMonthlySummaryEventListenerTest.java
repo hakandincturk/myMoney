@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.hakandincturk.core.events.InstallmentUpdatedEvent;
 import com.hakandincturk.core.events.InstallmentsPaidEvent;
 import com.hakandincturk.core.events.TransactionCreatedEvent;
 import com.hakandincturk.eventListeners.RecalculateMonthlySummaryEventListener;
@@ -58,5 +59,21 @@ class RecalculateMonthlySummaryEventListenerTest {
     listener.handleTransactionCreatedEvent(event);
 
     verify(recalculateMonthlySummaryService).reCalculateAfterTransactionCreate(transaction);
+  }
+
+  @Test
+  @DisplayName("InstallmentUpdatedEvent alındığında recalculate çağrılmalı")
+  void handleInstallmentUpdatedEvent_shouldCallRecalculate() {
+    Users user = new Users();
+    user.setId(1L);
+
+    Installment installment = new Installment();
+    installment.setId(5L);
+
+    InstallmentUpdatedEvent event = new InstallmentUpdatedEvent(user, installment);
+
+    listener.handleInstallmentUpdatedEvent(event);
+
+    verify(recalculateMonthlySummaryService).reCalculateAfterInstallmentUpdate(user, installment);
   }
 }
