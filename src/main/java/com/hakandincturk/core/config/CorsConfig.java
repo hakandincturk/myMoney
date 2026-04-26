@@ -21,6 +21,7 @@ public class CorsConfig {
 			public void addCorsMappings(@NonNull CorsRegistry registry) {
 				registry.addMapping("/**")
 					.allowedOrigins(
+						"http://127.0.0.1:5174",
 						"http://127.0.0.1:5173",
 						"http://127.0.0.1:4173",
 						"https://hakandincturk-mymoney.tech",
@@ -37,6 +38,7 @@ public class CorsConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(List.of(
+			"http://127.0.0.1:5174",
 			"http://127.0.0.1:5173",
 			"http://127.0.0.1:4173",
 			"https://hakandincturk-mymoney.tech",

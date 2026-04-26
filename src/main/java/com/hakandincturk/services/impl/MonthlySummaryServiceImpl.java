@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.hakandincturk.core.enums.MonthlySummeryTypes;
 import com.hakandincturk.core.enums.TransactionTypes;
 import com.hakandincturk.dtos.monthlySummery.request.BackFillMonthlySummeriesRequest;
 import com.hakandincturk.factories.MonthlySummeryFactory;
@@ -104,14 +106,26 @@ public class MonthlySummaryServiceImpl implements MonthlySummaryService {
 
   @Transactional
   public void saveUserMonthlySummaryForSpecificMonth(Users user, int year, int month){
-    MonthlySummary monthlySummaryByTransactionDate = this.calculateUserMonthlySummaryForSpecificMonthByTransactionDate(user, year, month);
-    MonthlySummary monthlySummaryByPaidDate = this.calculateUserMonthlySummaryForSpecificMonthByPaidDate(user, year, month);
+    MonthlySummary calculatedTransaction = this.calculateUserMonthlySummaryForSpecificMonthByTransactionDate(user, year, month);
+    MonthlySummary calculatedPayment = this.calculateUserMonthlySummaryForSpecificMonthByPaidDate(user, year, month);
 
-    List<MonthlySummary> summaries = new ArrayList<>();
-    summaries.add(monthlySummaryByTransactionDate);
-    summaries.add(monthlySummaryByPaidDate);
+    MonthlySummary transactionSummary = upsertMonthlySummary(user.getId(), year, month, MonthlySummeryTypes.TRANSACTION, calculatedTransaction);
+    MonthlySummary paymentSummary = upsertMonthlySummary(user.getId(), year, month, MonthlySummeryTypes.PAYMENT, calculatedPayment);
 
-    monthlySummaryRepository.saveAll(summaries);
+    monthlySummaryRepository.saveAll(List.of(transactionSummary, paymentSummary));
+  }
+
+  private MonthlySummary upsertMonthlySummary(Long userId, int year, int month, MonthlySummeryTypes type, MonthlySummary calculated) {
+    Optional<MonthlySummary> existing = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndTypeAndIsRemovedFalse(userId, year, month, type);
+    if (existing.isPresent()) {
+      MonthlySummary summary = existing.get();
+      summary.setTotalIncome(calculated.getTotalIncome());
+      summary.setTotalExpense(calculated.getTotalExpense());
+      summary.setTotalWaitingIncome(calculated.getTotalWaitingIncome());
+      summary.setTotalWaitingExpense(calculated.getTotalWaitingExpense());
+      return summary;
+    }
+    return calculated;
   }
 
   @Override
