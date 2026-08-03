@@ -45,6 +45,7 @@ import com.hakandincturk.repositories.MonthlySummaryRepository;
 import com.hakandincturk.repositories.TransactionRepository;
 import com.hakandincturk.services.abstracts.DashboardService;
 import com.hakandincturk.services.rules.DashboardRules;
+import com.hakandincturk.utils.ReportMathUtils;
 import com.hakandincturk.utils.TransactionClassifier;
 
 import static java.time.temporal.TemporalAdjusters.*;
@@ -130,19 +131,15 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     BigDecimal totalIncome = incomeDetail.getWaiting().add(incomeDetail.getOccured());
-    BigDecimal totalExpense = expenseDetail.getWaiting();
-
-    BigDecimal savingRate = totalIncome.compareTo(BigDecimal.ZERO) == 0 ?
-      ZERO :
-        totalIncome.subtract(totalExpense)
-        .divide(totalIncome, 2, RoundingMode.HALF_UP)
-        .multiply(BigDecimal.valueOf(100));
+    // Gerçekleşen gider de hesaba katılır; aksi halde oran şişik çıkar ve rapor ekranıyla çelişir
+    BigDecimal totalExpense = expenseDetail.getWaiting().add(expenseDetail.getOccured());
 
     QuickViewResponseDto quickViewResponse = new QuickViewResponseDto();
     quickViewResponse.setTotalBalance(totalBalance);
     quickViewResponse.setIncome(incomeDetail);
     quickViewResponse.setExpense(expenseDetail);
-    quickViewResponse.setSavingRate(savingRate.doubleValue());
+    // Tasarruf oranı rapor modülüyle aynı formülden gelir
+    quickViewResponse.setSavingRate(ReportMathUtils.savingRate(totalIncome, totalExpense));
 
     List<TransactionStatuses> transactionStatuses = List.of(TransactionStatuses.PARTIAL, TransactionStatuses.PENDING);
     List<TransactionTypes> transactionTypes = List.of(TransactionTypes.DEBT, TransactionTypes.PAYMENT);

@@ -121,6 +121,9 @@ class DashboardServiceTest {
     assertEquals(BigDecimal.valueOf(4000), result.getIncome().getOccured());
     assertEquals(BigDecimal.valueOf(2500), result.getExpense().getOccured());
     assertEquals(5, result.getWaitingInstallments());
+
+    // Tasarruf oranı hem gerçekleşen hem bekleyen gideri kapsar: (6000 - 3500) / 6000 * 100
+    assertEquals(41.67, result.getSavingRate());
   }
 
   @Test
