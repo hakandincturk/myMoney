@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.hakandincturk.core.enums.AccountTypes;
 import com.hakandincturk.core.enums.DashboardTagSummarySumMode;
 import com.hakandincturk.core.enums.DashboardTagSummaryTypes;
+import com.hakandincturk.core.enums.InstallmentStatuses;
 import com.hakandincturk.core.enums.MonthlySummeryTypes;
 import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.core.enums.TransactionTypes;
@@ -43,6 +45,7 @@ import com.hakandincturk.repositories.AccountRepository;
 import com.hakandincturk.repositories.InstallmentRepository;
 import com.hakandincturk.repositories.MonthlySummaryRepository;
 import com.hakandincturk.repositories.TransactionRepository;
+import com.hakandincturk.repositories.projections.InstallmentTagAmountProjection;
 import com.hakandincturk.services.abstracts.DashboardService;
 import com.hakandincturk.services.rules.DashboardRules;
 import com.hakandincturk.utils.ReportMathUtils;
@@ -204,29 +207,46 @@ public class DashboardServiceImpl implements DashboardService {
     // Gider sınıflandırması aylık özet ve rapor modülüyle aynı kaynaktan gelir
     List<TransactionTypes> transactionTypes = TransactionClassifier.EXPENSE_TYPES;
 
+    // Taksit - etiket satırları tek sorguda çekilir; taksit başına lazy etiket yüklemesi (N+1) yok
+    List<InstallmentTagAmountProjection> tagRows = installmentRepository.findInstallmentTagAmounts(
+      userId,
+      transactionTypes,
+      body.getStartDate(),
+      body.getEndDate(),
+      InstallmentStatuses.SKIPPED
+    );
+
+    Map<Long, BigDecimal> amountByInstallment = new LinkedHashMap<>();
+    Map<Long, List<String>> tagNamesByInstallment = new LinkedHashMap<>();
+    for (InstallmentTagAmountProjection row : tagRows) {
+      amountByInstallment.putIfAbsent(row.installmentId(), row.amount());
+      List<String> tagNames = tagNamesByInstallment.computeIfAbsent(row.installmentId(), id -> new ArrayList<>());
+      if(row.tagName() != null && !tagNames.contains(row.tagName())){
+        tagNames.add(row.tagName());
+      }
+    }
+
     BigDecimal totalAmount = ZERO;
     Map<String, BigDecimal> tagSummary = new HashMap<>();
-    List<Installment> installments = installmentRepository.findByTransaction_UserIdAndTransactionTypeInAndDebtDateBetweenAndIsRemovedFalse(userId,  transactionTypes, body.getStartDate(), body.getEndDate());
-    for (Installment installment : installments) {
-      BigDecimal amount = installment.getAmount();
+    for (Map.Entry<Long, BigDecimal> installmentEntry : amountByInstallment.entrySet()) {
+      BigDecimal amount = installmentEntry.getValue();
       totalAmount = totalAmount.add(amount);
 
-      if(installment.getTransaction().getTransactionTags() == null || installment.getTransaction().getTransactionTags().isEmpty()){
+      List<String> installmentTags = tagNamesByInstallment.getOrDefault(installmentEntry.getKey(), List.of());
+      if(installmentTags.isEmpty()){
         tagSummary.merge("-", amount, BigDecimal::add);
         continue;
       }
-
-      List<Tag> installmentTags = installment.getTransaction().getTransactionTags().stream().map(TransactionTag::getTag).toList();
 
       if(sumMode == DashboardTagSummarySumMode.DISTRIBUTED){
         int tagSize = installmentTags.size();
         amount = amount.divide(BigDecimal.valueOf(tagSize), 2, RoundingMode.HALF_UP);
       }
 
-      for (Tag tag : installmentTags) {
-        tagSummary.merge(tag.getName(), amount, BigDecimal::add);
+      for (String tagName : installmentTags) {
+        tagSummary.merge(tagName, amount, BigDecimal::add);
       }
-    };
+    }
 
     // 0'a bolunme hatasi
     final BigDecimal total = totalAmount.compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ONE : totalAmount;

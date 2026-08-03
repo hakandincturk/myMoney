@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.hakandincturk.core.enums.AccountTypes;
 import com.hakandincturk.core.enums.DashboardTagSummarySumMode;
 import com.hakandincturk.core.enums.DashboardTagSummaryTypes;
+import com.hakandincturk.core.enums.InstallmentStatuses;
 import com.hakandincturk.core.enums.MonthlySummeryTypes;
 import com.hakandincturk.core.enums.TransactionTypes;
 import com.hakandincturk.dtos.dashboard.request.TagSummaryRequestDto;
@@ -38,6 +39,7 @@ import com.hakandincturk.repositories.AccountRepository;
 import com.hakandincturk.repositories.InstallmentRepository;
 import com.hakandincturk.repositories.MonthlySummaryRepository;
 import com.hakandincturk.repositories.TransactionRepository;
+import com.hakandincturk.repositories.projections.InstallmentTagAmountProjection;
 import com.hakandincturk.services.impl.DashboardServiceImpl;
 import com.hakandincturk.services.rules.DashboardRules;
 
@@ -189,17 +191,9 @@ class DashboardServiceTest {
         LocalDate.of(2025, 6, 30)
     );
 
-    Transaction transaction = new Transaction();
-    transaction.setType(TransactionTypes.DEBT);
-    transaction.setTransactionTags(List.of());
-
-    Installment installment = new Installment();
-    installment.setAmount(BigDecimal.valueOf(500));
-    installment.setTransaction(transaction);
-
-    when(installmentRepository.findByTransaction_UserIdAndTransactionTypeInAndDebtDateBetweenAndIsRemovedFalse(
-        eq(userId), anyList(), any(LocalDate.class), any(LocalDate.class)))
-        .thenReturn(List.of(installment));
+    when(installmentRepository.findInstallmentTagAmounts(
+        eq(userId), anyList(), any(LocalDate.class), any(LocalDate.class), eq(InstallmentStatuses.SKIPPED)))
+        .thenReturn(List.of(new InstallmentTagAmountProjection(1L, 10L, BigDecimal.valueOf(500), null, null)));
 
     TagSummaryResponseDto result = dashboardService.tagSummary(userId, DashboardTagSummaryTypes.MONTHLY, DashboardTagSummarySumMode.DOUBLE_COUNT, body);
 
@@ -217,27 +211,12 @@ class DashboardServiceTest {
         LocalDate.of(2025, 6, 30)
     );
 
-    Tag tag1 = new Tag();
-    tag1.setName("Yemek");
-    Tag tag2 = new Tag();
-    tag2.setName("Eğlence");
-
-    TransactionTag tt1 = new TransactionTag();
-    tt1.setTag(tag1);
-    TransactionTag tt2 = new TransactionTag();
-    tt2.setTag(tag2);
-
-    Transaction transaction = new Transaction();
-    transaction.setType(TransactionTypes.DEBT);
-    transaction.setTransactionTags(List.of(tt1, tt2));
-
-    Installment installment = new Installment();
-    installment.setAmount(BigDecimal.valueOf(1000));
-    installment.setTransaction(transaction);
-
-    when(installmentRepository.findByTransaction_UserIdAndTransactionTypeInAndDebtDateBetweenAndIsRemovedFalse(
-        eq(userId), anyList(), any(LocalDate.class), any(LocalDate.class)))
-        .thenReturn(List.of(installment));
+    when(installmentRepository.findInstallmentTagAmounts(
+        eq(userId), anyList(), any(LocalDate.class), any(LocalDate.class), eq(InstallmentStatuses.SKIPPED)))
+        .thenReturn(List.of(
+            new InstallmentTagAmountProjection(1L, 10L, BigDecimal.valueOf(1000), 1L, "Yemek"),
+            new InstallmentTagAmountProjection(1L, 10L, BigDecimal.valueOf(1000), 2L, "Eğlence")
+        ));
 
     TagSummaryResponseDto result = dashboardService.tagSummary(userId, DashboardTagSummaryTypes.MONTHLY, DashboardTagSummarySumMode.DISTRIBUTED, body);
 
