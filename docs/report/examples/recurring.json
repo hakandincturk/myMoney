@@ -1,0 +1,169 @@
+{
+    [1m"type"[0m: [1;34mtrue[0m,
+    [1m"message"[0m: [32m"Tekrar eden harcamalar getirildi"[0m,
+    [1m"timestamp"[0m: [32m"2026-08-03T16:51:27.868852"[0m,
+    [1m"data"[0m: {
+        [1m"items"[0m: [
+            {
+                [1m"groupKey"[0m: [32m"TX:5"[0m,
+                [1m"name"[0m: [32m"Buzdolab\u0131"[0m,
+                [1m"kind"[0m: [32m"INSTALLMENT"[0m,
+                [1m"occurrenceCount"[0m: [33m2[0m,
+                [1m"monthsSpan"[0m: [33m2[0m,
+                [1m"averageAmount"[0m: [33m12000.0[0m,
+                [1m"totalAmount"[0m: [33m24000.0[0m,
+                [1m"lastAmount"[0m: [33m12000.0[0m,
+                [1m"lastDate"[0m: [32m"2026-08-15"[0m,
+                [1m"nextExpectedDate"[0m: [32m"2026-08-15"[0m,
+                [1m"amountByMonth"[0m: [
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m3[0m,
+                        [1m"amount"[0m: [33m0.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m4[0m,
+                        [1m"amount"[0m: [33m0.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m5[0m,
+                        [1m"amount"[0m: [33m0.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m6[0m,
+                        [1m"amount"[0m: [33m0.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m7[0m,
+                        [1m"amount"[0m: [33m12000.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m8[0m,
+                        [1m"amount"[0m: [33m12000.0[0m
+                    }
+                ],
+                [1m"tags"[0m: [
+                    {
+                        [1m"id"[0m: [33m2[0m,
+                        [1m"name"[0m: [32m"Ev"[0m
+                    }
+                ],
+                [1m"active"[0m: [1;34mtrue[0m
+            },
+            {
+                [1m"groupKey"[0m: [32m"TX:9"[0m,
+                [1m"name"[0m: [32m"\u0130htiya\u00e7 Kredisi"[0m,
+                [1m"kind"[0m: [32m"INSTALLMENT"[0m,
+                [1m"occurrenceCount"[0m: [33m4[0m,
+                [1m"monthsSpan"[0m: [33m4[0m,
+                [1m"averageAmount"[0m: [33m5000.0[0m,
+                [1m"totalAmount"[0m: [33m20000.0[0m,
+                [1m"lastAmount"[0m: [33m5000.0[0m,
+                [1m"lastDate"[0m: [32m"2026-08-05"[0m,
+                [1m"nextExpectedDate"[0m: [32m"2026-08-05"[0m,
+                [1m"amountByMonth"[0m: [
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m3[0m,
+                        [1m"amount"[0m: [33m0.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m4[0m,
+                        [1m"amount"[0m: [33m0.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m5[0m,
+                        [1m"amount"[0m: [33m5000.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m6[0m,
+                        [1m"amount"[0m: [33m5000.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m7[0m,
+                        [1m"amount"[0m: [33m5000.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m8[0m,
+                        [1m"amount"[0m: [33m5000.0[0m
+                    }
+                ],
+                [1m"tags"[0m: [],
+                [1m"active"[0m: [1;34mtrue[0m
+            },
+            {
+                [1m"groupKey"[0m: [32m"NAME:netflix"[0m,
+                [1m"name"[0m: [32m"Netflix"[0m,
+                [1m"kind"[0m: [32m"REPEATED"[0m,
+                [1m"occurrenceCount"[0m: [33m4[0m,
+                [1m"monthsSpan"[0m: [33m4[0m,
+                [1m"averageAmount"[0m: [33m229.0[0m,
+                [1m"totalAmount"[0m: [33m916.0[0m,
+                [1m"lastAmount"[0m: [33m229.0[0m,
+                [1m"lastDate"[0m: [32m"2026-08-05"[0m,
+                [1m"nextExpectedDate"[0m: [32m"2026-09-04"[0m,
+                [1m"amountByMonth"[0m: [
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m3[0m,
+                        [1m"amount"[0m: [33m0.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m4[0m,
+                        [1m"amount"[0m: [33m0.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m5[0m,
+                        [1m"amount"[0m: [33m229.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m6[0m,
+                        [1m"amount"[0m: [33m229.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m7[0m,
+                        [1m"amount"[0m: [33m229.0[0m
+                    },
+                    {
+                        [1m"year"[0m: [33m2026[0m,
+                        [1m"month"[0m: [33m8[0m,
+                        [1m"amount"[0m: [33m229.0[0m
+                    }
+                ],
+                [1m"tags"[0m: [
+                    {
+                        [1m"id"[0m: [33m3[0m,
+                        [1m"name"[0m: [32m"Abonelik"[0m
+                    }
+                ],
+                [1m"active"[0m: [1;34mtrue[0m
+            }
+        ],
+        [1m"monthlyFixedCost"[0m: [33m17229.0[0m,
+        [1m"fixedCostShareOfIncome"[0m: [33m33.78[0m,
+        [1m"windowStart"[0m: {
+            [1m"year"[0m: [33m2026[0m,
+            [1m"month"[0m: [33m3[0m,
+            [1m"label"[0m: [32m"MARCH"[0m
+        },
+        [1m"windowEnd"[0m: {
+            [1m"year"[0m: [33m2026[0m,
+            [1m"month"[0m: [33m8[0m,
+            [1m"label"[0m: [32m"AUGUST"[0m
+        }
+    }
+}

@@ -1,0 +1,77 @@
+{
+    [1m"type"[0m: [1;34mtrue[0m,
+    [1m"message"[0m: [32m"Rapor \u00f6zeti getirildi"[0m,
+    [1m"timestamp"[0m: [32m"2026-08-03T16:51:27.740238"[0m,
+    [1m"data"[0m: {
+        [1m"previous"[0m: {
+            [1m"year"[0m: [33m2026[0m,
+            [1m"month"[0m: [33m7[0m,
+            [1m"label"[0m: [32m"JULY"[0m,
+            [1m"kind"[0m: [32m"ACTUAL"[0m,
+            [1m"income"[0m: [33m45000.0[0m,
+            [1m"expense"[0m: [33m23499.0[0m,
+            [1m"net"[0m: [33m21501.0[0m,
+            [1m"realizedIncome"[0m: [33m45000.0[0m,
+            [1m"pendingIncome"[0m: [33m0.0[0m,
+            [1m"realizedExpense"[0m: [33m23499.0[0m,
+            [1m"pendingExpense"[0m: [33m0.0[0m,
+            [1m"transactionCount"[0m: [33m5[0m,
+            [1m"installmentCount"[0m: [33m5[0m
+        },
+        [1m"current"[0m: {
+            [1m"year"[0m: [33m2026[0m,
+            [1m"month"[0m: [33m8[0m,
+            [1m"label"[0m: [32m"AUGUST"[0m,
+            [1m"kind"[0m: [32m"PARTIAL"[0m,
+            [1m"income"[0m: [33m51000.0[0m,
+            [1m"expense"[0m: [33m28829.0[0m,
+            [1m"net"[0m: [33m22171.0[0m,
+            [1m"realizedIncome"[0m: [33m48500.0[0m,
+            [1m"pendingIncome"[0m: [33m2500.0[0m,
+            [1m"realizedExpense"[0m: [33m11600.0[0m,
+            [1m"pendingExpense"[0m: [33m17229.0[0m,
+            [1m"transactionCount"[0m: [33m7[0m,
+            [1m"installmentCount"[0m: [33m7[0m
+        },
+        [1m"next"[0m: {
+            [1m"year"[0m: [33m2026[0m,
+            [1m"month"[0m: [33m9[0m,
+            [1m"label"[0m: [32m"SEPTEMBER"[0m,
+            [1m"kind"[0m: [32m"PROJECTED"[0m,
+            [1m"income"[0m: [33m48500.0[0m,
+            [1m"expense"[0m: [33m12000.0[0m,
+            [1m"net"[0m: [33m36500.0[0m,
+            [1m"realizedIncome"[0m: [33m0.0[0m,
+            [1m"pendingIncome"[0m: [33m48500.0[0m,
+            [1m"realizedExpense"[0m: [33m0.0[0m,
+            [1m"pendingExpense"[0m: [33m12000.0[0m,
+            [1m"transactionCount"[0m: [33m2[0m,
+            [1m"installmentCount"[0m: [33m2[0m
+        },
+        [1m"deltaVsPrevious"[0m: {
+            [1m"incomeChangeRate"[0m: [33m13.33[0m,
+            [1m"expenseChangeRate"[0m: [33m22.68[0m,
+            [1m"netChangeAmount"[0m: [33m670.0[0m
+        },
+        [1m"deltaVsNext"[0m: {
+            [1m"incomeChangeRate"[0m: [33m-4.9[0m,
+            [1m"expenseChangeRate"[0m: [33m-58.38[0m,
+            [1m"netChangeAmount"[0m: [33m14329.0[0m
+        },
+        [1m"savingRate"[0m: [33m43.47[0m,
+        [1m"averageDailyExpense"[0m: [33m9609.67[0m,
+        [1m"daysInMonth"[0m: [33m31[0m,
+        [1m"daysElapsed"[0m: [33m3[0m,
+        [1m"projectedMonthEndExpense"[0m: [33m297899.77[0m,
+        [1m"busiestDay"[0m: {
+            [1m"date"[0m: [32m"2026-08-15"[0m,
+            [1m"amount"[0m: [33m12000.0[0m
+        },
+        [1m"topTag"[0m: {
+            [1m"tagId"[0m: [33m2[0m,
+            [1m"name"[0m: [32m"Ev"[0m,
+            [1m"amount"[0m: [33m12000.0[0m,
+            [1m"share"[0m: [33m41.62[0m
+        }
+    }
+}

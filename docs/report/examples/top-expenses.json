@@ -1,0 +1,95 @@
+{
+    [1m"type"[0m: [1;34mtrue[0m,
+    [1m"message"[0m: [32m"Ay\u0131n en b\u00fcy\u00fck kalemleri getirildi"[0m,
+    [1m"timestamp"[0m: [32m"2026-08-03T16:51:27.834962"[0m,
+    [1m"data"[0m: {
+        [1m"items"[0m: [
+            {
+                [1m"transactionId"[0m: [33m5[0m,
+                [1m"installmentId"[0m: [33m6[0m,
+                [1m"name"[0m: [32m"Buzdolab\u0131"[0m,
+                [1m"description"[0m: [32m"Buzdolab\u0131 a\u00e7\u0131klamas\u0131"[0m,
+                [1m"amount"[0m: [33m12000.0[0m,
+                [1m"date"[0m: [32m"2026-08-15"[0m,
+                [1m"accountName"[0m: [32m"Garanti Bonus"[0m,
+                [1m"contactName"[0m: [1;34mnull[0m,
+                [1m"tags"[0m: [
+                    {
+                        [1m"id"[0m: [33m2[0m,
+                        [1m"name"[0m: [32m"Ev"[0m
+                    }
+                ],
+                [1m"installmentNumber"[0m: [33m3[0m,
+                [1m"totalInstallment"[0m: [33m12[0m,
+                [1m"paid"[0m: [1;34mfalse[0m
+            },
+            {
+                [1m"transactionId"[0m: [33m7[0m,
+                [1m"installmentId"[0m: [33m9[0m,
+                [1m"name"[0m: [32m"Market Al\u0131\u015fveri\u015fi"[0m,
+                [1m"description"[0m: [32m"Market Al\u0131\u015fveri\u015fi a\u00e7\u0131klamas\u0131"[0m,
+                [1m"amount"[0m: [33m8400.0[0m,
+                [1m"date"[0m: [32m"2026-08-10"[0m,
+                [1m"accountName"[0m: [32m"Garanti Bonus"[0m,
+                [1m"contactName"[0m: [1;34mnull[0m,
+                [1m"tags"[0m: [
+                    {
+                        [1m"id"[0m: [33m1[0m,
+                        [1m"name"[0m: [32m"Market"[0m
+                    }
+                ],
+                [1m"installmentNumber"[0m: [33m1[0m,
+                [1m"totalInstallment"[0m: [33m1[0m,
+                [1m"paid"[0m: [1;34mtrue[0m
+            },
+            {
+                [1m"transactionId"[0m: [33m9[0m,
+                [1m"installmentId"[0m: [33m14[0m,
+                [1m"name"[0m: [32m"\u0130htiya\u00e7 Kredisi"[0m,
+                [1m"description"[0m: [32m"\u0130htiya\u00e7 Kredisi a\u00e7\u0131klamas\u0131"[0m,
+                [1m"amount"[0m: [33m5000.0[0m,
+                [1m"date"[0m: [32m"2026-08-05"[0m,
+                [1m"accountName"[0m: [32m"Garanti Bonus"[0m,
+                [1m"contactName"[0m: [1;34mnull[0m,
+                [1m"tags"[0m: [],
+                [1m"installmentNumber"[0m: [33m4[0m,
+                [1m"totalInstallment"[0m: [33m12[0m,
+                [1m"paid"[0m: [1;34mfalse[0m
+            },
+            {
+                [1m"transactionId"[0m: [33m8[0m,
+                [1m"installmentId"[0m: [33m10[0m,
+                [1m"name"[0m: [32m"Yak\u0131t"[0m,
+                [1m"description"[0m: [32m"Yak\u0131t a\u00e7\u0131klamas\u0131"[0m,
+                [1m"amount"[0m: [33m3200.0[0m,
+                [1m"date"[0m: [32m"2026-08-12"[0m,
+                [1m"accountName"[0m: [32m"Garanti Bonus"[0m,
+                [1m"contactName"[0m: [1;34mnull[0m,
+                [1m"tags"[0m: [],
+                [1m"installmentNumber"[0m: [33m1[0m,
+                [1m"totalInstallment"[0m: [33m1[0m,
+                [1m"paid"[0m: [1;34mtrue[0m
+            },
+            {
+                [1m"transactionId"[0m: [33m13[0m,
+                [1m"installmentId"[0m: [33m18[0m,
+                [1m"name"[0m: [32m"Netflix"[0m,
+                [1m"description"[0m: [32m"Netflix a\u00e7\u0131klamas\u0131"[0m,
+                [1m"amount"[0m: [33m229.0[0m,
+                [1m"date"[0m: [32m"2026-08-05"[0m,
+                [1m"accountName"[0m: [32m"Garanti Bonus"[0m,
+                [1m"contactName"[0m: [1;34mnull[0m,
+                [1m"tags"[0m: [
+                    {
+                        [1m"id"[0m: [33m3[0m,
+                        [1m"name"[0m: [32m"Abonelik"[0m
+                    }
+                ],
+                [1m"installmentNumber"[0m: [33m1[0m,
+                [1m"totalInstallment"[0m: [33m1[0m,
+                [1m"paid"[0m: [1;34mfalse[0m
+            }
+        ],
+        [1m"periodTotal"[0m: [33m28829.0[0m
+    }
+}

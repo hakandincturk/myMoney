@@ -1,0 +1,3260 @@
+{
+    [1m"openapi"[0m: [32m"3.1.0"[0m,
+    [1m"info"[0m: {
+        [1m"title"[0m: [32m"MyMoney API"[0m,
+        [1m"description"[0m: [32m"MyMoney Application REST API Documentation"[0m,
+        [1m"contact"[0m: {
+            [1m"name"[0m: [32m"Hakan Din\u00e7t\u00fcrk"[0m,
+            [1m"email"[0m: [32m"hakandincturk@example.com"[0m
+        },
+        [1m"version"[0m: [32m"1.0.0"[0m
+    },
+    [1m"servers"[0m: [
+        {
+            [1m"url"[0m: [32m"/"[0m,
+            [1m"description"[0m: [32m"Default Server"[0m
+        }
+    ],
+    [1m"security"[0m: [
+        {
+            [1m"bearerAuth"[0m: []
+        }
+    ],
+    [1m"tags"[0m: [
+        {
+            [1m"name"[0m: [32m"Auth"[0m,
+            [1m"description"[0m: [32m"Kullan\u0131c\u0131 giri\u015f i\u015flemleri"[0m
+        },
+        {
+            [1m"name"[0m: [32m"Contact"[0m,
+            [1m"description"[0m: [32m"Kullan\u0131c\u0131 i\u015flemleri"[0m
+        },
+        {
+            [1m"name"[0m: [32m"Tag"[0m,
+            [1m"description"[0m: [32m"Etiket i\u015flemleri"[0m
+        },
+        {
+            [1m"name"[0m: [32m"Account"[0m,
+            [1m"description"[0m: [32m"Hesap i\u015flemleri"[0m
+        },
+        {
+            [1m"name"[0m: [32m"Transaction"[0m,
+            [1m"description"[0m: [32m"Transaction i\u015flemleri"[0m
+        },
+        {
+            [1m"name"[0m: [32m"Installment"[0m,
+            [1m"description"[0m: [32m"Taksit i\u015flemleri"[0m
+        },
+        {
+            [1m"name"[0m: [32m"Dashboard"[0m,
+            [1m"description"[0m: [32m"Ana sayfa i\u015flemleri"[0m
+        },
+        {
+            [1m"name"[0m: [32m"Report"[0m,
+            [1m"description"[0m: [32m"Rapor i\u015flemleri"[0m
+        }
+    ],
+    [1m"paths"[0m: {
+        [1m"/contact/my/{contactId}"[0m: {
+            [1m"put"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Contact"[0m
+                ],
+                [1m"operationId"[0m: [32m"updateMyAccount"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"contactId"[0m,
+                        [1m"in"[0m: [32m"path"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int64"[0m
+                        }
+                    }
+                ],
+                [1m"requestBody"[0m: {
+                    [1m"content"[0m: {
+                        [1m"application/json"[0m: {
+                            [1m"schema"[0m: {
+                                [1m"$ref"[0m: [32m"#/components/schemas/UpdateMyContactRequestDto"[0m
+                            }
+                        }
+                    },
+                    [1m"required"[0m: [1;34mtrue[0m
+                },
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseObject"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            [1m"delete"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Contact"[0m
+                ],
+                [1m"operationId"[0m: [32m"deleteContact"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"contactId"[0m,
+                        [1m"in"[0m: [32m"path"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int64"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseObject"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/account/my/{accountId}"[0m: {
+            [1m"put"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Account"[0m
+                ],
+                [1m"summary"[0m: [32m"Update my account"[0m,
+                [1m"description"[0m: [32m"Kullan\u0131c\u0131n\u0131n hesap bilgilerini ve bakiyesini g\u00fcnceller"[0m,
+                [1m"operationId"[0m: [32m"updateMyAccount_1"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"accountId"[0m,
+                        [1m"in"[0m: [32m"path"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int64"[0m
+                        }
+                    }
+                ],
+                [1m"requestBody"[0m: {
+                    [1m"content"[0m: {
+                        [1m"application/json"[0m: {
+                            [1m"schema"[0m: {
+                                [1m"$ref"[0m: [32m"#/components/schemas/UpdateAccountRequestDto"[0m
+                            }
+                        }
+                    },
+                    [1m"required"[0m: [1;34mtrue[0m
+                },
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseObject"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/transaction/tag/{tagId}"[0m: {
+            [1m"post"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Transaction"[0m
+                ],
+                [1m"summary"[0m: [32m"List Tag Transactions"[0m,
+                [1m"description"[0m: [32m"Bir etiketin Gelir/Giderlerini listeler"[0m,
+                [1m"operationId"[0m: [32m"listTagTransactions"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"tagId"[0m,
+                        [1m"in"[0m: [32m"path"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int64"[0m
+                        }
+                    }
+                ],
+                [1m"requestBody"[0m: {
+                    [1m"content"[0m: {
+                        [1m"application/json"[0m: {
+                            [1m"schema"[0m: {
+                                [1m"$ref"[0m: [32m"#/components/schemas/TagTransactionsFilterRequestDto"[0m
+                            }
+                        }
+                    },
+                    [1m"required"[0m: [1;34mtrue[0m
+                },
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponsePagedResponseListTagTransactionsResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/transaction/"[0m: {
+            [1m"post"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Transaction"[0m
+                ],
+                [1m"summary"[0m: [32m"Create Transaction and installments"[0m,
+                [1m"description"[0m: [32m"Yeni bor\u00e7 giri\u015fi olu\u015fturulmas\u0131n\u0131 sa\u011flar"[0m,
+                [1m"operationId"[0m: [32m"createTransaction"[0m,
+                [1m"requestBody"[0m: {
+                    [1m"content"[0m: {
+                        [1m"application/json"[0m: {
+                            [1m"schema"[0m: {
+                                [1m"$ref"[0m: [32m"#/components/schemas/CreateTransactionRequestDto"[0m
+                            }
+                        }
+                    },
+                    [1m"required"[0m: [1;34mtrue[0m
+                },
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseObject"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/monthly-summery/backfill/specific-users"[0m: {
+            [1m"post"[0m: {
+                [1m"tags"[0m: [
+                    [32m"monthly-summary-controller-impl"[0m
+                ],
+                [1m"summary"[0m: [32m"Calculate monthly summeries for specific users"[0m,
+                [1m"description"[0m: [32m"Secilen kullanicilar icin aylik ozet hesaplamalarini yapar"[0m,
+                [1m"operationId"[0m: [32m"fillForUsers"[0m,
+                [1m"requestBody"[0m: {
+                    [1m"content"[0m: {
+                        [1m"application/json"[0m: {
+                            [1m"schema"[0m: {
+                                [1m"$ref"[0m: [32m"#/components/schemas/BackFillMonthlySummeriesRequest"[0m
+                            }
+                        }
+                    },
+                    [1m"required"[0m: [1;34mtrue[0m
+                },
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseObject"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/monthly-summery/backfill/all-users"[0m: {
+            [1m"post"[0m: {
+                [1m"tags"[0m: [
+                    [32m"monthly-summary-controller-impl"[0m
+                ],
+                [1m"summary"[0m: [32m"Calculate monthly summeries for all users"[0m,
+                [1m"description"[0m: [32m"Butun kullanicilar icin aylik ozet hesaplamalarini yapar"[0m,
+                [1m"operationId"[0m: [32m"fillForAllUsers"[0m,
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseObject"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/dashboard/tag-summary"[0m: {
+            [1m"post"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Dashboard"[0m
+                ],
+                [1m"summary"[0m: [32m"Tag Summary"[0m,
+                [1m"description"[0m: [32m"Ana sayfada harcamalari etiket baz\u0131nda getirir"[0m,
+                [1m"operationId"[0m: [32m"tagSummary"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"type"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m,
+                            [1m"enum"[0m: [
+                                [32m"MONTHLY"[0m,
+                                [32m"YEARLY"[0m
+                            ]
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"sumMode"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m,
+                            [1m"enum"[0m: [
+                                [32m"DOUBLE_COUNT"[0m,
+                                [32m"DISTRIBUTED"[0m
+                            ]
+                        }
+                    }
+                ],
+                [1m"requestBody"[0m: {
+                    [1m"content"[0m: {
+                        [1m"application/json"[0m: {
+                            [1m"schema"[0m: {
+                                [1m"$ref"[0m: [32m"#/components/schemas/TagSummaryRequestDto"[0m
+                            }
+                        }
+                    },
+                    [1m"required"[0m: [1;34mtrue[0m
+                },
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseTagSummaryResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/contact/my"[0m: {
+            [1m"post"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Contact"[0m
+                ],
+                [1m"summary"[0m: [32m"Create Contact"[0m,
+                [1m"description"[0m: [32m"Kullan\u0131c\u0131n\u0131n yeni ki\u015fi olu\u015fturmas\u0131n\u0131 sa\u011flar"[0m,
+                [1m"operationId"[0m: [32m"createContact"[0m,
+                [1m"requestBody"[0m: {
+                    [1m"content"[0m: {
+                        [1m"application/json"[0m: {
+                            [1m"schema"[0m: {
+                                [1m"$ref"[0m: [32m"#/components/schemas/CreateContactRequestDto"[0m
+                            }
+                        }
+                    },
+                    [1m"required"[0m: [1;34mtrue[0m
+                },
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseObject"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/auth/register"[0m: {
+            [1m"post"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Auth"[0m
+                ],
+                [1m"operationId"[0m: [32m"register"[0m,
+                [1m"requestBody"[0m: {
+                    [1m"content"[0m: {
+                        [1m"application/json"[0m: {
+                            [1m"schema"[0m: {
+                                [1m"$ref"[0m: [32m"#/components/schemas/RegisterRequestDto"[0m
+                            }
+                        }
+                    },
+                    [1m"required"[0m: [1;34mtrue[0m
+                },
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseObject"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/auth/login"[0m: {
+            [1m"post"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Auth"[0m
+                ],
+                [1m"summary"[0m: [32m"Login"[0m,
+                [1m"description"[0m: [32m"Kullan\u0131c\u0131n\u0131n sisteme giri\u015f yapmas\u0131n\u0131 sa\u011flar."[0m,
+                [1m"operationId"[0m: [32m"login"[0m,
+                [1m"requestBody"[0m: {
+                    [1m"content"[0m: {
+                        [1m"application/json"[0m: {
+                            [1m"schema"[0m: {
+                                [1m"$ref"[0m: [32m"#/components/schemas/LoginRequestDto"[0m
+                            }
+                        }
+                    },
+                    [1m"required"[0m: [1;34mtrue[0m
+                },
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseLoginResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/account/my"[0m: {
+            [1m"post"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Account"[0m
+                ],
+                [1m"summary"[0m: [32m"Create Account"[0m,
+                [1m"description"[0m: [32m"Kullan\u0131c\u0131n\u0131n yeni hesap a\u00e7mas\u0131n\u0131 sa\u011flar"[0m,
+                [1m"operationId"[0m: [32m"createAccount"[0m,
+                [1m"requestBody"[0m: {
+                    [1m"content"[0m: {
+                        [1m"application/json"[0m: {
+                            [1m"schema"[0m: {
+                                [1m"$ref"[0m: [32m"#/components/schemas/CreateAccountRequestDto"[0m
+                            }
+                        }
+                    },
+                    [1m"required"[0m: [1;34mtrue[0m
+                },
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseObject"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/installment/{installmentId}"[0m: {
+            [1m"patch"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Installment"[0m
+                ],
+                [1m"summary"[0m: [32m"Update installment"[0m,
+                [1m"description"[0m: [32m"Taksit tutar\u0131n\u0131 veya durumunu g\u00fcnceller"[0m,
+                [1m"operationId"[0m: [32m"updateInstallment"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"installmentId"[0m,
+                        [1m"in"[0m: [32m"path"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int64"[0m
+                        }
+                    }
+                ],
+                [1m"requestBody"[0m: {
+                    [1m"content"[0m: {
+                        [1m"application/json"[0m: {
+                            [1m"schema"[0m: {
+                                [1m"$ref"[0m: [32m"#/components/schemas/UpdateInstallmentRequestDto"[0m
+                            }
+                        }
+                    },
+                    [1m"required"[0m: [1;34mtrue[0m
+                },
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseObject"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/installment/pay"[0m: {
+            [1m"patch"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Installment"[0m
+                ],
+                [1m"operationId"[0m: [32m"payInstallment"[0m,
+                [1m"requestBody"[0m: {
+                    [1m"content"[0m: {
+                        [1m"application/json"[0m: {
+                            [1m"schema"[0m: {
+                                [1m"$ref"[0m: [32m"#/components/schemas/PayInstallmentRequestDto"[0m
+                            }
+                        }
+                    },
+                    [1m"required"[0m: [1;34mtrue[0m
+                },
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseObject"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/transaction/{transactionId}/installments/"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Transaction"[0m
+                ],
+                [1m"summary"[0m: [32m"List transaction installments"[0m,
+                [1m"description"[0m: [32m"Gelir/Gider'in taksitlerini listeler"[0m,
+                [1m"operationId"[0m: [32m"listTransactionInstallments"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"transactionId"[0m,
+                        [1m"in"[0m: [32m"path"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int64"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseListListInstallments"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/transaction/my"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Transaction"[0m
+                ],
+                [1m"summary"[0m: [32m"List my transactions"[0m,
+                [1m"description"[0m: [32m"Bor\u00e7lar\u0131n listelenmesini sa\u011flar"[0m,
+                [1m"operationId"[0m: [32m"listMyTransactions"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"pageData"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/TransactionFilterRequestDto"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponsePagedResponseListMyTransactionsResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/tag/my"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Tag"[0m
+                ],
+                [1m"summary"[0m: [32m"Get user tags with transaction count"[0m,
+                [1m"description"[0m: [32m"Kullan\u0131c\u0131ya ait etiketleri gelir/gider say\u0131lar\u0131 ile beraber getirir"[0m,
+                [1m"operationId"[0m: [32m"listUserTagsWithTransactionCount"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"body"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/FilterListUserTags"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponsePagedResponseListUserTagsWithTransactionCountDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/tag/my/active"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Tag"[0m
+                ],
+                [1m"summary"[0m: [32m"Get user tags"[0m,
+                [1m"description"[0m: [32m"Kullan\u0131c\u0131ya ait etiketleri getirir"[0m,
+                [1m"operationId"[0m: [32m"listUserTags"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"body"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/FilterListUserTags"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponsePagedResponseListUserTagsDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/report/top-expenses"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Report"[0m
+                ],
+                [1m"summary"[0m: [32m"Report Top Expenses"[0m,
+                [1m"description"[0m: [32m"Se\u00e7ilen ay\u0131n en b\u00fcy\u00fck kalemlerini getirir"[0m,
+                [1m"operationId"[0m: [32m"topExpenses"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"year"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m,
+                            [1m"maximum"[0m: [33m2100[0m,
+                            [1m"minimum"[0m: [33m2000[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"month"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m,
+                            [1m"maximum"[0m: [33m12[0m,
+                            [1m"minimum"[0m: [33m1[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"type"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mfalse[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m,
+                            [1m"enum"[0m: [
+                                [32m"EXPENSE"[0m,
+                                [32m"INCOME"[0m
+                            ]
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"limit"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mfalse[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseReportTopExpensesResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/report/timeline"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Report"[0m
+                ],
+                [1m"summary"[0m: [32m"Report Timeline"[0m,
+                [1m"description"[0m: [32m"Ge\u00e7mi\u015f ve gelecek aylara ait gelir/gider serisini getirir"[0m,
+                [1m"operationId"[0m: [32m"timeline"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"year"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m,
+                            [1m"maximum"[0m: [33m2100[0m,
+                            [1m"minimum"[0m: [33m2000[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"month"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m,
+                            [1m"maximum"[0m: [33m12[0m,
+                            [1m"minimum"[0m: [33m1[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"pastMonths"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mfalse[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"futureMonths"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mfalse[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseReportTimelineResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/report/tag-breakdown"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Report"[0m
+                ],
+                [1m"summary"[0m: [32m"Report Tag Breakdown"[0m,
+                [1m"description"[0m: [32m"Etiket bazl\u0131 k\u0131r\u0131l\u0131m\u0131 ve \u00f6nceki ay kar\u015f\u0131la\u015ft\u0131rmas\u0131n\u0131 getirir"[0m,
+                [1m"operationId"[0m: [32m"tagBreakdown"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"year"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m,
+                            [1m"maximum"[0m: [33m2100[0m,
+                            [1m"minimum"[0m: [33m2000[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"month"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m,
+                            [1m"maximum"[0m: [33m12[0m,
+                            [1m"minimum"[0m: [33m1[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"type"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mfalse[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m,
+                            [1m"enum"[0m: [
+                                [32m"EXPENSE"[0m,
+                                [32m"INCOME"[0m
+                            ]
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"sumMode"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mfalse[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"string"[0m,
+                            [1m"enum"[0m: [
+                                [32m"DOUBLE_COUNT"[0m,
+                                [32m"DISTRIBUTED"[0m
+                            ]
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"limit"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mfalse[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseReportTagBreakdownResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/report/summary"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Report"[0m
+                ],
+                [1m"summary"[0m: [32m"Report Summary"[0m,
+                [1m"description"[0m: [32m"Se\u00e7ilen ay\u0131 \u00f6nceki ve sonraki ayla kar\u015f\u0131la\u015ft\u0131ran \u00f6zet verilerini getirir"[0m,
+                [1m"operationId"[0m: [32m"summary"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"year"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m,
+                            [1m"maximum"[0m: [33m2100[0m,
+                            [1m"minimum"[0m: [33m2000[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"month"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m,
+                            [1m"maximum"[0m: [33m12[0m,
+                            [1m"minimum"[0m: [33m1[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseReportSummaryResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/report/recurring"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Report"[0m
+                ],
+                [1m"summary"[0m: [32m"Report Recurring Expenses"[0m,
+                [1m"description"[0m: [32m"Tekrar eden harcamalar\u0131 ve ayl\u0131k sabit gider y\u00fck\u00fcn\u00fc getirir"[0m,
+                [1m"operationId"[0m: [32m"recurring"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"lookbackMonths"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mfalse[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"minOccurrence"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mfalse[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    },
+                    {
+                        [1m"name"[0m: [32m"limit"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mfalse[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int32"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseReportRecurringResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/installment/month"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Installment"[0m
+                ],
+                [1m"summary"[0m: [32m"Get monthly installments"[0m,
+                [1m"description"[0m: [32m"Ayl\u0131k taksitleri listelemeyi sa\u011flar"[0m,
+                [1m"operationId"[0m: [32m"listMySpecisifDateInstallments"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"pageData"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/FilterListMyInstallmentRequestDto"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponsePagedResponseListMySpecificDateInstallmentsResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/dashboard/quick-view"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Dashboard"[0m
+                ],
+                [1m"summary"[0m: [32m"Quick View"[0m,
+                [1m"description"[0m: [32m"Ana sayfa h\u0131zl\u0131 bak\u0131\u015f verilerini getirir"[0m,
+                [1m"operationId"[0m: [32m"quickViewResponse"[0m,
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseQuickViewResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/dashboard/monthly-trend"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Dashboard"[0m
+                ],
+                [1m"summary"[0m: [32m"Monthly Trend"[0m,
+                [1m"description"[0m: [32m"Ana sayfa gelir/gider trendi grafigi verilerini getirir"[0m,
+                [1m"operationId"[0m: [32m"monthlyTrend"[0m,
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseMonthlyTrendResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/dashboard/last-transactions"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Dashboard"[0m
+                ],
+                [1m"summary"[0m: [32m"Last 10 Transactions"[0m,
+                [1m"description"[0m: [32m"En son kaydedilen gelir ve gider hareketleri"[0m,
+                [1m"operationId"[0m: [32m"lastTransactions"[0m,
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseLastTransactionsResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/dashboard/incoming-transactions"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Dashboard"[0m
+                ],
+                [1m"summary"[0m: [32m"Get the nearest installments"[0m,
+                [1m"description"[0m: [32m"Yakla\u015fan \u00f6demeler getirildi"[0m,
+                [1m"operationId"[0m: [32m"incomingInstallments"[0m,
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseIncomingInstallmentsResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/contact/my/active"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Contact"[0m
+                ],
+                [1m"operationId"[0m: [32m"listMyActiveContacts"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"pageData"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/ContactFilterRequestDto"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponsePagedResponseListMyContactsResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/account/my/active"[0m: {
+            [1m"get"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Account"[0m
+                ],
+                [1m"summary"[0m: [32m"List my active accounts"[0m,
+                [1m"description"[0m: [32m"Kullan\u0131c\u0131n\u0131n aktif olan hesaplar\u0131n\u0131 listeler"[0m,
+                [1m"operationId"[0m: [32m"listMyActiveAccounts"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"pageData"[0m,
+                        [1m"in"[0m: [32m"query"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/SortablePageRequest"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponsePagedResponseListMyAccountsResponseDto"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/transaction/my/{transactionId}"[0m: {
+            [1m"delete"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Transaction"[0m
+                ],
+                [1m"summary"[0m: [32m"Delete my transactions"[0m,
+                [1m"description"[0m: [32m"Borcun silinmesini sa\u011flar"[0m,
+                [1m"operationId"[0m: [32m"deleteMyTransaction"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"transactionId"[0m,
+                        [1m"in"[0m: [32m"path"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int64"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseObject"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        [1m"/tag/my/{tagId}"[0m: {
+            [1m"delete"[0m: {
+                [1m"tags"[0m: [
+                    [32m"Tag"[0m
+                ],
+                [1m"summary"[0m: [32m"Delete tag"[0m,
+                [1m"description"[0m: [32m"Kullan\u0131c\u0131ya ait etiketi siler"[0m,
+                [1m"operationId"[0m: [32m"deleteTag"[0m,
+                [1m"parameters"[0m: [
+                    {
+                        [1m"name"[0m: [32m"tagId"[0m,
+                        [1m"in"[0m: [32m"path"[0m,
+                        [1m"required"[0m: [1;34mtrue[0m,
+                        [1m"schema"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int64"[0m
+                        }
+                    }
+                ],
+                [1m"responses"[0m: {
+                    [1m"200"[0m: {
+                        [1m"description"[0m: [32m"OK"[0m,
+                        [1m"content"[0m: {
+                            [1m"*/*"[0m: {
+                                [1m"schema"[0m: {
+                                    [1m"$ref"[0m: [32m"#/components/schemas/ApiResponseObject"[0m
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    [1m"components"[0m: {
+        [1m"schemas"[0m: {
+            [1m"UpdateMyContactRequestDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"fullName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"note"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                },
+                [1m"required"[0m: [
+                    [32m"fullName"[0m
+                ]
+            },
+            [1m"ApiResponseObject"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {}
+                }
+            },
+            [1m"UpdateAccountRequestDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"totalBalance"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    }
+                },
+                [1m"required"[0m: [
+                    [32m"name"[0m,
+                    [32m"totalBalance"[0m
+                ]
+            },
+            [1m"TagTransactionsFilterRequestDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"pageNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"pageSize"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"columnName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"asc"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"transactionName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"accountIds"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int64"[0m
+                        }
+                    },
+                    [1m"types"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"string"[0m,
+                            [1m"enum"[0m: [
+                                [32m"DEBT"[0m,
+                                [32m"CREDIT"[0m,
+                                [32m"PAYMENT"[0m,
+                                [32m"COLLECTION"[0m
+                            ]
+                        }
+                    },
+                    [1m"statuses"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"string"[0m,
+                            [1m"enum"[0m: [
+                                [32m"PENDING"[0m,
+                                [32m"PARTIAL"[0m,
+                                [32m"PAID"[0m
+                            ]
+                        }
+                    },
+                    [1m"minAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"maxAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"minInstallmentCount"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"maxInstallmentCount"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    }
+                }
+            },
+            [1m"ApiResponsePagedResponseListTagTransactionsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/PagedResponseListTagTransactionsResponseDto"[0m
+                    }
+                }
+            },
+            [1m"ListTagTransactionsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"id"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"accountName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"status"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"totalAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"paidAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"totalInstallment"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    }
+                }
+            },
+            [1m"PagedResponseListTagTransactionsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"content"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/ListTagTransactionsResponseDto"[0m
+                        }
+                    },
+                    [1m"pageNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"pageSize"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"totalElements"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"totalPages"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"first"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"last"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    }
+                }
+            },
+            [1m"CreateTransactionRequestDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"contactId"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"accountId"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"enum"[0m: [
+                            [32m"DEBT"[0m,
+                            [32m"CREDIT"[0m,
+                            [32m"PAYMENT"[0m,
+                            [32m"COLLECTION"[0m
+                        ]
+                    },
+                    [1m"totalAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"totalInstallment"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m,
+                        [1m"minimum"[0m: [33m1[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"maxLength"[0m: [33m2147483647[0m,
+                        [1m"minLength"[0m: [33m2[0m
+                    },
+                    [1m"description"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"debtDate"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    },
+                    [1m"equalSharingBetweenInstallments"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"tag"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/CreateTransactionTagDetail"[0m
+                    }
+                },
+                [1m"required"[0m: [
+                    [32m"accountId"[0m,
+                    [32m"debtDate"[0m,
+                    [32m"name"[0m,
+                    [32m"totalAmount"[0m,
+                    [32m"type"[0m
+                ]
+            },
+            [1m"CreateTransactionTagDetail"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"tagIds"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int64"[0m
+                        }
+                    },
+                    [1m"newTags"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"string"[0m
+                        }
+                    }
+                }
+            },
+            [1m"BackFillMonthlySummeriesRequest"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"userIds"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int64"[0m
+                        },
+                        [1m"maxItems"[0m: [33m2147483647[0m,
+                        [1m"minItems"[0m: [33m0[0m
+                    }
+                }
+            },
+            [1m"TagSummaryRequestDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"startDate"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    },
+                    [1m"endDate"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    }
+                },
+                [1m"required"[0m: [
+                    [32m"endDate"[0m,
+                    [32m"startDate"[0m
+                ]
+            },
+            [1m"ApiResponseTagSummaryResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/TagSummaryResponseDto"[0m
+                    }
+                }
+            },
+            [1m"TagSummaryDataDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"amount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"percentage"[0m: {
+                        [1m"type"[0m: [32m"number"[0m,
+                        [1m"format"[0m: [32m"double"[0m
+                    }
+                }
+            },
+            [1m"TagSummaryResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"tagSummaryDatas"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/TagSummaryDataDto"[0m
+                        }
+                    }
+                }
+            },
+            [1m"CreateContactRequestDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"fullName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"note"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                },
+                [1m"required"[0m: [
+                    [32m"fullName"[0m
+                ]
+            },
+            [1m"RegisterRequestDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"fullName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"email"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"password"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"phone"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                },
+                [1m"required"[0m: [
+                    [32m"email"[0m,
+                    [32m"fullName"[0m,
+                    [32m"password"[0m,
+                    [32m"phone"[0m
+                ]
+            },
+            [1m"LoginRequestDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"email"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"password"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                },
+                [1m"required"[0m: [
+                    [32m"email"[0m,
+                    [32m"password"[0m
+                ]
+            },
+            [1m"ApiResponseLoginResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/LoginResponseDto"[0m
+                    }
+                }
+            },
+            [1m"LoginResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"token"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                }
+            },
+            [1m"CreateAccountRequestDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"enum"[0m: [
+                            [32m"CREDIT_CARD"[0m,
+                            [32m"CASH"[0m,
+                            [32m"BANK"[0m
+                        ]
+                    },
+                    [1m"currency"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"enum"[0m: [
+                            [32m"TL"[0m,
+                            [32m"USD"[0m,
+                            [32m"EUR"[0m
+                        ]
+                    },
+                    [1m"balance"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    }
+                },
+                [1m"required"[0m: [
+                    [32m"balance"[0m,
+                    [32m"currency"[0m,
+                    [32m"name"[0m,
+                    [32m"type"[0m
+                ]
+            },
+            [1m"UpdateInstallmentRequestDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"amount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m,
+                        [1m"minimum"[0m: [33m0.01[0m
+                    },
+                    [1m"status"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"enum"[0m: [
+                            [32m"ACTIVE"[0m,
+                            [32m"SKIPPED"[0m
+                        ]
+                    }
+                }
+            },
+            [1m"PayInstallmentRequestDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"ids"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int64"[0m
+                        }
+                    },
+                    [1m"paidDate"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    }
+                }
+            },
+            [1m"ApiResponseListListInstallments"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/ListInstallments"[0m
+                        }
+                    }
+                }
+            },
+            [1m"ListInstallments"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"id"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"amount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"debtDate"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    },
+                    [1m"installmentNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"description"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"status"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"enum"[0m: [
+                            [32m"ACTIVE"[0m,
+                            [32m"SKIPPED"[0m
+                        ]
+                    },
+                    [1m"paid"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    }
+                }
+            },
+            [1m"TransactionFilterRequestDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"pageNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"pageSize"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"columnName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"asc"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"accountIds"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int64"[0m
+                        }
+                    },
+                    [1m"contactIds"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"integer"[0m,
+                            [1m"format"[0m: [32m"int64"[0m
+                        }
+                    },
+                    [1m"minAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"maxAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"minInstallmentCount"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"maxInstallmentCount"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"startDate"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    },
+                    [1m"endDate"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    },
+                    [1m"types"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"string"[0m,
+                            [1m"enum"[0m: [
+                                [32m"DEBT"[0m,
+                                [32m"CREDIT"[0m,
+                                [32m"PAYMENT"[0m,
+                                [32m"COLLECTION"[0m
+                            ]
+                        }
+                    },
+                    [1m"statuses"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"string"[0m,
+                            [1m"enum"[0m: [
+                                [32m"PENDING"[0m,
+                                [32m"PARTIAL"[0m,
+                                [32m"PAID"[0m
+                            ]
+                        }
+                    }
+                }
+            },
+            [1m"ApiResponsePagedResponseListMyTransactionsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/PagedResponseListMyTransactionsResponseDto"[0m
+                    }
+                }
+            },
+            [1m"ListMyTransactionsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"id"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"contactName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"accountName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"status"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"totalAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"paidAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"totalInstallment"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"tags"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/TransactionTagInfoDto"[0m
+                        }
+                    }
+                }
+            },
+            [1m"PagedResponseListMyTransactionsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"content"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/ListMyTransactionsResponseDto"[0m
+                        }
+                    },
+                    [1m"pageNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"pageSize"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"totalElements"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"totalPages"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"first"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"last"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    }
+                }
+            },
+            [1m"TransactionTagInfoDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"id"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                }
+            },
+            [1m"FilterListUserTags"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"pageNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"pageSize"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"columnName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"asc"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"createdStartDate"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    },
+                    [1m"createdEndDate"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    }
+                }
+            },
+            [1m"ApiResponsePagedResponseListUserTagsWithTransactionCountDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/PagedResponseListUserTagsWithTransactionCountDto"[0m
+                    }
+                }
+            },
+            [1m"ListUserTagsWithTransactionCountDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"id"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"createdAt"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"transactionCount"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    }
+                }
+            },
+            [1m"PagedResponseListUserTagsWithTransactionCountDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"content"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/ListUserTagsWithTransactionCountDto"[0m
+                        }
+                    },
+                    [1m"pageNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"pageSize"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"totalElements"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"totalPages"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"first"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"last"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    }
+                }
+            },
+            [1m"ApiResponsePagedResponseListUserTagsDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/PagedResponseListUserTagsDto"[0m
+                    }
+                }
+            },
+            [1m"ListUserTagsDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"id"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"createdAt"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    }
+                }
+            },
+            [1m"PagedResponseListUserTagsDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"content"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/ListUserTagsDto"[0m
+                        }
+                    },
+                    [1m"pageNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"pageSize"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"totalElements"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"totalPages"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"first"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"last"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    }
+                }
+            },
+            [1m"ApiResponseReportTopExpensesResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ReportTopExpensesResponseDto"[0m
+                    }
+                }
+            },
+            [1m"ReportTagRefDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"id"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                }
+            },
+            [1m"ReportTopExpensesResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"items"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/TopExpenseItemDto"[0m
+                        }
+                    },
+                    [1m"periodTotal"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    }
+                }
+            },
+            [1m"TopExpenseItemDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"transactionId"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"installmentId"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"description"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"amount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"date"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    },
+                    [1m"accountName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"contactName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"tags"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/ReportTagRefDto"[0m
+                        }
+                    },
+                    [1m"installmentNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"totalInstallment"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"paid"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    }
+                }
+            },
+            [1m"ApiResponseReportTimelineResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ReportTimelineResponseDto"[0m
+                    }
+                }
+            },
+            [1m"ReportTimelineResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"points"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/TimelinePointDto"[0m
+                        }
+                    }
+                }
+            },
+            [1m"TimelinePointDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"year"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"month"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"label"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"kind"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"enum"[0m: [
+                            [32m"ACTUAL"[0m,
+                            [32m"PARTIAL"[0m,
+                            [32m"PROJECTED"[0m
+                        ]
+                    },
+                    [1m"income"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"expense"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"net"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"realizedIncome"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"pendingIncome"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"realizedExpense"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"pendingExpense"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"transactionCount"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"installmentCount"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"cumulativeRemainingDebt"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"projectedRemainingDebt"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    }
+                }
+            },
+            [1m"ApiResponseReportTagBreakdownResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ReportTagBreakdownResponseDto"[0m
+                    }
+                }
+            },
+            [1m"ReportTagBreakdownResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"items"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/TagBreakdownItemDto"[0m
+                        }
+                    },
+                    [1m"total"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"previousTotal"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"untaggedAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    }
+                }
+            },
+            [1m"TagBreakdownItemDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"tagId"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"amount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"percentage"[0m: {
+                        [1m"type"[0m: [32m"number"[0m,
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"previousAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"changeRate"[0m: {
+                        [1m"type"[0m: [32m"number"[0m,
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"transactionCount"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    }
+                }
+            },
+            [1m"ApiResponseReportSummaryResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ReportSummaryResponseDto"[0m
+                    }
+                }
+            },
+            [1m"BusiestDayDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"date"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    },
+                    [1m"amount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    }
+                }
+            },
+            [1m"PeriodDeltaDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"incomeChangeRate"[0m: {
+                        [1m"type"[0m: [32m"number"[0m,
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"expenseChangeRate"[0m: {
+                        [1m"type"[0m: [32m"number"[0m,
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"netChangeAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    }
+                }
+            },
+            [1m"PeriodTotalsDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"year"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"month"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"label"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"kind"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"enum"[0m: [
+                            [32m"ACTUAL"[0m,
+                            [32m"PARTIAL"[0m,
+                            [32m"PROJECTED"[0m
+                        ]
+                    },
+                    [1m"income"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"expense"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"net"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"realizedIncome"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"pendingIncome"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"realizedExpense"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"pendingExpense"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"transactionCount"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"installmentCount"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    }
+                }
+            },
+            [1m"ReportSummaryResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"previous"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/PeriodTotalsDto"[0m
+                    },
+                    [1m"current"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/PeriodTotalsDto"[0m
+                    },
+                    [1m"next"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/PeriodTotalsDto"[0m
+                    },
+                    [1m"deltaVsPrevious"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/PeriodDeltaDto"[0m
+                    },
+                    [1m"deltaVsNext"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/PeriodDeltaDto"[0m
+                    },
+                    [1m"savingRate"[0m: {
+                        [1m"type"[0m: [32m"number"[0m,
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"averageDailyExpense"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"daysInMonth"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"daysElapsed"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"projectedMonthEndExpense"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"busiestDay"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/BusiestDayDto"[0m
+                    },
+                    [1m"topTag"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/TopTagDto"[0m
+                    }
+                }
+            },
+            [1m"TopTagDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"tagId"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"amount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"share"[0m: {
+                        [1m"type"[0m: [32m"number"[0m,
+                        [1m"format"[0m: [32m"double"[0m
+                    }
+                }
+            },
+            [1m"ApiResponseReportRecurringResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ReportRecurringResponseDto"[0m
+                    }
+                }
+            },
+            [1m"RecurringItemDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"groupKey"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"kind"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"enum"[0m: [
+                            [32m"INSTALLMENT"[0m,
+                            [32m"REPEATED"[0m
+                        ]
+                    },
+                    [1m"occurrenceCount"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"monthsSpan"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"averageAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"totalAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"lastAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"lastDate"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    },
+                    [1m"nextExpectedDate"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    },
+                    [1m"amountByMonth"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/RecurringMonthAmountDto"[0m
+                        }
+                    },
+                    [1m"tags"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/ReportTagRefDto"[0m
+                        }
+                    },
+                    [1m"active"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    }
+                }
+            },
+            [1m"RecurringMonthAmountDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"year"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"month"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"amount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    }
+                }
+            },
+            [1m"ReportPeriodRefDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"year"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"month"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"label"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                }
+            },
+            [1m"ReportRecurringResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"items"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/RecurringItemDto"[0m
+                        }
+                    },
+                    [1m"monthlyFixedCost"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"fixedCostShareOfIncome"[0m: {
+                        [1m"type"[0m: [32m"number"[0m,
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"windowStart"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ReportPeriodRefDto"[0m
+                    },
+                    [1m"windowEnd"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/ReportPeriodRefDto"[0m
+                    }
+                }
+            },
+            [1m"FilterListMyInstallmentRequestDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"pageNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"pageSize"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"columnName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"asc"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"month"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"year"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"transactionName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"description"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"minTotalAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"maxTotalAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"isPaid"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"type"[0m: [32m"boolean"[0m
+                        }
+                    }
+                }
+            },
+            [1m"ApiResponsePagedResponseListMySpecificDateInstallmentsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/PagedResponseListMySpecificDateInstallmentsResponseDto"[0m
+                    }
+                }
+            },
+            [1m"ListMySpecificDateInstallmentsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"id"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"transaction"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/TransactionDetailDto"[0m
+                    },
+                    [1m"amount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"debtDate"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    },
+                    [1m"installmentNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"description"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"status"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"enum"[0m: [
+                            [32m"ACTIVE"[0m,
+                            [32m"SKIPPED"[0m
+                        ]
+                    },
+                    [1m"paid"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    }
+                }
+            },
+            [1m"PagedResponseListMySpecificDateInstallmentsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"content"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/ListMySpecificDateInstallmentsResponseDto"[0m
+                        }
+                    },
+                    [1m"pageNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"pageSize"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"totalElements"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"totalPages"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"first"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"last"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    }
+                }
+            },
+            [1m"TransactionDetailDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"id"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"enum"[0m: [
+                            [32m"DEBT"[0m,
+                            [32m"CREDIT"[0m,
+                            [32m"PAYMENT"[0m,
+                            [32m"COLLECTION"[0m
+                        ]
+                    }
+                }
+            },
+            [1m"ApiResponseQuickViewResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/QuickViewResponseDto"[0m
+                    }
+                }
+            },
+            [1m"QuickViewIncomeAndExpenseDetailDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"occured"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"waiting"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"lastMonthChangeRate"[0m: {
+                        [1m"type"[0m: [32m"number"[0m,
+                        [1m"format"[0m: [32m"double"[0m
+                    }
+                }
+            },
+            [1m"QuickViewResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"totalBalance"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"income"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/QuickViewIncomeAndExpenseDetailDto"[0m
+                    },
+                    [1m"expense"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/QuickViewIncomeAndExpenseDetailDto"[0m
+                    },
+                    [1m"savingRate"[0m: {
+                        [1m"type"[0m: [32m"number"[0m,
+                        [1m"format"[0m: [32m"double"[0m
+                    },
+                    [1m"waitingInstallments"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    }
+                }
+            },
+            [1m"ApiResponseMonthlyTrendResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/MonthlyTrendResponseDto"[0m
+                    }
+                }
+            },
+            [1m"MonthlyTrendDataDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"title"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"income"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"expense"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    }
+                }
+            },
+            [1m"MonthlyTrendResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"monthlyTrendData"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/MonthlyTrendDataDto"[0m
+                        }
+                    }
+                }
+            },
+            [1m"ApiResponseLastTransactionsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/LastTransactionsResponseDto"[0m
+                    }
+                }
+            },
+            [1m"LastTransactionDataDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"description"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"enum"[0m: [
+                            [32m"DEBT"[0m,
+                            [32m"CREDIT"[0m,
+                            [32m"PAYMENT"[0m,
+                            [32m"COLLECTION"[0m
+                        ]
+                    },
+                    [1m"totalAmount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"createdAt"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    }
+                }
+            },
+            [1m"LastTransactionsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"lastTransactionData"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/LastTransactionDataDto"[0m
+                        }
+                    }
+                }
+            },
+            [1m"ApiResponseIncomingInstallmentsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/IncomingInstallmentsResponseDto"[0m
+                    }
+                }
+            },
+            [1m"IncomingInstallmentTransactionDetailDataDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"description"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"enum"[0m: [
+                            [32m"DEBT"[0m,
+                            [32m"CREDIT"[0m,
+                            [32m"PAYMENT"[0m,
+                            [32m"COLLECTION"[0m
+                        ]
+                    }
+                }
+            },
+            [1m"IncomingInstallmentsDataDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"transaction"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/IncomingInstallmentTransactionDetailDataDto"[0m
+                    },
+                    [1m"amount"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"debtDate"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date"[0m
+                    },
+                    [1m"installmentNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"totalInstallment"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    }
+                }
+            },
+            [1m"IncomingInstallmentsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"incomingInstallmentsDatas"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/IncomingInstallmentsDataDto"[0m
+                        }
+                    }
+                }
+            },
+            [1m"ContactFilterRequestDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"pageNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"pageSize"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"columnName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"asc"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"fullName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"note"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                }
+            },
+            [1m"ApiResponsePagedResponseListMyContactsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/PagedResponseListMyContactsResponseDto"[0m
+                    }
+                }
+            },
+            [1m"ListMyContactsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"id"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"fullName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"note"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    }
+                }
+            },
+            [1m"PagedResponseListMyContactsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"content"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/ListMyContactsResponseDto"[0m
+                        }
+                    },
+                    [1m"pageNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"pageSize"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"totalElements"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"totalPages"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"first"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"last"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    }
+                }
+            },
+            [1m"SortablePageRequest"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"pageNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"pageSize"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"columnName"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"asc"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    }
+                }
+            },
+            [1m"ApiResponsePagedResponseListMyAccountsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"message"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"timestamp"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"format"[0m: [32m"date-time"[0m
+                    },
+                    [1m"data"[0m: {
+                        [1m"$ref"[0m: [32m"#/components/schemas/PagedResponseListMyAccountsResponseDto"[0m
+                    }
+                }
+            },
+            [1m"ListMyAccountsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"id"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"name"[0m: {
+                        [1m"type"[0m: [32m"string"[0m
+                    },
+                    [1m"totalBalance"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"balance"[0m: {
+                        [1m"type"[0m: [32m"number"[0m
+                    },
+                    [1m"currency"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"enum"[0m: [
+                            [32m"TL"[0m,
+                            [32m"USD"[0m,
+                            [32m"EUR"[0m
+                        ]
+                    },
+                    [1m"type"[0m: {
+                        [1m"type"[0m: [32m"string"[0m,
+                        [1m"enum"[0m: [
+                            [32m"CREDIT_CARD"[0m,
+                            [32m"CASH"[0m,
+                            [32m"BANK"[0m
+                        ]
+                    }
+                }
+            },
+            [1m"PagedResponseListMyAccountsResponseDto"[0m: {
+                [1m"type"[0m: [32m"object"[0m,
+                [1m"properties"[0m: {
+                    [1m"content"[0m: {
+                        [1m"type"[0m: [32m"array"[0m,
+                        [1m"items"[0m: {
+                            [1m"$ref"[0m: [32m"#/components/schemas/ListMyAccountsResponseDto"[0m
+                        }
+                    },
+                    [1m"pageNumber"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"pageSize"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"totalElements"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int64"[0m
+                    },
+                    [1m"totalPages"[0m: {
+                        [1m"type"[0m: [32m"integer"[0m,
+                        [1m"format"[0m: [32m"int32"[0m
+                    },
+                    [1m"first"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    },
+                    [1m"last"[0m: {
+                        [1m"type"[0m: [32m"boolean"[0m
+                    }
+                }
+            }
+        },
+        [1m"securitySchemes"[0m: {
+            [1m"bearerAuth"[0m: {
+                [1m"type"[0m: [32m"http"[0m,
+                [1m"scheme"[0m: [32m"bearer"[0m,
+                [1m"bearerFormat"[0m: [32m"JWT"[0m
+            }
+        }
+    }
+}

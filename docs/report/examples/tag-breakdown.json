@@ -1,0 +1,48 @@
+{
+    [1m"type"[0m: [1;34mtrue[0m,
+    [1m"message"[0m: [32m"Etiket bazl\u0131 k\u0131r\u0131l\u0131m getirildi"[0m,
+    [1m"timestamp"[0m: [32m"2026-08-03T16:51:27.803123"[0m,
+    [1m"data"[0m: {
+        [1m"items"[0m: [
+            {
+                [1m"tagId"[0m: [33m2[0m,
+                [1m"name"[0m: [32m"Ev"[0m,
+                [1m"amount"[0m: [33m12000.0[0m,
+                [1m"percentage"[0m: [33m41.62[0m,
+                [1m"previousAmount"[0m: [33m12000.0[0m,
+                [1m"changeRate"[0m: [33m0.0[0m,
+                [1m"transactionCount"[0m: [33m1[0m
+            },
+            {
+                [1m"tagId"[0m: [33m1[0m,
+                [1m"name"[0m: [32m"Market"[0m,
+                [1m"amount"[0m: [33m8400.0[0m,
+                [1m"percentage"[0m: [33m29.14[0m,
+                [1m"previousAmount"[0m: [33m6270.0[0m,
+                [1m"changeRate"[0m: [33m33.97[0m,
+                [1m"transactionCount"[0m: [33m1[0m
+            },
+            {
+                [1m"tagId"[0m: [1;34mnull[0m,
+                [1m"name"[0m: [32m"UNTAGGED"[0m,
+                [1m"amount"[0m: [33m8200.0[0m,
+                [1m"percentage"[0m: [33m28.44[0m,
+                [1m"previousAmount"[0m: [33m5000.0[0m,
+                [1m"changeRate"[0m: [33m64.0[0m,
+                [1m"transactionCount"[0m: [33m2[0m
+            },
+            {
+                [1m"tagId"[0m: [33m3[0m,
+                [1m"name"[0m: [32m"Abonelik"[0m,
+                [1m"amount"[0m: [33m229.0[0m,
+                [1m"percentage"[0m: [33m0.79[0m,
+                [1m"previousAmount"[0m: [33m229.0[0m,
+                [1m"changeRate"[0m: [33m0.0[0m,
+                [1m"transactionCount"[0m: [33m1[0m
+            }
+        ],
+        [1m"total"[0m: [33m28829.0[0m,
+        [1m"previousTotal"[0m: [33m23499.0[0m,
+        [1m"untaggedAmount"[0m: [33m8200.0[0m
+    }
+}
