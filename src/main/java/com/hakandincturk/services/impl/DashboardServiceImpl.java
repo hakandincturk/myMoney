@@ -45,6 +45,7 @@ import com.hakandincturk.repositories.MonthlySummaryRepository;
 import com.hakandincturk.repositories.TransactionRepository;
 import com.hakandincturk.services.abstracts.DashboardService;
 import com.hakandincturk.services.rules.DashboardRules;
+import com.hakandincturk.utils.TransactionClassifier;
 
 import static java.time.temporal.TemporalAdjusters.*;
 
@@ -204,7 +205,8 @@ public class DashboardServiceImpl implements DashboardService {
     dashboardRules.tagSummaryDatesControl(body);
     dashboardRules.tagSummaryDatesOnly1MonthOr1Year(body);
 
-    List<TransactionTypes> transactionTypes = List.of(TransactionTypes.DEBT, TransactionTypes.PAYMENT);
+    // Gider sınıflandırması aylık özet ve rapor modülüyle aynı kaynaktan gelir
+    List<TransactionTypes> transactionTypes = TransactionClassifier.EXPENSE_TYPES;
 
     BigDecimal totalAmount = ZERO;
     Map<String, BigDecimal> tagSummary = new HashMap<>();

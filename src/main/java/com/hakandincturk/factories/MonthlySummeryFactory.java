@@ -6,12 +6,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.hakandincturk.core.enums.InstallmentStatuses;
 import com.hakandincturk.core.enums.MonthlySummeryTypes;
-import com.hakandincturk.core.enums.TransactionTypes;
 import com.hakandincturk.models.Installment;
 import com.hakandincturk.models.MonthlySummary;
 import com.hakandincturk.models.Users;
+import com.hakandincturk.utils.TransactionClassifier;
 
 @Component
 public class MonthlySummeryFactory {
@@ -113,23 +112,26 @@ public class MonthlySummeryFactory {
     return monthlySummary;
   }
 
+  // Sınıflandırma kuralları TransactionClassifier'a taşındı; aylık özet, dashboard ve rapor
+  // aynı kaynağı kullanmak zorunda, aksi halde ekranlar arasında farklı rakamlar oluşur.
+
   private boolean isIncomeInstallment(Installment installment){
-    return installment.getTransaction().getType() == TransactionTypes.CREDIT || installment.getTransaction().getType() == TransactionTypes.COLLECTION;
+    return TransactionClassifier.isIncomeInstallment(installment);
   }
 
   private boolean isExpenseInstallment(Installment installment){
-    return installment.getTransaction().getType() == TransactionTypes.DEBT || installment.getTransaction().getType() == TransactionTypes.PAYMENT;
+    return TransactionClassifier.isExpenseInstallment(installment);
   }
 
   private boolean isPaidInstallment(Installment installment){
-    return installment.isPaid();
+    return TransactionClassifier.isPaidInstallment(installment);
   }
 
   private boolean isUnpaidInstallment(Installment installment){
-    return installment.isPaid() == false;
+    return TransactionClassifier.isUnpaidInstallment(installment);
   }
 
   private boolean isActiveInstallment(Installment installment){
-    return installment.getStatus() != InstallmentStatuses.SKIPPED;
+    return TransactionClassifier.isActiveInstallment(installment);
   }
 }
