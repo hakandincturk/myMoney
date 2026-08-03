@@ -40,3 +40,8 @@ logging:
 jwt:
   secret:
     key: Mz4mA1h2siTZWMgsDvldEVlUUKMRVC9E04os3UatieA=
+
+cors:
+  # Comma-separated origins, e.g. "https://domain1.com,https://domain2.com".
+  # Falls back to "*" when CORS_ALLOWED_ORIGINS is not set in the environment.
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:*}
