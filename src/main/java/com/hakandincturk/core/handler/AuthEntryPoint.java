@@ -7,18 +7,21 @@ import org.springframework.stereotype.Component;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class AuthEntryPoint implements AuthenticationEntryPoint {
+
+  private final UnauthorizedResponseWriter unauthorizedResponseWriter;
 
   @Override
   public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
       throws IOException, ServletException {
         // Authentication errors happen outside controller advice; write consistent ApiResponse JSON
-        UnauthorizedResponseWriter.write(response, authException.getMessage());
+        unauthorizedResponseWriter.write(response, authException.getMessage());
   }
 
-
-  
 }

@@ -15,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.hakandincturk.security.services.JwtService;
 import com.hakandincturk.core.handler.UnauthorizedResponseWriter;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtService jwtService;
   private final UserDetailsService userDetailsService;
+  private final UnauthorizedResponseWriter unauthorizedResponseWriter;
 
   @Override
   protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
@@ -39,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         
         String header = request.getHeader("Authorization");
         if(header == null || !header.startsWith("Bearer ")){
-          UnauthorizedResponseWriter.write(response, "Yetkisiz giriş. Lütfen tekrar giriş yapınız");
+          unauthorizedResponseWriter.write(response, "Yetkisiz giriş. Lütfen tekrar giriş yapınız");
           return;
         }
 
@@ -61,7 +63,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         catch(ExpiredJwtException ex){
           // Token expired: write consistent ApiResponse JSON and return
-          UnauthorizedResponseWriter.write(response, "Oturumunuzun süresi dolmuştur. Lütfen tekrar giriş yapınız");
+          unauthorizedResponseWriter.write(response, "Oturumunuzun süresi dolmuştur. Lütfen tekrar giriş yapınız");
+          return;
+        }
+        catch(JwtException | IllegalArgumentException ex){
+          // Bozuk veya imzası geçersiz token: 500 yerine tutarlı 401 sözleşmesi döner
+          unauthorizedResponseWriter.write(response, "Geçersiz oturum bilgisi. Lütfen tekrar giriş yapınız");
           return;
         }
         catch(Exception ex){
