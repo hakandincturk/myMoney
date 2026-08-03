@@ -36,9 +36,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         boolean shouldNotCheckPath = shouldNotFilter(request);
         if(shouldNotCheckPath){
+          // Zincirin ikinci kez işlenip 401 yazmaması için burada sonlandırılır
           filterChain.doFilter(request, response);
+          return;
         }
-        
+
+
         String header = request.getHeader("Authorization");
         if(header == null || !header.startsWith("Bearer ")){
           unauthorizedResponseWriter.write(response, "Yetkisiz giriş. Lütfen tekrar giriş yapınız");
