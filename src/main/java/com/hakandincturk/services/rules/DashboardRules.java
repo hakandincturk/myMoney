@@ -4,9 +4,9 @@ import java.time.LocalDate;
 
 import org.springframework.stereotype.Service;
 
+import com.hakandincturk.core.exception.ValidationException;
 import com.hakandincturk.dtos.dashboard.request.TagSummaryRequestDto;
 
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 
 @Service

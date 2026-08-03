@@ -10,10 +10,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.ServletWebRequest;
+
+import com.hakandincturk.core.handler.GlobalExceptionHandler;
+import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.dtos.dashboard.request.TagSummaryRequestDto;
+import com.hakandincturk.core.exception.ValidationException;
 import com.hakandincturk.services.rules.DashboardRules;
 
-import jakarta.validation.ValidationException;
+
 
 @ExtendWith(MockitoExtension.class)
 class DashboardRulesTest {
@@ -89,5 +97,23 @@ class DashboardRulesTest {
         () -> dashboardRules.tagSummaryDatesOnly1MonthOr1Year(body));
 
     assertEquals("Başlangıç ve bitiş tarihleri aylık veya yıllık olmalı", exception.getMessage());
+  }
+
+  @Test
+  @DisplayName("Dashboard validasyon hatası global handler üzerinden 400 dönmeli")
+  void validationException_shouldBeHandledAsBadRequest() {
+    TagSummaryRequestDto body = new TagSummaryRequestDto(
+        LocalDate.of(2025, 6, 30),
+        LocalDate.of(2025, 6, 1)
+    );
+
+    ValidationException exception = assertThrows(ValidationException.class,
+        () -> dashboardRules.tagSummaryDatesControl(body));
+
+    ResponseEntity<ApiResponse<?>> response = new GlobalExceptionHandler()
+        .handleBusinessException(exception, new ServletWebRequest(new MockHttpServletRequest()));
+
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    assertFalse(response.getBody().isType());
   }
 }
