@@ -188,7 +188,6 @@ public class DashboardServiceImpl implements DashboardService {
     }
     MonthlyTrendResponseDto responseData = new MonthlyTrendResponseDto();
     responseData.setMonthlyTrendData(monthlyTrendDatas);
-    System.out.println(1);
 
     return responseData;
   }
