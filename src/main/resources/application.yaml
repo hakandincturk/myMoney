@@ -7,10 +7,12 @@ spring:
     name: myMoney
 
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/myMoney_prod
+    # Machine specific values belong in .env, not here. Prod overrides all of this
+    # through application-prod.yaml.
+    url: ${DB_URL:jdbc:postgresql://127.0.0.1:5432/myMoney_prod}
     driver-class-name: org.postgresql.Driver
-    username: hakandincturk
-    password: ""
+    username: ${DB_USERNAME:hakandincturk}
+    password: ${DB_PASSWORD:}
   
   jpa:
     properties:

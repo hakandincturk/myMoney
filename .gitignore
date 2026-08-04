@@ -33,3 +33,9 @@ build/
 .vscode/
 
 /src/main/resources/application.properties
+
+### Environment ###
+# Local secrets and per-machine overrides. Keep .env.example in git instead.
+.env
+.env.local
+!.env.example
