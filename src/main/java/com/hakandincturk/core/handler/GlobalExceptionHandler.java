@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.hakandincturk.core.exception.BusinessException;
 import com.hakandincturk.core.exception.ConflictException;
@@ -58,6 +59,14 @@ public class GlobalExceptionHandler {
     Map<String, String> errorDetails = new HashMap<>();
     errorDetails.put("path", request.getDescription(false).substring(4));
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createApiResponse(ex.getMessage(), errorDetails));
+  }
+
+  // Unknown paths (no controller, no static resource) must be 404, not caught by the generic 500 handler.
+  @ExceptionHandler(value = {NoResourceFoundException.class})
+  public ResponseEntity<ApiResponse<?>> handleNoResourceFoundException(NoResourceFoundException ex, WebRequest request){
+    Map<String, String> errorDetails = new HashMap<>();
+    errorDetails.put("path", request.getDescription(false).substring(4));
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(createApiResponse("İstenen adres bulunamadı", errorDetails));
   }
 
   @ExceptionHandler(value = {ConflictException.class})
