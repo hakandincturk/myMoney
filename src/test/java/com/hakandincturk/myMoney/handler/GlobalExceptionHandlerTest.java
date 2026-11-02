@@ -9,9 +9,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.hakandincturk.core.exception.BusinessException;
 import com.hakandincturk.core.exception.ConflictException;
@@ -106,6 +108,19 @@ class GlobalExceptionHandlerTest {
     ResponseEntity<ApiResponse<?>> response = handler.handleUnauthorizedException(ex, webRequest);
 
     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+  }
+
+  @Test
+  @DisplayName("NoResourceFoundException (olmayan adres) 404 döndürmeli")
+  void handleNoResourceFoundException_shouldReturn404() {
+    setupWebRequest();
+    NoResourceFoundException ex = new NoResourceFoundException(HttpMethod.GET, "v3/api-docs");
+
+    ResponseEntity<ApiResponse<?>> response = handler.handleNoResourceFoundException(ex, webRequest);
+
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    assertFalse(response.getBody().isType());
+    assertEquals("İstenen adres bulunamadı", response.getBody().getMessage());
   }
 
   @Test
