@@ -18,7 +18,7 @@ import com.hakandincturk.dtos.contact.request.ContactFilterRequestDto;
 import com.hakandincturk.dtos.contact.request.CreateContactRequestDto;
 import com.hakandincturk.dtos.contact.request.UpdateMyContactRequestDto;
 import com.hakandincturk.dtos.contact.response.ListMyContactsResponseDto;
-import com.hakandincturk.security.JwtAuthentication;
+import com.hakandincturk.security.UserSessionAuthentication;
 import com.hakandincturk.services.abstracts.ContactService;
 import com.hakandincturk.webapi.controllers.BaseController;
 import com.hakandincturk.webapi.controllers.abstracts.ContactController;
@@ -41,8 +41,8 @@ public class ContactControllerImpl extends BaseController implements ContactCont
   @Operation(summary = "Create Contact", description = "Kullanıcının yeni kişi oluşturmasını sağlar")
   public ApiResponse<?> createContact(@Valid @RequestBody CreateContactRequestDto body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       contactService.createAccount(userId, body);
       return success("Kişi oluşturuldu", null);
     }
@@ -55,8 +55,8 @@ public class ContactControllerImpl extends BaseController implements ContactCont
   @GetMapping(value = "/my/active")
   public ApiResponse<PagedResponse<ListMyContactsResponseDto>> listMyActiveContacts(@ModelAttribute ContactFilterRequestDto pageData) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       return successPaged("Kişi listeniz getirildi", contactService.listMyActiveContacts(userId, pageData));
     }
     else {
@@ -68,8 +68,8 @@ public class ContactControllerImpl extends BaseController implements ContactCont
   @PutMapping(value = "/my/{contactId}")
   public ApiResponse<?> updateMyAccount(@PathVariable(value = "contactId") Long contactId, @RequestBody UpdateMyContactRequestDto body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       contactService.updateMyContact(userId, contactId, body);
       return success("Kişi başarılı bir şekilde güncellendi", null);
     }
@@ -82,8 +82,8 @@ public class ContactControllerImpl extends BaseController implements ContactCont
   @DeleteMapping(value = "/my/{contactId}")
   public ApiResponse<?> deleteContact(@PathVariable(name = "contactId") Long contactId) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       contactService.deleteContact(userId, contactId);
       return success("Kişi başarılı bir şekilde silindi", null);
     }

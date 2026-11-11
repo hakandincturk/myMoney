@@ -29,9 +29,11 @@ class CorsConfigTest {
   }
 
   @Test
-  @DisplayName("Environment değişkeni verilmediğinde tüm origin'lere izin verilmeli")
-  void resolveAllowedOrigins_shouldDefaultToWildcard() {
-    assertEquals(List.of("*"), registeredPatterns("*"));
+  @DisplayName("Environment değişkeni verilmediğinde yalnız lokal geliştirme origin'leri izinli olmalı (wildcard yok)")
+  void resolveAllowedOrigins_shouldDefaultToLocalDevOrigins() {
+    assertEquals(
+      List.of("http://localhost:5173", "http://localhost:5174"),
+      registeredPatterns(CorsConfig.DEFAULT_ALLOWED_ORIGINS));
   }
 
   @Test
@@ -51,15 +53,26 @@ class CorsConfigTest {
   }
 
   @Test
-  @DisplayName("Wildcard ile birlikte allowCredentials açık kalmalı")
-  void corsConfiguration_shouldKeepCredentialsEnabledWithWildcard() {
+  @DisplayName("Wildcard origin reddedilmeli: cookie oturumunda CSRF korumasını sessizce kapatır")
+  void resolveAllowedOrigins_shouldRejectWildcard() {
+    for (String value : new String[] {"*", "https://mymoney.hakandincturk.com,*", "https://*.hakandincturk.com"}) {
+      CorsConfig config = new CorsConfig();
+      ReflectionTestUtils.setField(config, "allowedOrigins", value);
+
+      IllegalStateException ex = assertThrows(IllegalStateException.class, config::corsConfigurationSource, value);
+      assertTrue(ex.getMessage().contains("cors.allowed-origins"), ex.getMessage());
+    }
+  }
+
+  @Test
+  @DisplayName("Açık origin listesiyle allowCredentials açık kalmalı ve allowedOrigins kullanılmamalı")
+  void corsConfiguration_shouldKeepCredentialsEnabled() {
     CorsConfig config = new CorsConfig();
-    ReflectionTestUtils.setField(config, "allowedOrigins", "*");
+    ReflectionTestUtils.setField(config, "allowedOrigins", "https://mymoney.hakandincturk.com");
 
     UrlBasedCorsConfigurationSource source = (UrlBasedCorsConfigurationSource) config.corsConfigurationSource();
     CorsConfiguration configuration = source.getCorsConfigurations().get("/**");
 
-    // allowedOrigins("*") + allowCredentials would blow up at runtime; patterns must be used instead
     assertNull(configuration.getAllowedOrigins());
     assertEquals(Boolean.TRUE, configuration.getAllowCredentials());
   }

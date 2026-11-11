@@ -25,7 +25,7 @@ import com.hakandincturk.dtos.contact.request.ContactFilterRequestDto;
 import com.hakandincturk.dtos.contact.request.CreateContactRequestDto;
 import com.hakandincturk.dtos.contact.request.UpdateMyContactRequestDto;
 import com.hakandincturk.dtos.contact.response.ListMyContactsResponseDto;
-import com.hakandincturk.security.JwtAuthentication;
+import com.hakandincturk.security.UserSessionAuthentication;
 import com.hakandincturk.services.abstracts.ContactService;
 import com.hakandincturk.webapi.controllers.impl.ContactControllerImpl;
 
@@ -42,7 +42,7 @@ class ContactControllerTest {
 
   @BeforeEach
   void setUpSecurity() {
-    JwtAuthentication auth = new JwtAuthentication("test@test.com", null, List.of(), USER_ID);
+    UserSessionAuthentication auth = new UserSessionAuthentication("test@test.com", List.of(), USER_ID, null);
     SecurityContextHolder.getContext().setAuthentication(auth);
   }
 

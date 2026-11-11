@@ -29,7 +29,7 @@ import com.hakandincturk.dtos.report.response.ReportSummaryResponseDto;
 import com.hakandincturk.dtos.report.response.ReportTagBreakdownResponseDto;
 import com.hakandincturk.dtos.report.response.ReportTimelineResponseDto;
 import com.hakandincturk.dtos.report.response.ReportTopExpensesResponseDto;
-import com.hakandincturk.security.JwtAuthentication;
+import com.hakandincturk.security.UserSessionAuthentication;
 import com.hakandincturk.services.abstracts.ReportService;
 import com.hakandincturk.webapi.controllers.impl.ReportControllerImpl;
 
@@ -46,7 +46,7 @@ class ReportControllerTest {
 
   @BeforeEach
   void setUpSecurity() {
-    JwtAuthentication auth = new JwtAuthentication("test@test.com", null, List.of(), USER_ID);
+    UserSessionAuthentication auth = new UserSessionAuthentication("test@test.com", List.of(), USER_ID, null);
     SecurityContextHolder.getContext().setAuthentication(auth);
   }
 

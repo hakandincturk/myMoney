@@ -25,7 +25,7 @@ import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.tag.request.FilterListUserTags;
 import com.hakandincturk.dtos.tag.response.ListUserTagsDto;
 import com.hakandincturk.dtos.tag.response.ListUserTagsWithTransactionCountDto;
-import com.hakandincturk.security.JwtAuthentication;
+import com.hakandincturk.security.UserSessionAuthentication;
 import com.hakandincturk.services.abstracts.TagService;
 import com.hakandincturk.webapi.controllers.impl.TagControllerImpl;
 
@@ -42,7 +42,7 @@ class TagControllerTest {
 
   @BeforeEach
   void setUpSecurity() {
-    JwtAuthentication auth = new JwtAuthentication("test@test.com", null, List.of(), USER_ID);
+    UserSessionAuthentication auth = new UserSessionAuthentication("test@test.com", List.of(), USER_ID, null);
     SecurityContextHolder.getContext().setAuthentication(auth);
   }
 

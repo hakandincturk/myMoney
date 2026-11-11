@@ -25,7 +25,7 @@ import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.installment.request.FilterListMyInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.response.ListMySpecificDateInstallmentsResponseDto;
-import com.hakandincturk.security.JwtAuthentication;
+import com.hakandincturk.security.UserSessionAuthentication;
 import com.hakandincturk.services.abstracts.InstallmentService;
 import com.hakandincturk.webapi.controllers.impl.InstallmentControllerImpl;
 
@@ -42,7 +42,7 @@ class InstallmentControllerTest {
 
   @BeforeEach
   void setUpSecurity() {
-    JwtAuthentication auth = new JwtAuthentication("test@test.com", null, List.of(), USER_ID);
+    UserSessionAuthentication auth = new UserSessionAuthentication("test@test.com", List.of(), USER_ID, null);
     SecurityContextHolder.getContext().setAuthentication(auth);
   }
 

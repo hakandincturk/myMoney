@@ -23,8 +23,13 @@ public class UnauthorizedResponseWriter {
   private final ObjectMapper objectMapper;
 
   public void write(HttpServletResponse response, String message) throws IOException {
+    write(response, HttpServletResponse.SC_UNAUTHORIZED, message);
+  }
+
+  /** Same ApiResponse body with another status, e.g. 403 from the origin check. */
+  public void write(HttpServletResponse response, int status, String message) throws IOException {
     ApiResponse<Object> api = new ApiResponse<>(false, message, LocalDateTime.now(), null);
-    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+    response.setStatus(status);
     response.setContentType("application/json;charset=UTF-8");
     objectMapper.writeValue(response.getWriter(), api);
     response.getWriter().flush();

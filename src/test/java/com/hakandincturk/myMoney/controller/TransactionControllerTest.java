@@ -33,7 +33,7 @@ import com.hakandincturk.dtos.transaction.request.TransactionFilterRequestDto;
 import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 import com.hakandincturk.dtos.transaction.response.ListTagTransactionsResponseDto;
-import com.hakandincturk.security.JwtAuthentication;
+import com.hakandincturk.security.UserSessionAuthentication;
 import com.hakandincturk.services.abstracts.TransactionService;
 import com.hakandincturk.webapi.controllers.impl.TransactionControllerImpl;
 
@@ -50,7 +50,7 @@ class TransactionControllerTest {
 
   @BeforeEach
   void setUpSecurity() {
-    JwtAuthentication auth = new JwtAuthentication("test@test.com", null, List.of(), USER_ID);
+    UserSessionAuthentication auth = new UserSessionAuthentication("test@test.com", List.of(), USER_ID, null);
     SecurityContextHolder.getContext().setAuthentication(auth);
   }
 

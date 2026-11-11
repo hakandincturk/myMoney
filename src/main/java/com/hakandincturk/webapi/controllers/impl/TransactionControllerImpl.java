@@ -23,7 +23,7 @@ import com.hakandincturk.dtos.transaction.response.ListTagTransactionsResponseDt
 import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
 import com.hakandincturk.dtos.transaction.response.UpdateTransactionTagsResponseDto;
-import com.hakandincturk.security.JwtAuthentication;
+import com.hakandincturk.security.UserSessionAuthentication;
 import com.hakandincturk.services.abstracts.TransactionService;
 import com.hakandincturk.webapi.controllers.BaseController;
 import com.hakandincturk.webapi.controllers.abstracts.TransactionController;
@@ -47,8 +47,8 @@ public class TransactionControllerImpl extends BaseController implements Transac
   @Operation(summary = "Create Transaction and installments", description = "Yeni borç girişi oluşturulmasını sağlar")
   public ApiResponse<?> createTransaction(@Valid @RequestBody CreateTransactionRequestDto body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       transactionService.createTransaction(userId, body);
       return success("Borç girişi başarıyla tamamlandı", null);
     }
@@ -62,8 +62,8 @@ public class TransactionControllerImpl extends BaseController implements Transac
   @Operation(summary = "List my transactions", description = "Borçların listelenmesini sağlar")
   public ApiResponse<PagedResponse<ListMyTransactionsResponseDto>> listMyTransactions(@ModelAttribute TransactionFilterRequestDto pageData) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       return successPaged("Borçlar başarıyla getirildi", transactionService.listMyTransactions(userId, pageData));
     }
     else {
@@ -76,8 +76,8 @@ public class TransactionControllerImpl extends BaseController implements Transac
   @Operation(summary = "Delete my transactions", description = "Borcun silinmesini sağlar")
   public ApiResponse<?> deleteMyTransaction(@PathVariable(value = "transactionId") Long transactionId) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       transactionService.deleteMyTransaction(userId, transactionId);
       return success("Borç başarıyla silindi", null);
     }
@@ -91,8 +91,8 @@ public class TransactionControllerImpl extends BaseController implements Transac
   @Operation(summary = "List transaction installments", description = "Gelir/Gider'in taksitlerini listeler")
   public ApiResponse<List<ListInstallments>> listTransactionInstallments(@PathVariable(value = "transactionId") Long transactionId) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       return success("Aylık taksitler getirildi", transactionService.listTransactionInstallments(userId, transactionId));
     }
     else {
@@ -105,8 +105,8 @@ public class TransactionControllerImpl extends BaseController implements Transac
   @Operation(summary = "List Tag Transactions", description = "Bir etiketin Gelir/Giderlerini listeler")
   public ApiResponse<PagedResponse<ListTagTransactionsResponseDto>> listTagTransactions(@PathVariable(value = "tagId") Long tagId, @RequestBody TagTransactionsFilterRequestDto body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       return successPaged("Etiket gelir/giderleri getirildi", transactionService.listTagTransactions(userId, tagId, body));
     }
     else {
@@ -119,8 +119,8 @@ public class TransactionControllerImpl extends BaseController implements Transac
   @Operation(summary = "Update transaction tags", description = "Gelir/Gider'in etiketlerini günceller; aynı isimde etiket varsa yenisi açılmaz")
   public ApiResponse<UpdateTransactionTagsResponseDto> updateTransactionTags(@PathVariable(value = "transactionId") Long transactionId, @RequestBody UpdateTransactionTagsRequestDto body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       return success("Etiketler güncellendi", transactionService.updateTransactionTags(userId, transactionId, body));
     }
     else {

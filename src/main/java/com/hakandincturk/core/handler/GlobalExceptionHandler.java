@@ -47,10 +47,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ApiResponse<?>> handleUnauthorizedException(UnauthorizedException ex, WebRequest request){
     Map<String, String> errorDetails = new HashMap<>();
     errorDetails.put("path", request.getDescription(false).substring(4));
-    String token = request.getHeader("Authorization");
-    if(token != null){
-      errorDetails.put("token", token);
-    }
+    // Credentials are never echoed back in error bodies.
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(createApiResponse(ex.getMessage(), errorDetails));
   }
 

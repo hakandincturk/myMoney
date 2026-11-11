@@ -17,7 +17,7 @@ import com.hakandincturk.dtos.tag.request.FilterListUserTags;
 import com.hakandincturk.dtos.tag.request.RenameTagRequestDto;
 import com.hakandincturk.dtos.tag.response.ListUserTagsDto;
 import com.hakandincturk.dtos.tag.response.ListUserTagsWithTransactionCountDto;
-import com.hakandincturk.security.JwtAuthentication;
+import com.hakandincturk.security.UserSessionAuthentication;
 import com.hakandincturk.services.abstracts.TagService;
 import com.hakandincturk.webapi.controllers.BaseController;
 import com.hakandincturk.webapi.controllers.abstracts.TagController;
@@ -40,8 +40,8 @@ public class TagControllerImpl extends BaseController implements TagController {
   @Operation(summary = "Get user tags", description = "Kullanıcıya ait etiketleri getirir")
   public ApiResponse<PagedResponse<ListUserTagsDto>> listUserTags(@ModelAttribute FilterListUserTags body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       return successPaged("Etiketler getirildi", tagService.listUserTags(userId, body));
     }
     else {
@@ -55,8 +55,8 @@ public class TagControllerImpl extends BaseController implements TagController {
   @Operation(summary = "Get user tags with transaction count", description = "Kullanıcıya ait etiketleri gelir/gider sayıları ile beraber getirir")
   public ApiResponse<PagedResponse<ListUserTagsWithTransactionCountDto>> listUserTagsWithTransactionCount(FilterListUserTags body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       return successPaged("Kullanıcı etiketleri getirildi", tagService.listUserTagsWithTransactionCount(userId, body));
     }
     else {
@@ -69,8 +69,8 @@ public class TagControllerImpl extends BaseController implements TagController {
   @Operation(summary = "Delete tag", description = "Kullanıcıya ait etiketi siler")
   public ApiResponse<?> deleteTag(@PathVariable(name = "tagId") Long tagId) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       tagService.deleteTag(userId, tagId);
       return success("Etiket başarıyla silindi", null);
     }
@@ -84,8 +84,8 @@ public class TagControllerImpl extends BaseController implements TagController {
   @Operation(summary = "Rename tag", description = "Kullanıcıya ait etiketi yeniden adlandırır; aynı isimde başka etiket varsa hata döner")
   public ApiResponse<?> renameTag(@PathVariable(name = "tagId") Long tagId, @Valid @RequestBody RenameTagRequestDto body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       tagService.renameTag(userId, tagId, body);
       return success("Etiket yeniden adlandırıldı", null);
     }

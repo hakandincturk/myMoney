@@ -28,7 +28,7 @@ import com.hakandincturk.dtos.SortablePageRequest;
 import com.hakandincturk.dtos.account.request.CreateAccountRequestDto;
 import com.hakandincturk.dtos.account.request.UpdateAccountRequestDto;
 import com.hakandincturk.dtos.account.response.ListMyAccountsResponseDto;
-import com.hakandincturk.security.JwtAuthentication;
+import com.hakandincturk.security.UserSessionAuthentication;
 import com.hakandincturk.services.abstracts.AccountService;
 import com.hakandincturk.webapi.controllers.impl.AccountControllerImpl;
 
@@ -45,7 +45,7 @@ class AccountControllerTest {
 
   @BeforeEach
   void setUpSecurity() {
-    JwtAuthentication auth = new JwtAuthentication("test@test.com", null, List.of(), USER_ID);
+    UserSessionAuthentication auth = new UserSessionAuthentication("test@test.com", List.of(), USER_ID, null);
     SecurityContextHolder.getContext().setAuthentication(auth);
   }
 
