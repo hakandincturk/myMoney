@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import com.hakandincturk.core.enums.DashboardTagSummarySumMode;
 import com.hakandincturk.core.enums.InstallmentStatuses;
-import com.hakandincturk.core.enums.PeriodKind;
 import com.hakandincturk.core.enums.ReportFlowTypes;
 import com.hakandincturk.dtos.report.request.ReportRecurringRequestDto;
 import com.hakandincturk.dtos.report.request.ReportSummaryRequestDto;
@@ -92,7 +91,8 @@ public class ReportServiceImpl implements ReportService {
 
     int daysInMonth = currentPeriod.lengthOfMonth();
     int daysElapsed = ReportPeriodUtils.divisorDayCount(currentPeriod, today);
-    BigDecimal averageDailyExpense = ReportMathUtils.divide(currentTotals.getExpense(), daysElapsed);
+    // Yalnız gerçekleşen gider bölünür; ayın ilerisindeki planlı taksitler geçen günlere yayılmamalı
+    BigDecimal averageDailyExpense = ReportMathUtils.divide(currentTotals.getRealizedExpense(), daysElapsed);
 
     ReportSummaryResponseDto response = new ReportSummaryResponseDto();
     response.setPrevious(periodTotals.get(previousPeriod));
@@ -104,7 +104,6 @@ public class ReportServiceImpl implements ReportService {
     response.setAverageDailyExpense(averageDailyExpense);
     response.setDaysInMonth(daysInMonth);
     response.setDaysElapsed(daysElapsed);
-    response.setProjectedMonthEndExpense(this.projectMonthEndExpense(currentTotals, averageDailyExpense, daysInMonth));
     response.setBusiestDay(this.findBusiestDay(userId, currentPeriod));
     response.setTopTag(reportTagFactory.buildTopTag(tagRows));
 
@@ -333,17 +332,6 @@ public class ReportServiceImpl implements ReportService {
     }
 
     return projectedDebtByMonth;
-  }
-
-  /**
-   * İçinde bulunulan ayda ay sonu gideri için naif doğrusal tahmin; diğer aylarda ayın kendi gideri.
-  */
-  private BigDecimal projectMonthEndExpense(PeriodTotalsDto currentTotals, BigDecimal averageDailyExpense, int daysInMonth){
-    if(currentTotals.getKind() != PeriodKind.PARTIAL){
-      return ReportMathUtils.money(currentTotals.getExpense());
-    }
-
-    return ReportMathUtils.money(averageDailyExpense.multiply(BigDecimal.valueOf(daysInMonth)));
   }
 
   private List<InstallmentTagAmountProjection> loadTagRows(Long userId, ReportFlowTypes flowType, YearMonth period){

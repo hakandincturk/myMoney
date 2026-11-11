@@ -1,48 +1,48 @@
 {
-    [1m"type"[0m: [1;34mtrue[0m,
-    [1m"message"[0m: [32m"Etiket bazl\u0131 k\u0131r\u0131l\u0131m getirildi"[0m,
-    [1m"timestamp"[0m: [32m"2026-08-03T16:51:27.803123"[0m,
-    [1m"data"[0m: {
-        [1m"items"[0m: [
+    "type": true,
+    "message": "Etiket bazl\u0131 k\u0131r\u0131l\u0131m getirildi",
+    "timestamp": "2026-08-03T16:51:27.803123",
+    "data": {
+        "items": [
             {
-                [1m"tagId"[0m: [33m2[0m,
-                [1m"name"[0m: [32m"Ev"[0m,
-                [1m"amount"[0m: [33m12000.0[0m,
-                [1m"percentage"[0m: [33m41.62[0m,
-                [1m"previousAmount"[0m: [33m12000.0[0m,
-                [1m"changeRate"[0m: [33m0.0[0m,
-                [1m"transactionCount"[0m: [33m1[0m
+                "tagId": 2,
+                "name": "Ev",
+                "amount": 12000.0,
+                "percentage": 41.62,
+                "previousAmount": 12000.0,
+                "changeRate": 0.0,
+                "transactionCount": 1
             },
             {
-                [1m"tagId"[0m: [33m1[0m,
-                [1m"name"[0m: [32m"Market"[0m,
-                [1m"amount"[0m: [33m8400.0[0m,
-                [1m"percentage"[0m: [33m29.14[0m,
-                [1m"previousAmount"[0m: [33m6270.0[0m,
-                [1m"changeRate"[0m: [33m33.97[0m,
-                [1m"transactionCount"[0m: [33m1[0m
+                "tagId": 1,
+                "name": "Market",
+                "amount": 8400.0,
+                "percentage": 29.14,
+                "previousAmount": 6270.0,
+                "changeRate": 33.97,
+                "transactionCount": 1
             },
             {
-                [1m"tagId"[0m: [1;34mnull[0m,
-                [1m"name"[0m: [32m"UNTAGGED"[0m,
-                [1m"amount"[0m: [33m8200.0[0m,
-                [1m"percentage"[0m: [33m28.44[0m,
-                [1m"previousAmount"[0m: [33m5000.0[0m,
-                [1m"changeRate"[0m: [33m64.0[0m,
-                [1m"transactionCount"[0m: [33m2[0m
+                "tagId": null,
+                "name": "UNTAGGED",
+                "amount": 8200.0,
+                "percentage": 28.44,
+                "previousAmount": 5000.0,
+                "changeRate": 64.0,
+                "transactionCount": 2
             },
             {
-                [1m"tagId"[0m: [33m3[0m,
-                [1m"name"[0m: [32m"Abonelik"[0m,
-                [1m"amount"[0m: [33m229.0[0m,
-                [1m"percentage"[0m: [33m0.79[0m,
-                [1m"previousAmount"[0m: [33m229.0[0m,
-                [1m"changeRate"[0m: [33m0.0[0m,
-                [1m"transactionCount"[0m: [33m1[0m
+                "tagId": 3,
+                "name": "Abonelik",
+                "amount": 229.0,
+                "percentage": 0.79,
+                "previousAmount": 229.0,
+                "changeRate": 0.0,
+                "transactionCount": 1
             }
         ],
-        [1m"total"[0m: [33m28829.0[0m,
-        [1m"previousTotal"[0m: [33m23499.0[0m,
-        [1m"untaggedAmount"[0m: [33m8200.0[0m
+        "total": 28829.0,
+        "previousTotal": 23499.0,
+        "untaggedAmount": 8200.0
     }
 }

@@ -162,10 +162,9 @@ export namespace ReportDTOs {
     deltaVsPrevious: PeriodDelta       // previous -> current, denominator = previous
     deltaVsNext: PeriodDelta           // current -> next, denominator = current
     savingRate: number                 // %, can be negative, not clamped
-    averageDailyExpense: number        // expense / daysElapsed
+    averageDailyExpense: number        // current.realizedExpense / daysElapsed
     daysInMonth: number                // 28..31
     daysElapsed: number                // divisor used above; PARTIAL month -> days so far
-    projectedMonthEndExpense: number   // PARTIAL: naive linear estimate, otherwise = expense
     busiestDay: BusiestDay | null      // null when the month has no expense
     topTag: TopTag | null              // null when the month has no expense
   }
@@ -309,14 +308,15 @@ tek bir `DeltaBadge` bileşeni her ikisinde de kullanılabilir.
 **`savingRate`** — negatif olabilir (gider > gelir). Backend clamp etmiyor; görsel olarak
 clamp'lersen ham değeri tooltip'te göster.
 
-**`averageDailyExpense` + `daysElapsed` + `daysInMonth` + `projectedMonthEndExpense`** birlikte
-kullanılır:
-- `kind === 'PARTIAL'` ise etiket **"bugüne kadar günlük ort."** olmalı (`daysElapsed` gün üzerinden),
-  ve yanında `projectedMonthEndExpense` "ay sonu tahmini" olarak gösterilmeli.
-- Diğer aylarda `daysElapsed === daysInMonth` ve `projectedMonthEndExpense === expense`; etiket
-  sade "günlük ort." olur, tahmin gösterilmez.
-- `projectedMonthEndExpense` **naif doğrusal tahmindir** (günlük ortalama × ayın gün sayısı). Ayın
-  başında çok yüksek çıkabilir — "tahmin" olduğunu UI'da açıkça belirt.
+**`averageDailyExpense` + `daysElapsed` + `daysInMonth`** birlikte kullanılır:
+- `averageDailyExpense` = **gerçekleşen** giderin geçen güne bölümü (`current.realizedExpense / daysElapsed`).
+  Pay ve payda aynı aralığı kapsar: "bugüne kadar fiilen harcanan / bugüne kadar geçen gün".
+- **Ay sonu tahmini diye bir alan yok ve gerekmiyor.** Her gider bir taksitten gelir ve vadesi baştan
+  bellidir; ayın toplam gideri zaten `current.expense`'tir. Ayın ilerisindeki kısmı `pendingExpense`.
+- `kind === 'PARTIAL'` → önerilen kart metni: *"Günlük ort. (gerçekleşen) ₺3.867 · 3/31 gün"* + alt
+  satır *"Ay toplamı ₺28.829 — ₺17.229'u planlı"*.
+- `ACTUAL` → `daysElapsed === daysInMonth`, etiket sade "günlük ort.".
+- `PROJECTED` → henüz gerçekleşen gider olmadığı için `averageDailyExpense === 0`; bu doğru davranıştır.
 
 **İki kalan borç metriği** — karıştırma:
 - `cumulativeRemainingDebt`: geçmişe bakar, o ayın sonunda fiilen taşınan borç. Gelecek aylarda düz
@@ -372,13 +372,11 @@ Aşağıdakiler backend'den gerçek HTTP çağrılarıyla alınmıştır (refera
  "next":{"year":2026,"month":9,"label":"SEPTEMBER","kind":"PROJECTED","income":48500.00,"expense":12000.00,"net":36500.00,"realizedIncome":0.00,"pendingIncome":48500.00,"realizedExpense":0.00,"pendingExpense":12000.00,"transactionCount":2,"installmentCount":2},
  "deltaVsPrevious":{"incomeChangeRate":13.33,"expenseChangeRate":22.68,"netChangeAmount":670.00},
  "deltaVsNext":{"incomeChangeRate":-4.9,"expenseChangeRate":-58.38,"netChangeAmount":14329.00},
- "savingRate":43.47,"averageDailyExpense":9609.67,"daysInMonth":31,"daysElapsed":3,
- "projectedMonthEndExpense":297899.77,
+ "savingRate":43.47,"averageDailyExpense":3866.67,"daysInMonth":31,"daysElapsed":3,
  "busiestDay":{"date":"2026-08-15","amount":12000.00},
  "topTag":{"tagId":2,"name":"Ev","amount":12000.00,"share":41.62}}}
 ```
-Not: `projectedMonthEndExpense` ayın 3'ünde alınmış naif tahmindir; bu yüzden bu kadar yüksek.
-UI'da mutlaka "tahmin" olarak etiketle.
+Not: `averageDailyExpense` = `realizedExpense / daysElapsed` = `11600 / 3` = `3866.67`.
 
 ### `GET /report/timeline?year=2026&month=8&pastMonths=2&futureMonths=2`
 ```json
@@ -468,7 +466,11 @@ Bunlar için **yeni endpoint yok**, client-side hesaplanacak:
 - `percentage` toplamı `DOUBLE_COUNT` modunda %100'ü aşar — pasta grafikte kullanma.
 - `total` / `untaggedAmount` / `monthlyFixedCost` limit'ten bağımsızdır, `items` üzerinden yeniden
   hesaplama.
-- `projectedMonthEndExpense` ay başında çok yüksek çıkar; "tahmin" etiketi olmadan gösterme.
+- `INSTALLMENT` kayıtlarında `occurrenceCount` `minOccurrence`'tan küçük olabilir (ör. Buzdolabı `2`):
+  bu kayıtlar kurala tekrar sayısıyla değil `total_installment >= minOccurrence` ile girer. Tutarsız
+  veri sanıp filtreleme.
+- `averageAmount = totalAmount / monthsSpan`; `monthsSpan` işlemin **geçtiği farklı ay** sayısıdır,
+  takvim aralığı değil. Aynı ayda iki geçiş varsa `occurrenceCount > monthsSpan` olur.
 - Grafikte `projectedRemainingDebt` çizilir; `cumulativeRemainingDebt` gelecekte düz gider ve
   yanlış okunur.
 - `timeline` hem geçmiş hem gelecek içerir; `PROJECTED` noktaları gerçekleşmiş gibi gösterme.

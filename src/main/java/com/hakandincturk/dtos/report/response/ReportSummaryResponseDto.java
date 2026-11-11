@@ -28,7 +28,11 @@ public class ReportSummaryResponseDto {
 
   private Double savingRate;
 
-  /** Ayın gideri / daysElapsed. */
+  /**
+   * Gerçekleşen giderin geçen güne bölümü (realizedExpense / daysElapsed); pay ve payda aynı aralığı kapsar.
+   * Ayın toplam gideri zaten current.expense alanındadır ve planlı taksitler nedeniyle baştan bilinir;
+   * bu yüzden ayrıca bir "ay sonu tahmini" alanı gereksizdir.
+   */
   private BigDecimal averageDailyExpense;
 
   /** Seçilen ayın toplam gün sayısı. */
@@ -36,9 +40,6 @@ public class ReportSummaryResponseDto {
 
   /** averageDailyExpense hesabında kullanılan bölen; içinde bulunulan ayda bugüne kadarki gün sayısı. */
   private Integer daysElapsed;
-
-  /** İçinde bulunulan ayda naif doğrusal ay sonu tahmini, diğer aylarda ayın kendi gideri. */
-  private BigDecimal projectedMonthEndExpense;
 
   private BusiestDayDto busiestDay;
   private TopTagDto topTag;
