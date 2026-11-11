@@ -3,16 +3,12 @@ package com.hakandincturk.services.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 
@@ -20,7 +16,6 @@ import com.hakandincturk.core.enums.AccountTypes;
 import com.hakandincturk.core.enums.DashboardTagSummarySumMode;
 import com.hakandincturk.core.enums.DashboardTagSummaryTypes;
 import com.hakandincturk.core.enums.InstallmentStatuses;
-import com.hakandincturk.core.enums.MonthlySummeryTypes;
 import com.hakandincturk.core.enums.TransactionStatuses;
 import com.hakandincturk.core.enums.TransactionTypes;
 import com.hakandincturk.dtos.dashboard.response.MonthlyTrendResponseDto;
@@ -31,19 +26,20 @@ import com.hakandincturk.dtos.dashboard.response.IncomingInstallmentsDataDto;
 import com.hakandincturk.dtos.dashboard.response.IncomingInstallmentsResponseDto;
 import com.hakandincturk.dtos.dashboard.response.LastTransactionDataDto;
 import com.hakandincturk.dtos.dashboard.response.LastTransactionsResponseDto;
-import com.hakandincturk.dtos.dashboard.response.MonthlyTrendDataDto;
 import com.hakandincturk.dtos.dashboard.response.QuickViewIncomeAndExpenseDetailDto;
 import com.hakandincturk.dtos.dashboard.response.QuickViewResponseDto;
+import com.hakandincturk.dtos.report.response.PeriodTotalsDto;
+import com.hakandincturk.factories.DashboardSummaryFactory;
+import com.hakandincturk.factories.ReportPeriodFactory;
+import com.hakandincturk.repositories.projections.MonthlyTypeAmountProjection;
 import com.hakandincturk.mappers.InstallmentMapper;
 import com.hakandincturk.mappers.TransactionMapper;
 import com.hakandincturk.models.Tag;
 import com.hakandincturk.models.Installment;
-import com.hakandincturk.models.MonthlySummary;
 import com.hakandincturk.models.Transaction;
 import com.hakandincturk.models.TransactionTag;
 import com.hakandincturk.repositories.AccountRepository;
 import com.hakandincturk.repositories.InstallmentRepository;
-import com.hakandincturk.repositories.MonthlySummaryRepository;
 import com.hakandincturk.repositories.TransactionRepository;
 import com.hakandincturk.repositories.projections.InstallmentTagAmountProjection;
 import com.hakandincturk.services.abstracts.DashboardService;
@@ -63,11 +59,14 @@ public class DashboardServiceImpl implements DashboardService {
   private final AccountRepository accountRepository;
   private final TransactionRepository transactionRepository;
   private final InstallmentRepository installmentRepository;
-  private final MonthlySummaryRepository monthlySummaryRepository;
   private final TransactionMapper transactionMapper;
   private final InstallmentMapper installmentMapper;
+  private final ReportPeriodFactory reportPeriodFactory;
+  private final DashboardSummaryFactory dashboardSummaryFactory;
 
   private static final BigDecimal ZERO = BigDecimal.ZERO;
+  private static final int TREND_PAST_MONTHS = 6;
+  private static final int TREND_FUTURE_MONTHS = 5;
 
   @Override
   public QuickViewResponseDto quickViewResponse(Long userId) {
@@ -75,63 +74,18 @@ public class DashboardServiceImpl implements DashboardService {
     List<AccountTypes> accountTypes = List.of(AccountTypes.BANK, AccountTypes.CASH);
     BigDecimal totalBalance = accountRepository.sumBalanceByUserIdAndTypes(userId, accountTypes);
 
-    QuickViewIncomeAndExpenseDetailDto incomeDetail = new QuickViewIncomeAndExpenseDetailDto();
-    QuickViewIncomeAndExpenseDetailDto expenseDetail = new QuickViewIncomeAndExpenseDetailDto();
+    LocalDate today = LocalDate.now();
+    YearMonth currentPeriod = YearMonth.from(today);
+    YearMonth previousPeriod = currentPeriod.minusMonths(1);
 
-    LocalDateTime currentDate = LocalDateTime.now();
-    LocalDateTime prevMonth = currentDate.minusMonths(1);
+    // Computed live from installments on every request, so a deleted or edited transaction is reflected immediately
+    Map<YearMonth, PeriodTotalsDto> totalsByDebtDate = this.loadTotalsByDebtDate(userId, previousPeriod, currentPeriod, today);
+    PeriodTotalsDto currentByDebtDate = totalsByDebtDate.get(currentPeriod);
+    PeriodTotalsDto previousByDebtDate = totalsByDebtDate.get(previousPeriod);
+    PeriodTotalsDto currentByPaidDate = this.loadTotalsByPaidDate(userId, currentPeriod, currentPeriod, today).get(currentPeriod);
 
-    // debtDate'e gore monthly summary
-    Optional<MonthlySummary> dbMonthlyTransactionSummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndTypeAndIsRemovedFalse(userId, currentDate.getYear(), currentDate.getMonthValue(), MonthlySummeryTypes.TRANSACTION);
-
-    // paymentDate'e gore monthly summary
-    Optional<MonthlySummary> dbMonthlyPaymentSummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndTypeAndIsRemovedFalse(userId, currentDate.getYear(), currentDate.getMonthValue(), MonthlySummeryTypes.PAYMENT);
-
-    // onceki ay paymentDate'e gore monthly summary
-    Optional<MonthlySummary> dbPrevMonthlPaymentSummary = monthlySummaryRepository.findByUser_IdAndYearAndMonthAndTypeAndIsRemovedFalse(userId, prevMonth.getYear(), prevMonth.getMonthValue(), MonthlySummeryTypes.PAYMENT);
-
-    incomeDetail.setOccured(ZERO);
-    incomeDetail.setWaiting(ZERO);
-    incomeDetail.setLastMonthChangeRate(Double.valueOf(0));
-
-    expenseDetail.setOccured(ZERO);
-    expenseDetail.setWaiting(ZERO);
-    expenseDetail.setLastMonthChangeRate(Double.valueOf(0));
-
-    if(!dbMonthlyTransactionSummary.isEmpty()) {
-      MonthlySummary monthlTransactionSummary = dbMonthlyTransactionSummary.get();
-      incomeDetail.setWaiting(monthlTransactionSummary.getTotalWaitingIncome());
-      expenseDetail.setWaiting(monthlTransactionSummary.getTotalWaitingExpense());
-
-      if(!dbMonthlyPaymentSummary.isEmpty()){
-      MonthlySummary monthlPaymentSummary = dbMonthlyPaymentSummary.get();
-        incomeDetail.setOccured(monthlPaymentSummary.getTotalIncome());
-        expenseDetail.setOccured(monthlPaymentSummary.getTotalExpense());
-      }
-
-      if(!dbPrevMonthlPaymentSummary.isEmpty()) {
-        // bu ay ve bir onceki ay toplam gelir
-        MonthlySummary prevMonthlyPaymentSummary = dbPrevMonthlPaymentSummary.get();
-        BigDecimal totalPrevIncome = prevMonthlyPaymentSummary.getTotalIncome();
-        BigDecimal totalIncome = monthlTransactionSummary.getTotalWaitingIncome().add(monthlTransactionSummary.getTotalIncome());
-
-        // bu ay ve bir onceki ay toplam gider
-        BigDecimal totalPrevMonthExpense = prevMonthlyPaymentSummary.getTotalExpense();
-        BigDecimal totalExpense = monthlTransactionSummary.getTotalExpense().add(monthlTransactionSummary.getTotalWaitingExpense());
-
-        // ((gecen ay gelir - bu ay gelir)/gecen ay gelir)*100
-        BigDecimal incomeDiffrence = totalIncome.subtract(totalPrevIncome);
-        BigDecimal incomeChangeRate = incomeDiffrence.signum() == 0 || totalPrevIncome.signum() == 0 ? ZERO : incomeDiffrence.divide(totalPrevIncome, 2, RoundingMode.HALF_EVEN).multiply(BigDecimal.valueOf(100));;
-        incomeDetail.setLastMonthChangeRate(incomeChangeRate.doubleValue());
-
-        // ((gecen ay gider - bu ay gider)/gecen ay gelir)*100
-        BigDecimal expenseDiffrence = totalExpense.subtract(totalPrevMonthExpense);
-        BigDecimal expenseChangeRate = expenseDiffrence.signum() == 0 || totalPrevMonthExpense.signum() == 0 ? ZERO : expenseDiffrence.divide(totalPrevMonthExpense, 2, RoundingMode.HALF_EVEN).multiply(BigDecimal.valueOf(100));
-        expenseDetail.setLastMonthChangeRate(Double.valueOf(expenseChangeRate.doubleValue()));
-
-        // expenseDetail.setOccured(prevMonthlyPaymentSummary.getTotalExpense());
-      }
-    }
+    QuickViewIncomeAndExpenseDetailDto incomeDetail = dashboardSummaryFactory.buildIncomeDetail(currentByDebtDate, previousByDebtDate, currentByPaidDate);
+    QuickViewIncomeAndExpenseDetailDto expenseDetail = dashboardSummaryFactory.buildExpenseDetail(currentByDebtDate, previousByDebtDate, currentByPaidDate);
 
     BigDecimal totalIncome = incomeDetail.getWaiting().add(incomeDetail.getOccured());
     // Gerçekleşen gider de hesaba katılır; aksi halde oran şişik çıkar ve rapor ekranıyla çelişir
@@ -155,44 +109,41 @@ public class DashboardServiceImpl implements DashboardService {
 
   @Override
   public MonthlyTrendResponseDto monthlyTrend(Long userId) {
-    LocalDate currentDate = LocalDate.now().withDayOfMonth(1);
-    LocalDate firstDate = currentDate.minusMonths(6);
-    LocalDate endDate = currentDate.plusMonths(6);
+    LocalDate today = LocalDate.now();
+    YearMonth currentPeriod = YearMonth.from(today);
+    // 6 months back to 5 months ahead: the same 12-month window the chart always had
+    YearMonth firstPeriod = currentPeriod.minusMonths(TREND_PAST_MONTHS);
+    YearMonth lastPeriod = currentPeriod.plusMonths(TREND_FUTURE_MONTHS);
 
-    List<MonthlySummary> oldSummaries = monthlySummaryRepository.findByUser_IdAndSummaryDateBetweenAndTypeAndIsRemovedFalse(userId, firstDate, currentDate.minusMonths(1), MonthlySummeryTypes.TRANSACTION);
-    List<MonthlySummary> futureSummaries = monthlySummaryRepository.findByUser_IdAndSummaryDateBetweenAndTypeAndIsRemovedFalse(userId, currentDate, endDate, MonthlySummeryTypes.TRANSACTION);
-    List<MonthlySummary> allSummaries = Stream.concat(oldSummaries.stream(), futureSummaries.stream()).toList();
+    // One grouped query for the whole window, not one per month
+    Map<YearMonth, PeriodTotalsDto> totalsByDebtDate = this.loadTotalsByDebtDate(userId, firstPeriod, lastPeriod, today);
 
-    Map<LocalDate, MonthlySummary> summaryMap = allSummaries.stream()
-      .collect(Collectors.toMap(MonthlySummary::getSummaryDate, Function.identity()));
-
-    List<MonthlyTrendDataDto> monthlyTrendDatas = new ArrayList<>();
-    LocalDate dateCursor = firstDate;
-    while(dateCursor.isBefore(endDate)){
-      MonthlySummary monthlySummary = summaryMap.get(dateCursor);
-      MonthlyTrendDataDto monthlyTrendData = new MonthlyTrendDataDto();
-
-      if(monthlySummary == null){
-        monthlyTrendData.setExpense(ZERO);
-        monthlyTrendData.setIncome(ZERO);
-        monthlyTrendData.setTitle(dateCursor.getMonth().toString());
-      }
-      else{
-        BigDecimal income = monthlySummary.getTotalIncome().add(monthlySummary.getTotalWaitingIncome());
-        BigDecimal expense = monthlySummary.getTotalExpense().add(monthlySummary.getTotalWaitingExpense());
-
-        monthlyTrendData.setIncome(income);
-        monthlyTrendData.setExpense(expense);
-        monthlyTrendData.setTitle(monthlySummary.getSummaryDate().getMonth().toString());
-      }
-
-      monthlyTrendDatas.add(monthlyTrendData);
-      dateCursor = dateCursor.plusMonths(1);
-    }
     MonthlyTrendResponseDto responseData = new MonthlyTrendResponseDto();
-    responseData.setMonthlyTrendData(monthlyTrendDatas);
+    responseData.setMonthlyTrendData(dashboardSummaryFactory.buildTrend(totalsByDebtDate, firstPeriod, lastPeriod));
 
     return responseData;
+  }
+
+  /**
+   * Month totals by due date (paid and still waiting), from the same query and factory the reports use.
+  */
+  private Map<YearMonth, PeriodTotalsDto> loadTotalsByDebtDate(Long userId, YearMonth firstPeriod, YearMonth lastPeriod, LocalDate today){
+    List<MonthlyTypeAmountProjection> amounts = installmentRepository.sumMonthlyAmountsByTypeAndPaidState(
+      userId, firstPeriod.atDay(1), lastPeriod.atEndOfMonth(), InstallmentStatuses.SKIPPED
+    );
+
+    return reportPeriodFactory.buildPeriodTotals(firstPeriod, lastPeriod, amounts, List.of(), today);
+  }
+
+  /**
+   * Month totals by the date the installments were paid; every amount lands in the paid (realized) bucket.
+  */
+  private Map<YearMonth, PeriodTotalsDto> loadTotalsByPaidDate(Long userId, YearMonth firstPeriod, YearMonth lastPeriod, LocalDate today){
+    List<MonthlyTypeAmountProjection> amounts = installmentRepository.sumPaidAmountsByPaidMonthAndType(
+      userId, firstPeriod.atDay(1), lastPeriod.atEndOfMonth(), InstallmentStatuses.SKIPPED
+    );
+
+    return reportPeriodFactory.buildPeriodTotals(firstPeriod, lastPeriod, amounts, List.of(), today);
   }
 
   @Override

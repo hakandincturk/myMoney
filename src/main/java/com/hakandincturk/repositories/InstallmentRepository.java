@@ -170,6 +170,36 @@ public interface InstallmentRepository extends JpaRepository<Installment, Long>,
   );
 
   /**
+   * Dashboard: paid amounts grouped by the month they were paid in and by transaction type.
+   * Every row is paid, so the projection's paid flag is always true. Income/expense split is left
+   * to TransactionClassifier, the same as the debt-date query above.
+  */
+  @Query("""
+    SELECT new com.hakandincturk.repositories.projections.MonthlyTypeAmountProjection(
+      year(i.paidDate),
+      month(i.paidDate),
+      t.type,
+      i.isPaid,
+      sum(i.amount)
+    )
+    FROM Installment i
+    JOIN i.transaction t
+    WHERE t.user.id = :userId
+      AND i.isRemoved = false
+      AND t.isRemoved = false
+      AND i.status <> :skippedStatus
+      AND i.isPaid = true
+      AND i.paidDate BETWEEN :startDate AND :endDate
+    GROUP BY year(i.paidDate), month(i.paidDate), t.type, i.isPaid
+      """)
+  List<MonthlyTypeAmountProjection> sumPaidAmountsByPaidMonthAndType(
+    @Param("userId") Long userId,
+    @Param("startDate") LocalDate startDate,
+    @Param("endDate") LocalDate endDate,
+    @Param("skippedStatus") InstallmentStatuses skippedStatus
+  );
+
+  /**
    * Rapor: vade tarihine göre ay bazlı ödenmemiş taksit tutarları.
    * "Plana uyulursa borç nasıl erir" projeksiyonunun girdisidir.
   */

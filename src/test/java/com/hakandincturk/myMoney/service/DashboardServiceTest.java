@@ -6,21 +6,21 @@ import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.hakandincturk.core.enums.AccountTypes;
 import com.hakandincturk.core.enums.DashboardTagSummarySumMode;
 import com.hakandincturk.core.enums.DashboardTagSummaryTypes;
 import com.hakandincturk.core.enums.InstallmentStatuses;
-import com.hakandincturk.core.enums.MonthlySummeryTypes;
 import com.hakandincturk.core.enums.TransactionTypes;
 import com.hakandincturk.dtos.dashboard.request.TagSummaryRequestDto;
 import com.hakandincturk.dtos.dashboard.response.IncomingInstallmentsResponseDto;
@@ -31,14 +31,15 @@ import com.hakandincturk.dtos.dashboard.response.TagSummaryResponseDto;
 import com.hakandincturk.mappers.InstallmentMapper;
 import com.hakandincturk.mappers.TransactionMapper;
 import com.hakandincturk.models.Installment;
-import com.hakandincturk.models.MonthlySummary;
 import com.hakandincturk.models.Transaction;
 import com.hakandincturk.models.TransactionTag;
 import com.hakandincturk.models.Tag;
 import com.hakandincturk.repositories.AccountRepository;
 import com.hakandincturk.repositories.InstallmentRepository;
-import com.hakandincturk.repositories.MonthlySummaryRepository;
 import com.hakandincturk.repositories.TransactionRepository;
+import com.hakandincturk.repositories.projections.MonthlyTypeAmountProjection;
+import com.hakandincturk.factories.ReportPeriodFactory;
+import com.hakandincturk.factories.DashboardSummaryFactory;
 import com.hakandincturk.repositories.projections.InstallmentTagAmountProjection;
 import com.hakandincturk.services.impl.DashboardServiceImpl;
 import com.hakandincturk.services.rules.DashboardRules;
@@ -57,26 +58,23 @@ class DashboardServiceTest {
   private TransactionRepository transactionRepository;
   @Mock
   private InstallmentRepository installmentRepository;
-  @Mock
-  private MonthlySummaryRepository monthlySummaryRepository;
+  // Real factories: the live calculation is verified end to end, only the queries are mocked
+  @Spy
+  private ReportPeriodFactory reportPeriodFactory = new ReportPeriodFactory();
+  @Spy
+  private DashboardSummaryFactory dashboardSummaryFactory = new DashboardSummaryFactory();
   @Mock
   private TransactionMapper transactionMapper;
   @Mock
   private InstallmentMapper installmentMapper;
 
   @Test
-  @DisplayName("QuickView - aylık özet olmadığında sıfır değerler döndürülmeli")
-  void quickViewResponse_shouldReturnZeros_whenNoMonthlySummary() {
+  @DisplayName("QuickView - hiç taksit yokken sıfır değerler döndürülmeli")
+  void quickViewResponse_shouldReturnZeros_whenNoInstallments() {
     Long userId = 1L;
 
     when(accountRepository.sumBalanceByUserIdAndTypes(eq(userId), anyList()))
         .thenReturn(BigDecimal.valueOf(10000));
-    when(monthlySummaryRepository.findByUser_IdAndYearAndMonthAndTypeAndIsRemovedFalse(
-        eq(userId), anyInt(), anyInt(), eq(MonthlySummeryTypes.TRANSACTION)))
-        .thenReturn(Optional.empty());
-    when(monthlySummaryRepository.findByUser_IdAndYearAndMonthAndTypeAndIsRemovedFalse(
-        eq(userId), anyInt(), anyInt(), eq(MonthlySummeryTypes.PAYMENT)))
-        .thenReturn(Optional.empty());
     when(transactionRepository.findWaitingTransactionCount(eq(userId), anyList(), anyList()))
         .thenReturn(0L);
 
@@ -84,48 +82,75 @@ class DashboardServiceTest {
 
     assertNotNull(result);
     assertEquals(BigDecimal.valueOf(10000), result.getTotalBalance());
-    assertEquals(BigDecimal.ZERO, result.getIncome().getOccured());
-    assertEquals(BigDecimal.ZERO, result.getExpense().getOccured());
+    assertEquals(0, BigDecimal.ZERO.compareTo(result.getIncome().getOccured()));
+    assertEquals(0, BigDecimal.ZERO.compareTo(result.getExpense().getOccured()));
+    assertEquals(0, BigDecimal.ZERO.compareTo(result.getIncome().getWaiting()));
+    // Nothing was due last month either, so there is no base for a change rate
+    assertNull(result.getIncome().getLastMonthChangeRate());
     assertEquals(0, result.getWaitingInstallments());
   }
 
   @Test
-  @DisplayName("QuickView - aylık özet varken değerler doğru hesaplanmalı")
-  void quickViewResponse_shouldCalculateCorrectly_whenMonthlySummaryExists() {
+  @DisplayName("QuickView - taksitlerden canlı hesaplanmalı: bekleyen vade ayına, gerçekleşen ödeme ayına göre")
+  void quickViewResponse_shouldCalculateLiveFromInstallments() {
     Long userId = 1L;
-
-    MonthlySummary transactionSummary = new MonthlySummary();
-    transactionSummary.setTotalIncome(BigDecimal.valueOf(5000));
-    transactionSummary.setTotalExpense(BigDecimal.valueOf(3000));
-    transactionSummary.setTotalWaitingIncome(BigDecimal.valueOf(2000));
-    transactionSummary.setTotalWaitingExpense(BigDecimal.valueOf(1000));
-
-    MonthlySummary paymentSummary = new MonthlySummary();
-    paymentSummary.setTotalIncome(BigDecimal.valueOf(4000));
-    paymentSummary.setTotalExpense(BigDecimal.valueOf(2500));
+    YearMonth current = YearMonth.now();
+    YearMonth previous = current.minusMonths(1);
 
     when(accountRepository.sumBalanceByUserIdAndTypes(eq(userId), anyList()))
         .thenReturn(BigDecimal.valueOf(10000));
-    when(monthlySummaryRepository.findByUser_IdAndYearAndMonthAndTypeAndIsRemovedFalse(
-        eq(userId), anyInt(), anyInt(), eq(MonthlySummeryTypes.TRANSACTION)))
-        .thenReturn(Optional.of(transactionSummary));
-    when(monthlySummaryRepository.findByUser_IdAndYearAndMonthAndTypeAndIsRemovedFalse(
-        eq(userId), anyInt(), anyInt(), eq(MonthlySummeryTypes.PAYMENT)))
-        .thenReturn(Optional.of(paymentSummary));
+    // Due this month: income 5000 paid + 2000 waiting, expense 3000 paid + 1000 waiting
+    // Due last month: income 6000, expense 1500 paid + 500 still unpaid
+    when(installmentRepository.sumMonthlyAmountsByTypeAndPaidState(userId, previous.atDay(1), current.atEndOfMonth(), InstallmentStatuses.SKIPPED))
+        .thenReturn(List.of(
+            amount(current, TransactionTypes.CREDIT, true, 5000),
+            amount(current, TransactionTypes.CREDIT, false, 2000),
+            amount(current, TransactionTypes.DEBT, true, 3000),
+            amount(current, TransactionTypes.DEBT, false, 1000),
+            amount(previous, TransactionTypes.CREDIT, true, 6000),
+            amount(previous, TransactionTypes.DEBT, true, 1500),
+            amount(previous, TransactionTypes.DEBT, false, 500)
+        ));
+    // Paid this month: income 4000, expense 2500
+    when(installmentRepository.sumPaidAmountsByPaidMonthAndType(userId, current.atDay(1), current.atEndOfMonth(), InstallmentStatuses.SKIPPED))
+        .thenReturn(List.of(
+            amount(current, TransactionTypes.CREDIT, true, 4000),
+            amount(current, TransactionTypes.DEBT, true, 2500)
+        ));
     when(transactionRepository.findWaitingTransactionCount(eq(userId), anyList(), anyList()))
         .thenReturn(5L);
 
     QuickViewResponseDto result = dashboardService.quickViewResponse(userId);
 
-    assertNotNull(result);
-    assertEquals(BigDecimal.valueOf(2000), result.getIncome().getWaiting());
-    assertEquals(BigDecimal.valueOf(1000), result.getExpense().getWaiting());
-    assertEquals(BigDecimal.valueOf(4000), result.getIncome().getOccured());
-    assertEquals(BigDecimal.valueOf(2500), result.getExpense().getOccured());
+    assertEquals(0, BigDecimal.valueOf(2000).compareTo(result.getIncome().getWaiting()));
+    assertEquals(0, BigDecimal.valueOf(1000).compareTo(result.getExpense().getWaiting()));
+    assertEquals(0, BigDecimal.valueOf(4000).compareTo(result.getIncome().getOccured()));
+    assertEquals(0, BigDecimal.valueOf(2500).compareTo(result.getExpense().getOccured()));
     assertEquals(5, result.getWaitingInstallments());
+
+    // Due totals vs. due totals: (7000 - 6000) / 6000 and (4000 - 2000) / 2000
+    assertEquals(16.67, result.getIncome().getLastMonthChangeRate());
+    assertEquals(100.0, result.getExpense().getLastMonthChangeRate());
 
     // Tasarruf oranı hem gerçekleşen hem bekleyen gideri kapsar: (6000 - 3500) / 6000 * 100
     assertEquals(41.67, result.getSavingRate());
+  }
+
+  @Test
+  @DisplayName("QuickView - bu ay vadesi olan taksit yokken bu ay yapılan ödemeler gösterilmeli")
+  void quickViewResponse_shouldShowPaymentsMadeThisMonth_whenNothingIsDueThisMonth() {
+    Long userId = 1L;
+    YearMonth current = YearMonth.now();
+
+    when(installmentRepository.sumPaidAmountsByPaidMonthAndType(eq(userId), any(), any(), eq(InstallmentStatuses.SKIPPED)))
+        .thenReturn(List.of(amount(current, TransactionTypes.DEBT, true, 750)));
+    when(transactionRepository.findWaitingTransactionCount(eq(userId), anyList(), anyList()))
+        .thenReturn(0L);
+
+    QuickViewResponseDto result = dashboardService.quickViewResponse(userId);
+
+    // The old cache showed 0 here because the month had no summary row
+    assertEquals(0, BigDecimal.valueOf(750).compareTo(result.getExpense().getOccured()));
   }
 
   @Test
@@ -163,23 +188,44 @@ class DashboardServiceTest {
   }
 
   @Test
-  @DisplayName("Aylık trend - boş veri olduğunda sıfır değerlerle dönmeli")
+  @DisplayName("Aylık trend - boş veri olduğunda 12 ay sıfır değerlerle dönmeli")
   void monthlyTrend_shouldReturnZeroValues_whenNoData() {
     Long userId = 1L;
 
-    when(monthlySummaryRepository.findByUser_IdAndSummaryDateBetweenAndTypeAndIsRemovedFalse(
-        eq(userId), any(LocalDate.class), any(LocalDate.class), eq(MonthlySummeryTypes.TRANSACTION)))
-        .thenReturn(List.of());
+    MonthlyTrendResponseDto result = dashboardService.monthlyTrend(userId);
+
+    assertEquals(12, result.getMonthlyTrendData().size());
+    result.getMonthlyTrendData().forEach(data -> {
+      assertEquals(0, BigDecimal.ZERO.compareTo(data.getIncome()));
+      assertEquals(0, BigDecimal.ZERO.compareTo(data.getExpense()));
+    });
+  }
+
+  @Test
+  @DisplayName("Aylık trend - tüm pencere tek sorguyla çekilmeli, aylar vade ayına göre dolmalı")
+  void monthlyTrend_shouldQueryWholeWindowOnce() {
+    Long userId = 1L;
+    YearMonth current = YearMonth.now();
+    YearMonth first = current.minusMonths(6);
+    YearMonth last = current.plusMonths(5);
+
+    when(installmentRepository.sumMonthlyAmountsByTypeAndPaidState(userId, first.atDay(1), last.atEndOfMonth(), InstallmentStatuses.SKIPPED))
+        .thenReturn(List.of(
+            amount(current, TransactionTypes.CREDIT, true, 1000),
+            amount(current, TransactionTypes.CREDIT, false, 500),
+            amount(last, TransactionTypes.DEBT, false, 1234)
+        ));
 
     MonthlyTrendResponseDto result = dashboardService.monthlyTrend(userId);
 
-    assertNotNull(result);
-    assertNotNull(result.getMonthlyTrendData());
-    assertTrue(result.getMonthlyTrendData().size() > 0);
-    result.getMonthlyTrendData().forEach(data -> {
-      assertEquals(BigDecimal.ZERO, data.getIncome());
-      assertEquals(BigDecimal.ZERO, data.getExpense());
-    });
+    verify(installmentRepository, times(1)).sumMonthlyAmountsByTypeAndPaidState(eq(userId), any(), any(), any());
+    assertEquals(first.getMonth().toString(), result.getMonthlyTrendData().get(0).getTitle());
+    assertEquals(0, BigDecimal.valueOf(1500).compareTo(result.getMonthlyTrendData().get(6).getIncome()));
+    assertEquals(0, BigDecimal.valueOf(1234).compareTo(result.getMonthlyTrendData().get(11).getExpense()));
+  }
+
+  private MonthlyTypeAmountProjection amount(YearMonth period, TransactionTypes type, boolean paid, int value) {
+    return new MonthlyTypeAmountProjection(period.getYear(), period.getMonthValue(), type, paid, BigDecimal.valueOf(value));
   }
 
   @Test
