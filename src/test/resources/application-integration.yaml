@@ -17,6 +17,3 @@ spring:
     locations: classpath:db/migration
     clean-disabled: false
 
-jwt:
-  secret:
-    key: dGVzdC1zZWNyZXQta2V5LWZvci1pbnRlZ3JhdGlvbi10ZXN0cw==

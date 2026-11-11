@@ -1,0 +1,16 @@
+package com.hakandincturk.core.config;
+
+import java.time.Clock;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/** Single time source so time-dependent services can be tested with a fixed clock. */
+@Configuration
+public class ClockConfig {
+
+  @Bean
+  public Clock clock() {
+    return Clock.systemUTC();
+  }
+}

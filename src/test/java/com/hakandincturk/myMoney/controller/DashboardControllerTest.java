@@ -26,7 +26,7 @@ import com.hakandincturk.dtos.dashboard.response.LastTransactionsResponseDto;
 import com.hakandincturk.dtos.dashboard.response.MonthlyTrendResponseDto;
 import com.hakandincturk.dtos.dashboard.response.QuickViewResponseDto;
 import com.hakandincturk.dtos.dashboard.response.TagSummaryResponseDto;
-import com.hakandincturk.security.JwtAuthentication;
+import com.hakandincturk.security.UserSessionAuthentication;
 import com.hakandincturk.services.abstracts.DashboardService;
 import com.hakandincturk.webapi.controllers.impl.DashboardControllerImpl;
 
@@ -43,7 +43,7 @@ class DashboardControllerTest {
 
   @BeforeEach
   void setUpSecurity() {
-    JwtAuthentication auth = new JwtAuthentication("test@test.com", null, List.of(), USER_ID);
+    UserSessionAuthentication auth = new UserSessionAuthentication("test@test.com", List.of(), USER_ID, null);
     SecurityContextHolder.getContext().setAuthentication(auth);
   }
 

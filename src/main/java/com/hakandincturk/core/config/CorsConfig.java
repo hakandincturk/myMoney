@@ -18,11 +18,17 @@ public class CorsConfig {
 
 	/**
 	 * Comma-separated list of allowed origins, e.g. "https://domain1.com,https://domain2.com".
-	 * Defaults to "*" (every origin) when CORS_ALLOWED_ORIGINS is not supplied, so the same jar
-	 * runs unchanged on localhost, on a bare IP, or behind a domain without a rebuild.
+	 * Defaults to the local dev origins when CORS_ALLOWED_ORIGINS is not supplied; production sets it
+	 * in /opt/mymoney/config/.env.
 	 */
-	@Value("${cors.allowed-origins:*}")
+	@Value("${cors.allowed-origins:" + DEFAULT_ALLOWED_ORIGINS + "}")
 	private String allowedOrigins;
+
+	/**
+	 * Local Vite dev/preview origins. No wildcard: session cookies are sent with credentials and
+	 * the origin check (OriginCheckFilter) uses this list, so an unset value must fail closed.
+	 */
+	public static final String DEFAULT_ALLOWED_ORIGINS = "http://localhost:5173,http://localhost:5174";
 
 	/**
 	 * Splits the configured value and drops blank entries, so a trailing comma or stray
@@ -32,6 +38,13 @@ public class CorsConfig {
 		List<String> origins = new ArrayList<>();
 		for (String origin : allowedOrigins.split(",")) {
 			String trimmed = origin.trim();
+			if (trimmed.contains("*")) {
+				// A wildcard would make OriginCheckFilter accept every origin and silently switch off the
+				// CSRF guard for cookie sessions (SameSite=Strict still sends the cookie from sibling
+				// *.hakandincturk.com sites). Refuse to start instead.
+				throw new IllegalStateException(
+					"cors.allowed-origins must list exact origins; wildcards are not allowed: " + trimmed);
+			}
 			if (!trimmed.isEmpty()) {
 				origins.add(trimmed);
 			}
@@ -47,9 +60,7 @@ public class CorsConfig {
 			@Override
 			public void addCorsMappings(@NonNull CorsRegistry registry) {
 				registry.addMapping("/**")
-					// allowedOriginPatterns instead of allowedOrigins: Spring rejects the literal "*"
-					// in allowedOrigins while allowCredentials is true. Patterns accept both "*" and
-					// exact origins, so a single code path covers every configuration.
+					// allowedOriginPatterns with exact origins only (wildcards are rejected above).
 					.allowedOriginPatterns(originPatterns)
 					.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
 					.allowedHeaders("*")

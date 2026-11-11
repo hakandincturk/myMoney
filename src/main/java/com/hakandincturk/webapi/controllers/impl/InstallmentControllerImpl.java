@@ -15,7 +15,7 @@ import com.hakandincturk.dtos.installment.request.FilterListMyInstallmentRequest
 import com.hakandincturk.dtos.installment.request.PayInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.request.UpdateInstallmentRequestDto;
 import com.hakandincturk.dtos.installment.response.ListMySpecificDateInstallmentsResponseDto;
-import com.hakandincturk.security.JwtAuthentication;
+import com.hakandincturk.security.UserSessionAuthentication;
 import com.hakandincturk.services.abstracts.InstallmentService;
 import com.hakandincturk.webapi.controllers.BaseController;
 import com.hakandincturk.webapi.controllers.abstracts.InstallmentController;
@@ -37,8 +37,8 @@ public class InstallmentControllerImpl extends BaseController implements Install
   @Operation(summary = "Get monthly installments", description = "Aylık taksitleri listelemeyi sağlar")
   public ApiResponse<PagedResponse<ListMySpecificDateInstallmentsResponseDto>> listMySpecisifDateInstallments(FilterListMyInstallmentRequestDto pageData) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       return successPaged("Aylık borçlarınız getirildi", installmentService.listMySpecisifDateInstallments(userId, pageData));
     }
     else {
@@ -50,8 +50,8 @@ public class InstallmentControllerImpl extends BaseController implements Install
   @PatchMapping(value = "/pay")
   public ApiResponse<?> payInstallment(@RequestBody PayInstallmentRequestDto body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       installmentService.payInstallments(userId, body);
       return success("Aylık taksit ödendi");
     }
@@ -65,8 +65,8 @@ public class InstallmentControllerImpl extends BaseController implements Install
   @Operation(summary = "Update installment", description = "Taksit tutarını veya durumunu günceller")
   public ApiResponse<?> updateInstallment(@PathVariable Long installmentId, @RequestBody UpdateInstallmentRequestDto body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       installmentService.updateInstallment(userId, installmentId, body);
       return success("Taksit güncellendi");
     }

@@ -86,28 +86,17 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  @DisplayName("UnauthorizedException 401 döndürmeli")
-  void handleUnauthorizedException_shouldReturn401() {
+  @DisplayName("UnauthorizedException 401 döndürmeli ve gelen kimlik bilgisini gövdeye yazmamalı")
+  void handleUnauthorizedException_shouldReturn401_withoutEchoingCredentials() {
     setupWebRequest();
-    when(webRequest.getHeader("Authorization")).thenReturn("Bearer token123");
+    lenient().when(webRequest.getHeader("Authorization")).thenReturn("Bearer token123");
     UnauthorizedException ex = new UnauthorizedException("Yetkisiz erişim");
 
     ResponseEntity<ApiResponse<?>> response = handler.handleUnauthorizedException(ex, webRequest);
 
     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     assertEquals("Yetkisiz erişim", response.getBody().getMessage());
-  }
-
-  @Test
-  @DisplayName("UnauthorizedException token olmadan 401 döndürmeli")
-  void handleUnauthorizedException_withoutToken_shouldReturn401() {
-    setupWebRequest();
-    when(webRequest.getHeader("Authorization")).thenReturn(null);
-    UnauthorizedException ex = new UnauthorizedException("Yetkisiz");
-
-    ResponseEntity<ApiResponse<?>> response = handler.handleUnauthorizedException(ex, webRequest);
-
-    assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    assertFalse(String.valueOf(response.getBody().getData()).contains("token123"), String.valueOf(response.getBody().getData()));
   }
 
   @Test

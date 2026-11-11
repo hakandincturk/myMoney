@@ -20,11 +20,11 @@ class ErrorResponseFormatIntegrationTest extends BaseIntegrationTest {
   private MockMvc mockMvc;
 
   @Test
-  @DisplayName("Geçersiz token ile istek 401 dönmeli ve timestamp ISO string olmalı")
+  @DisplayName("Geçersiz session cookie ile istek 401 dönmeli ve timestamp ISO string olmalı")
   void unauthorizedResponse_shouldUseIsoStringTimestamp() throws Exception {
     String body = mockMvc.perform(MockMvcRequestBuilders.get("/report/summary?year=2026&month=6")
             .servletPath("/report/summary")
-            .header("Authorization", "Bearer gecersiz.token.degeri"))
+            .cookie(new jakarta.servlet.http.Cookie("mm_session", "gecersiz-token")))
         .andReturn()
         .getResponse()
         .getContentAsString();
@@ -35,7 +35,7 @@ class ErrorResponseFormatIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  @DisplayName("Authorization header olmadan istek 401 dönmeli ve timestamp ISO string olmalı")
+  @DisplayName("Session cookie olmadan istek 401 dönmeli ve timestamp ISO string olmalı")
   void missingTokenResponse_shouldUseIsoStringTimestamp() throws Exception {
     String body = mockMvc.perform(MockMvcRequestBuilders.get("/report/summary?year=2026&month=6")
             .servletPath("/report/summary"))

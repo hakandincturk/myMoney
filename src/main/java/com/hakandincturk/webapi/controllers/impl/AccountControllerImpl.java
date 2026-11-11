@@ -18,7 +18,7 @@ import com.hakandincturk.dtos.SortablePageRequest;
 import com.hakandincturk.dtos.account.request.CreateAccountRequestDto;
 import com.hakandincturk.dtos.account.request.UpdateAccountRequestDto;
 import com.hakandincturk.dtos.account.response.ListMyAccountsResponseDto;
-import com.hakandincturk.security.JwtAuthentication;
+import com.hakandincturk.security.UserSessionAuthentication;
 import com.hakandincturk.services.abstracts.AccountService;
 import com.hakandincturk.utils.PaginationUtils;
 import com.hakandincturk.webapi.controllers.BaseController;
@@ -45,8 +45,8 @@ public class AccountControllerImpl extends BaseController implements AccountCont
   public ApiResponse<?> createAccount(@Valid @RequestBody CreateAccountRequestDto body) {
 
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       accountService.createAccount(body, userId);
 
       return success("Hesap başarılı bir şekilde oluşturuldu", null);
@@ -61,8 +61,8 @@ public class AccountControllerImpl extends BaseController implements AccountCont
   @Operation(summary = "List my active accounts", description = "Kullanıcının aktif olan hesaplarını listeler")
   public ApiResponse<PagedResponse<ListMyAccountsResponseDto>> listMyActiveAccounts(@ModelAttribute SortablePageRequest pageData) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       Pageable pageable = PaginationUtils.toPageable(pageData, AccountSortColumn.class);
       return successPaged("Hesaplarınız getirildi", accountService.listMyActiveAccounts(userId, pageable));
     }
@@ -76,8 +76,8 @@ public class AccountControllerImpl extends BaseController implements AccountCont
   @Operation(summary = "Update my account", description = "Kullanıcının hesap bilgilerini ve bakiyesini günceller")
   public ApiResponse<?> updateMyAccount(@PathVariable(value = "accountId") Long accountId, @Valid @RequestBody UpdateAccountRequestDto body) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    if(auth instanceof JwtAuthentication jwtAuth){
-      Long userId = jwtAuth.getUserId();
+    if(auth instanceof UserSessionAuthentication userAuth){
+      Long userId = userAuth.getUserId();
       accountService.updateMyAccount(userId, accountId, body);
       return success("Hesaplarınız güncellendi", null);
     }
