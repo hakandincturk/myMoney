@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,9 +18,11 @@ import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
 import com.hakandincturk.dtos.transaction.request.TagTransactionsFilterRequestDto;
 import com.hakandincturk.dtos.transaction.request.TransactionFilterRequestDto;
+import com.hakandincturk.dtos.transaction.request.UpdateTransactionTagsRequestDto;
 import com.hakandincturk.dtos.transaction.response.ListTagTransactionsResponseDto;
 import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
+import com.hakandincturk.dtos.transaction.response.UpdateTransactionTagsResponseDto;
 import com.hakandincturk.security.JwtAuthentication;
 import com.hakandincturk.services.abstracts.TransactionService;
 import com.hakandincturk.webapi.controllers.BaseController;
@@ -105,6 +108,20 @@ public class TransactionControllerImpl extends BaseController implements Transac
     if(auth instanceof JwtAuthentication jwtAuth){
       Long userId = jwtAuth.getUserId();
       return successPaged("Etiket gelir/giderleri getirildi", transactionService.listTagTransactions(userId, tagId, body));
+    }
+    else {
+      return error("Kullanıcı verilerine ulaşılamadı");
+    }
+  }
+
+  @Override
+  @PutMapping(value = "/my/{transactionId}/tags")
+  @Operation(summary = "Update transaction tags", description = "Gelir/Gider'in etiketlerini günceller; aynı isimde etiket varsa yenisi açılmaz")
+  public ApiResponse<UpdateTransactionTagsResponseDto> updateTransactionTags(@PathVariable(value = "transactionId") Long transactionId, @RequestBody UpdateTransactionTagsRequestDto body) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if(auth instanceof JwtAuthentication jwtAuth){
+      Long userId = jwtAuth.getUserId();
+      return success("Etiketler güncellendi", transactionService.updateTransactionTags(userId, transactionId, body));
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

@@ -7,9 +7,11 @@ import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
 import com.hakandincturk.dtos.transaction.request.TagTransactionsFilterRequestDto;
 import com.hakandincturk.dtos.transaction.request.TransactionFilterRequestDto;
+import com.hakandincturk.dtos.transaction.request.UpdateTransactionTagsRequestDto;
 import com.hakandincturk.dtos.transaction.response.ListTagTransactionsResponseDto;
 import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
+import com.hakandincturk.dtos.transaction.response.UpdateTransactionTagsResponseDto;
 
 public interface TransactionController {
   ApiResponse<?> createTransaction(CreateTransactionRequestDto body);
@@ -17,4 +19,5 @@ public interface TransactionController {
   ApiResponse<PagedResponse<ListMyTransactionsResponseDto>> listMyTransactions(TransactionFilterRequestDto pageData);
   ApiResponse<List<ListInstallments>> listTransactionInstallments(Long transactionId);
   ApiResponse<PagedResponse<ListTagTransactionsResponseDto>> listTagTransactions(Long tagId, TagTransactionsFilterRequestDto body);
+  ApiResponse<UpdateTransactionTagsResponseDto> updateTransactionTags(Long transactionId, UpdateTransactionTagsRequestDto body);
 }

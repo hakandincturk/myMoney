@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hakandincturk.core.specs.TagSpecification;
 import com.hakandincturk.dtos.tag.request.FilterListUserTags;
+import com.hakandincturk.dtos.tag.request.RenameTagRequestDto;
 import com.hakandincturk.dtos.tag.response.ListUserTagsDto;
 import com.hakandincturk.dtos.tag.response.ListUserTagsWithTransactionCountDto;
 import com.hakandincturk.mappers.TagMapper;
@@ -21,6 +22,7 @@ import com.hakandincturk.repositories.TransactionTagRepository;
 import com.hakandincturk.services.abstracts.TagService;
 import com.hakandincturk.services.rules.TagRules;
 import com.hakandincturk.utils.PaginationUtils;
+import com.hakandincturk.utils.TagNameUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -63,6 +65,18 @@ public class TagServiceImpl implements TagService {
     }
 
     tag.setRemoved(true);
+    tagRepository.save(tag);
+  }
+
+  @Override
+  @Transactional
+  public void renameTag(Long userId, Long tagId, RenameTagRequestDto body) {
+    Tag tag = tagRules.checkUserTagExistAndGet(userId, tagId);
+
+    // The tag itself is excluded, so changing only the letter case ("aylık" -> "Aylık") is allowed
+    tagRules.checkTagNameNotDuplicate(userId, body.getName(), tagId);
+
+    tag.setName(TagNameUtils.clean(body.getName()));
     tagRepository.save(tag);
   }
 }

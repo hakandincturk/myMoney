@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +30,8 @@ import com.hakandincturk.dtos.report.request.ReportSummaryRequestDto;
 import com.hakandincturk.dtos.report.request.ReportTagBreakdownRequestDto;
 import com.hakandincturk.dtos.report.request.ReportTimelineRequestDto;
 import com.hakandincturk.dtos.report.request.ReportTopExpensesRequestDto;
+import com.hakandincturk.dtos.report.response.RecurringItemDto;
+import com.hakandincturk.dtos.report.response.RecurringMonthAmountDto;
 import com.hakandincturk.dtos.report.response.ReportRecurringResponseDto;
 import com.hakandincturk.dtos.report.response.ReportSummaryResponseDto;
 import com.hakandincturk.dtos.report.response.ReportTagBreakdownResponseDto;
@@ -114,41 +117,59 @@ class ReportServiceTest {
   }
 
   @Test
-  @DisplayName("Özet - gün alanları ve ay sonu gider tahmini doldurulmalı")
-  void summary_shouldFillDayFieldsAndMonthEndProjection() {
+  @DisplayName("Özet - günlük ortalama yalnız gerçekleşen giderin geçen güne bölümü olmalı")
+  void summary_shouldAverageOnlyRealizedExpense_forCurrentMonth() {
     YearMonth current = YearMonth.now();
     LocalDate today = LocalDate.now();
 
+    // 3000 ödendi, 12000 ayın ilerisinde planlı; planlı kısım ortalamaya girmemeli
     when(installmentRepository.sumMonthlyAmountsByTypeAndPaidState(eq(USER_ID), any(), any(), eq(InstallmentStatuses.SKIPPED)))
-        .thenReturn(List.of(amount(current, TransactionTypes.DEBT, true, 3000)));
+        .thenReturn(List.of(
+            amount(current, TransactionTypes.DEBT, true, 3000),
+            amount(current, TransactionTypes.DEBT, false, 12000)
+        ));
 
     ReportSummaryResponseDto response = reportService.summary(USER_ID, summaryRequest(current));
 
     assertEquals(current.lengthOfMonth(), response.getDaysInMonth());
     assertEquals(today.getDayOfMonth(), response.getDaysElapsed());
+    // Ayın toplamı zaten biliniyor, ayrıca tahmin edilmez
+    assertEquals(0, BigDecimal.valueOf(15000).compareTo(response.getCurrent().getExpense()));
 
     BigDecimal expectedAverage = BigDecimal.valueOf(3000)
         .divide(BigDecimal.valueOf(today.getDayOfMonth()), 2, RoundingMode.HALF_UP);
     assertEquals(0, expectedAverage.compareTo(response.getAverageDailyExpense()));
-
-    // PARTIAL ayda ay sonu tahmini doğrusaldır: günlük ortalama x ayın gün sayısı
-    BigDecimal expectedProjection = expectedAverage.multiply(BigDecimal.valueOf(current.lengthOfMonth()));
-    assertEquals(0, expectedProjection.compareTo(response.getProjectedMonthEndExpense()));
   }
 
   @Test
-  @DisplayName("Özet - geçmiş ayda ay sonu tahmini ayın kendi gideri olmalı")
-  void summary_shouldNotProjectMonthEndExpense_forPastMonth() {
-    YearMonth past = YearMonth.now().minusMonths(3);
+  @DisplayName("Özet - geçmiş ayda günlük ortalama ayın tüm günlerine bölünmeli")
+  void summary_shouldDivideByWholeMonth_forPastMonth() {
+    YearMonth past = YearMonth.of(2026, 7);
 
     when(installmentRepository.sumMonthlyAmountsByTypeAndPaidState(eq(USER_ID), any(), any(), eq(InstallmentStatuses.SKIPPED)))
-        .thenReturn(List.of(amount(past, TransactionTypes.DEBT, true, 3000)));
+        .thenReturn(List.of(amount(past, TransactionTypes.DEBT, true, 23499)));
 
     ReportSummaryResponseDto response = reportService.summary(USER_ID, summaryRequest(past));
 
-    assertEquals(past.lengthOfMonth(), response.getDaysInMonth());
-    assertEquals(past.lengthOfMonth(), response.getDaysElapsed());
-    assertEquals(0, BigDecimal.valueOf(3000).compareTo(response.getProjectedMonthEndExpense()));
+    assertEquals(31, response.getDaysInMonth());
+    assertEquals(31, response.getDaysElapsed());
+    // 23499 / 31 = 758.03
+    assertEquals(0, new BigDecimal("758.03").compareTo(response.getAverageDailyExpense()));
+  }
+
+  @Test
+  @DisplayName("Özet - gelecek ayda henüz gerçekleşen gider olmadığı için günlük ortalama 0 olmalı")
+  void summary_shouldReturnZeroAverage_forProjectedMonth() {
+    YearMonth future = YearMonth.now().plusMonths(2);
+
+    when(installmentRepository.sumMonthlyAmountsByTypeAndPaidState(eq(USER_ID), any(), any(), eq(InstallmentStatuses.SKIPPED)))
+        .thenReturn(List.of(amount(future, TransactionTypes.DEBT, false, 5000)));
+
+    ReportSummaryResponseDto response = reportService.summary(USER_ID, summaryRequest(future));
+
+    assertEquals(PeriodKind.PROJECTED, response.getCurrent().getKind());
+    assertEquals(0, BigDecimal.valueOf(5000).compareTo(response.getCurrent().getExpense()));
+    assertEquals(0, BigDecimal.ZERO.compareTo(response.getAverageDailyExpense()));
   }
 
   @Test
@@ -247,6 +268,45 @@ class ReportServiceTest {
     assertEquals(0, BigDecimal.valueOf(1250).compareTo(points.get(0).getProjectedRemainingDebt()));
     assertEquals(0, BigDecimal.valueOf(850).compareTo(points.get(1).getProjectedRemainingDebt()));
     assertEquals(0, BigDecimal.valueOf(250).compareTo(points.get(2).getProjectedRemainingDebt()));
+  }
+
+  @Test
+  @DisplayName("Zaman serisi - çok taksitli işlemde projeksiyon borcu azalmalı, kalan borç gelecekte sabit kalmalı")
+  void timeline_shouldDecreaseProjectedDebt_whileCumulativeDebtStaysFlat() {
+    YearMonth center = YearMonth.of(2026, 6);
+    YearMonth firstDue = YearMonth.of(2026, 7);
+    YearMonth lastDue = firstDue.plusMonths(8);
+
+    // 12 taksitli işlemin kalan 9 taksiti: Temmuz 2026 - Mart 2027, her biri 1000, hiçbiri ödenmemiş
+    List<MonthlyAmountProjection> futureInstallments = new ArrayList<>();
+    for (YearMonth month = firstDue; !month.isAfter(lastDue); month = month.plusMonths(1)) {
+      futureInstallments.add(new MonthlyAmountProjection(month.getYear(), month.getMonthValue(), BigDecimal.valueOf(1000)));
+    }
+    when(installmentRepository.sumUnpaidAmountsByDebtMonth(eq(USER_ID), anyList(), any(), eq(InstallmentStatuses.SKIPPED)))
+        .thenReturn(futureInstallments);
+    when(installmentRepository.sumUnpaidAmount(eq(USER_ID), anyList(), eq(InstallmentStatuses.SKIPPED)))
+        .thenReturn(BigDecimal.valueOf(9000));
+
+    ReportTimelineResponseDto response = reportService.timeline(USER_ID, timelineRequest(center, 0, 12));
+
+    List<TimelinePointDto> points = response.getPoints();
+    assertEquals(13, points.size());
+
+    // Haziran sonu 9000, her ay bir taksit düşer, Mart 2027 sonunda 0
+    for (int index = 0; index <= 9; index++) {
+      BigDecimal expected = BigDecimal.valueOf(9000 - index * 1000L);
+      assertEquals(0, expected.compareTo(points.get(index).getProjectedRemainingDebt()), "index " + index);
+      if (index > 0) {
+        assertTrue(points.get(index).getProjectedRemainingDebt().compareTo(points.get(index - 1).getProjectedRemainingDebt()) < 0);
+      }
+    }
+    // Son taksitin ayından sonra 0'da kalır
+    for (int index = 10; index < points.size(); index++) {
+      assertEquals(0, BigDecimal.ZERO.compareTo(points.get(index).getProjectedRemainingDebt()));
+    }
+
+    // Aynı seride geriye bakan metrik gelecekte ödeme olmadığı için düz gider
+    points.forEach(point -> assertEquals(0, BigDecimal.valueOf(9000).compareTo(point.getCumulativeRemainingDebt())));
   }
 
   @Test
@@ -354,6 +414,43 @@ class ReportServiceTest {
     assertEquals("TX:1", response.getItems().get(0).getGroupKey());
     assertEquals(6, response.getItems().get(0).getAmountByMonth().size());
     assertEquals(1, response.getItems().get(0).getTags().size());
+  }
+
+  @Test
+  @DisplayName("Tekrar edenler - ortalama tekrar sayısına değil geçilen ay sayısına bölünmeli, boş ay 0 dönmeli")
+  void recurring_shouldAverageByMonthsSpan_whenOccurrencesAndMonthsDiffer() {
+    YearMonth current = YearMonth.now();
+    YearMonth threeMonthsAgo = current.minusMonths(3);
+    YearMonth twoMonthsAgo = current.minusMonths(2);
+    YearMonth lastMonth = current.minusMonths(1);
+
+    // 3 farklı ayda 4 geçiş: bir ay hiç yok, son ayda iki kez; tek taksitli olduğu için isimle gruplanır
+    when(installmentRepository.findRecurringCandidates(eq(USER_ID), anyList(), any(), any(), eq(InstallmentStatuses.SKIPPED)))
+        .thenReturn(List.of(
+            new RecurringInstallmentProjection(1L, "Kahve", 1, BigDecimal.valueOf(100), threeMonthsAgo.atDay(5)),
+            new RecurringInstallmentProjection(2L, "Kahve", 1, BigDecimal.valueOf(100), lastMonth.atDay(5)),
+            new RecurringInstallmentProjection(3L, "Kahve", 1, BigDecimal.valueOf(100), current.atDay(1)),
+            new RecurringInstallmentProjection(4L, "kahve ", 1, BigDecimal.valueOf(200), current.atDay(1))
+        ));
+
+    ReportRecurringResponseDto response = reportService.recurring(USER_ID, recurringRequest());
+
+    assertEquals(1, response.getItems().size());
+    RecurringItemDto item = response.getItems().get(0);
+    assertEquals(RecurringKinds.REPEATED, item.getKind());
+    assertEquals(4, item.getOccurrenceCount());
+    assertEquals(3, item.getMonthsSpan());
+    assertEquals(0, new BigDecimal("500.00").compareTo(item.getTotalAmount()));
+    // 500 / 3, 500 / 4 değil
+    assertEquals(0, new BigDecimal("166.67").compareTo(item.getAverageAmount()));
+
+    // Geçiş olmayan ay seride 0 ile korunur
+    RecurringMonthAmountDto gap = item.getAmountByMonth().stream()
+        .filter(month -> month.getYear() == twoMonthsAgo.getYear() && month.getMonth() == twoMonthsAgo.getMonthValue())
+        .findFirst()
+        .orElseThrow();
+    assertEquals(0, BigDecimal.ZERO.compareTo(gap.getAmount()));
+    assertEquals(0, new BigDecimal("300.00").compareTo(item.getAmountByMonth().getLast().getAmount()));
   }
 
   @Test

@@ -1,5 +1,6 @@
 package com.hakandincturk.myMoney.factory;
 
+import com.hakandincturk.models.TransactionTag;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
@@ -181,5 +182,57 @@ class TransactionFactoryTest {
     assertEquals(2, result.get(1).getInstallmentNumber());
     assertEquals(3, result.get(2).getInstallmentNumber());
     assertFalse(result.get(0).isPaid());
+  }
+
+  @Test
+  @DisplayName("Etiket senkronu - listede olmayan bağ soft delete olmalı, yeni etiket bağlanmalı, ortak etiket korunmalı")
+  void syncTransactionTags_shouldSoftDeleteRemovedAndAddMissing() {
+    Transaction transaction = new Transaction();
+    Tag kept = tagWithId(1L);
+    Tag dropped = tagWithId(2L);
+    Tag added = tagWithId(3L);
+    TransactionTag keptLink = new TransactionTag(transaction, kept);
+    TransactionTag droppedLink = new TransactionTag(transaction, dropped);
+    transaction.setTransactionTags(new java.util.ArrayList<>(List.of(keptLink, droppedLink)));
+
+    List<TransactionTag> changed = transactionFactory.syncTransactionTags(transaction, List.of(kept, added));
+
+    assertEquals(2, changed.size());
+    assertTrue(droppedLink.isRemoved());
+    assertFalse(keptLink.isRemoved());
+    // Soft delete: the link stays in the collection, otherwise orphanRemoval would hard delete it
+    assertEquals(3, transaction.getTransactionTags().size());
+    TransactionTag addedLink = changed.stream().filter(link -> link.getTag() == added).findFirst().orElseThrow();
+    assertSame(transaction, addedLink.getTransaction());
+    assertFalse(addedLink.isRemoved());
+  }
+
+  @Test
+  @DisplayName("Etiket senkronu - boş hedef listesi tüm bağları soft delete etmeli")
+  void syncTransactionTags_shouldRemoveAll_whenTargetEmpty() {
+    Transaction transaction = new Transaction();
+    TransactionTag link = new TransactionTag(transaction, tagWithId(1L));
+    transaction.setTransactionTags(new java.util.ArrayList<>(List.of(link)));
+
+    List<TransactionTag> changed = transactionFactory.syncTransactionTags(transaction, List.of());
+
+    assertEquals(List.of(link), changed);
+    assertTrue(link.isRemoved());
+  }
+
+  @Test
+  @DisplayName("Etiket senkronu - değişiklik yoksa hiçbir bağ değişmemeli")
+  void syncTransactionTags_shouldChangeNothing_whenTagsAreSame() {
+    Transaction transaction = new Transaction();
+    Tag tag = tagWithId(1L);
+    transaction.setTransactionTags(new java.util.ArrayList<>(List.of(new TransactionTag(transaction, tag))));
+
+    assertTrue(transactionFactory.syncTransactionTags(transaction, List.of(tag)).isEmpty());
+  }
+
+  private Tag tagWithId(Long id) {
+    Tag tag = new Tag();
+    tag.setId(id);
+    return tag;
   }
 }

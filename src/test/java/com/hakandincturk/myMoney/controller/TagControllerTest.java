@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.hakandincturk.dtos.tag.request.RenameTagRequestDto;
 import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.tag.request.FilterListUserTags;
@@ -93,5 +94,29 @@ class TagControllerTest {
 
     assertTrue(response.isType());
     verify(tagService).deleteTag(USER_ID, 5L);
+  }
+
+  @Test
+  @DisplayName("Etiket yeniden adlandırma - başarılı")
+  void renameTag_shouldReturnSuccess() {
+    RenameTagRequestDto body = new RenameTagRequestDto("Yeni Ad");
+
+    ApiResponse<?> response = controller.renameTag(5L, body);
+
+    assertTrue(response.isType());
+    verify(tagService).renameTag(USER_ID, 5L, body);
+  }
+
+  @Test
+  @DisplayName("Etiket yeniden adlandırma - auth başarısız")
+  void renameTag_shouldReturnError_whenNotJwtAuth() {
+    SecurityContextHolder.clearContext();
+    SecurityContextHolder.getContext().setAuthentication(
+        new org.springframework.security.authentication.UsernamePasswordAuthenticationToken("user", "pass"));
+
+    ApiResponse<?> response = controller.renameTag(5L, new RenameTagRequestDto("Yeni Ad"));
+
+    assertFalse(response.isType());
+    verifyNoInteractions(tagService);
   }
 }
