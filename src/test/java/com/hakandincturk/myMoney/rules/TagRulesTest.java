@@ -1,5 +1,6 @@
 package com.hakandincturk.myMoney.rules;
 
+import com.hakandincturk.core.exception.ConflictException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -139,5 +140,68 @@ class TagRulesTest {
 
     assertNotNull(result);
     assertTrue(result.isEmpty());
+  }
+
+  @Test
+  @DisplayName("Kullanıcı etiketleri - tekrarlanan id'ler tek sorgulanmalı ve etiketler dönmeli")
+  void checkAllUserTagIdsAndGet_shouldDeduplicateIds() {
+    Tag tag = new Tag();
+    tag.setId(3L);
+    when(tagRepository.findAllByIdInAndUserIdAndIsRemovedFalse(List.of(3L), 1L)).thenReturn(List.of(tag));
+
+    List<Tag> result = tagRules.checkAllUserTagIdsAndGet(1L, List.of(3L, 3L));
+
+    assertEquals(1, result.size());
+  }
+
+  @Test
+  @DisplayName("Kullanıcı etiketleri - başka kullanıcıya ait id varsa NotFoundException fırlatılmalı")
+  void checkAllUserTagIdsAndGet_shouldThrow_whenTagBelongsToAnotherUser() {
+    when(tagRepository.findAllByIdInAndUserIdAndIsRemovedFalse(List.of(3L, 9L), 1L)).thenReturn(List.of(new Tag()));
+
+    assertThrows(NotFoundException.class, () -> tagRules.checkAllUserTagIdsAndGet(1L, List.of(3L, 9L)));
+  }
+
+  @Test
+  @DisplayName("Kullanıcı etiketleri - id listesi boşsa sorgu atılmamalı")
+  void checkAllUserTagIdsAndGet_shouldReturnEmpty_whenIdsEmpty() {
+    assertTrue(tagRules.checkAllUserTagIdsAndGet(1L, null).isEmpty());
+    verifyNoInteractions(tagRepository);
+  }
+
+  @Test
+  @DisplayName("Etiket adı - büyük/küçük harf ve boşluk farkıyla aynı isim varsa ConflictException fırlatılmalı")
+  void checkTagNameNotDuplicate_shouldThrow_whenSameNameExists() {
+    Tag existing = new Tag();
+    existing.setId(5L);
+    existing.setName("aylık abonelik");
+    when(tagRepository.findAllByUserIdAndIsRemovedFalse(1L)).thenReturn(List.of(existing));
+
+    ConflictException exception = assertThrows(ConflictException.class,
+        () -> tagRules.checkTagNameNotDuplicate(1L, " Aylık  Abonelik", null));
+
+    assertEquals("Bu isimde bir etiket zaten var", exception.getMessage());
+  }
+
+  @Test
+  @DisplayName("Etiket adı - yeniden adlandırılan etiket kendisiyle çakışmamalı")
+  void checkTagNameNotDuplicate_shouldIgnoreExcludedTag() {
+    Tag self = new Tag();
+    self.setId(5L);
+    self.setName("aylık abonelik");
+    when(tagRepository.findAllByUserIdAndIsRemovedFalse(1L)).thenReturn(List.of(self));
+
+    assertDoesNotThrow(() -> tagRules.checkTagNameNotDuplicate(1L, "Aylık Abonelik", 5L));
+  }
+
+  @Test
+  @DisplayName("Etiket adı - farklı isimde hata fırlatılmamalı")
+  void checkTagNameNotDuplicate_shouldPass_whenNameIsUnique() {
+    Tag other = new Tag();
+    other.setId(6L);
+    other.setName("Market");
+    when(tagRepository.findAllByUserIdAndIsRemovedFalse(1L)).thenReturn(List.of(other));
+
+    assertDoesNotThrow(() -> tagRules.checkTagNameNotDuplicate(1L, "Ev", null));
   }
 }

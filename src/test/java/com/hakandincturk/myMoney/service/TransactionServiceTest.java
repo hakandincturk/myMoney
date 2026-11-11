@@ -1,5 +1,10 @@
 package com.hakandincturk.myMoney.service;
 
+import com.hakandincturk.core.exception.NotFoundException;
+import com.hakandincturk.dtos.tag.response.TransactionTagInfoDto;
+import com.hakandincturk.dtos.transaction.response.UpdateTransactionTagsResponseDto;
+import com.hakandincturk.dtos.transaction.request.UpdateTransactionTagsRequestDto;
+import com.hakandincturk.mappers.TagMapper;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -33,6 +38,7 @@ import com.hakandincturk.models.Contact;
 import com.hakandincturk.models.Installment;
 import com.hakandincturk.models.Tag;
 import com.hakandincturk.models.Transaction;
+import com.hakandincturk.models.TransactionTag;
 import com.hakandincturk.models.Users;
 import com.hakandincturk.repositories.AccountRepository;
 import com.hakandincturk.repositories.InstallmentRepository;
@@ -65,6 +71,8 @@ class TransactionServiceTest {
   private InstallmentMapper installmentMapper;
   @Mock
   private TransactionTagMapper transactionTagMapper;
+  @Mock
+  private TagMapper tagMapper;
   @Mock
   private TransactionFactory transactionFactory;
   @Mock
@@ -253,12 +261,100 @@ class TransactionServiceTest {
     when(transactionRules.getValidatedUser(userId)).thenReturn(user);
     when(transactionRules.getValidatedAccount(userId, 10L)).thenReturn(account);
     when(transactionRules.getValidatedContact(userId, null)).thenReturn(null);
-    when(tagFactory.createTag("Yeni Etiket", user)).thenReturn(newTag);
+    when(tagRepository.findAllByUserIdAndIsRemovedFalse(userId)).thenReturn(List.of());
+    when(tagFactory.resolveTagsByName(List.of("Yeni Etiket"), List.of(), user)).thenReturn(List.of(newTag));
     when(transactionFactory.createTransaction(eq(body), eq(user), eq(account), isNull(), any())).thenReturn(transaction);
 
     transactionService.createTransaction(userId, body);
 
     verify(tagRepository).saveAll(List.of(newTag));
     verify(transactionRepository).save(transaction);
+  }
+
+  @Test
+  @DisplayName("Var olan etiket adı yazıldığında yeni etiket kaydedilmemeli, mevcut etiket bağlanmalı")
+  void createTransaction_withExistingTagName_shouldReuseTagWithoutSaving() {
+    Long userId = 1L;
+    Users user = new Users();
+    user.setId(userId);
+    Account account = new Account();
+    account.setId(10L);
+    Tag existing = new Tag();
+    existing.setId(7L);
+    existing.setName("aylık abonelik");
+
+    CreateTransactionRequestDto body = new CreateTransactionRequestDto();
+    body.setType(TransactionTypes.PAYMENT);
+    body.setTotalAmount(BigDecimal.valueOf(229));
+    body.setTotalInstallment(1);
+    body.setAccountId(10L);
+    body.setDebtDate(LocalDate.of(2025, 6, 1));
+    body.setName("Netflix");
+    body.setTag(new CreateTransactionTagDetail(List.of(7L), List.of("Aylık Abonelik")));
+
+    Transaction transaction = new Transaction();
+    transaction.setType(TransactionTypes.PAYMENT);
+
+    when(transactionRules.getValidatedUser(userId)).thenReturn(user);
+    when(transactionRules.getValidatedAccount(userId, 10L)).thenReturn(account);
+    when(tagRules.checkAllUserTagIdsAndGet(userId, List.of(7L))).thenReturn(List.of(existing));
+    when(tagRepository.findAllByUserIdAndIsRemovedFalse(userId)).thenReturn(List.of(existing));
+    when(tagFactory.resolveTagsByName(List.of("Aylık Abonelik"), List.of(existing), user)).thenReturn(List.of(existing));
+    when(transactionFactory.createTransaction(eq(body), eq(user), eq(account), isNull(), any())).thenReturn(transaction);
+
+    transactionService.createTransaction(userId, body);
+
+    verify(tagRepository).saveAll(List.of());
+    // Selected id and typed name point to the same tag: it is linked once
+    verify(transactionFactory).createTransaction(eq(body), eq(user), eq(account), isNull(), eq(List.of(existing)));
+  }
+
+  @Test
+  @DisplayName("Etiket güncelleme - seçili ve yeni etiketler birleştirilip bağlar senkronlanmalı")
+  void updateTransactionTags_shouldResolveTagsAndSyncLinks() {
+    Long userId = 1L;
+    Users user = new Users();
+    user.setId(userId);
+    Transaction transaction = new Transaction();
+    transaction.setId(40L);
+    transaction.setUser(user);
+    Tag selected = new Tag();
+    selected.setId(3L);
+    selected.setName("Ev");
+    Tag created = new Tag();
+    created.setName("Market");
+
+    UpdateTransactionTagsRequestDto body = new UpdateTransactionTagsRequestDto(List.of(3L), List.of("Market"));
+    TransactionTag changedLink = new TransactionTag();
+
+    when(transactionRules.checkUserTransactionExistAndGet(userId, 40L)).thenReturn(transaction);
+    when(tagRules.checkAllUserTagIdsAndGet(userId, List.of(3L))).thenReturn(List.of(selected));
+    when(tagRepository.findAllByUserIdAndIsRemovedFalse(userId)).thenReturn(List.of(selected));
+    when(tagFactory.resolveTagsByName(List.of("Market"), List.of(selected), user)).thenReturn(List.of(created));
+    when(tagRepository.saveAll(List.of(created))).thenAnswer(invocation -> {
+      created.setId(8L);
+      return List.of(created);
+    });
+    when(transactionFactory.syncTransactionTags(eq(transaction), anyList())).thenReturn(List.of(changedLink));
+    when(tagMapper.toTransactionTagInfoDto(selected)).thenReturn(new TransactionTagInfoDto(3L, "Ev"));
+    when(tagMapper.toTransactionTagInfoDto(created)).thenReturn(new TransactionTagInfoDto(8L, "Market"));
+
+    UpdateTransactionTagsResponseDto response = transactionService.updateTransactionTags(userId, 40L, body);
+
+    verify(transactionFactory).syncTransactionTags(transaction, List.of(selected, created));
+    verify(transactionTagRepository).saveAll(List.of(changedLink));
+    assertEquals(40L, response.getTransactionId());
+    assertEquals(List.of(3L, 8L), response.getTags().stream().map(TransactionTagInfoDto::getId).toList());
+  }
+
+  @Test
+  @DisplayName("Etiket güncelleme - işlem kullanıcıya ait değilse hiçbir değişiklik yapılmamalı")
+  void updateTransactionTags_shouldNotTouchTags_whenTransactionNotFound() {
+    when(transactionRules.checkUserTransactionExistAndGet(1L, 40L)).thenThrow(new NotFoundException("İşlem bulunamadı"));
+
+    assertThrows(NotFoundException.class,
+        () -> transactionService.updateTransactionTags(1L, 40L, new UpdateTransactionTagsRequestDto(List.of(), List.of("X"))));
+
+    verifyNoInteractions(tagRepository, transactionTagRepository, tagFactory);
   }
 }

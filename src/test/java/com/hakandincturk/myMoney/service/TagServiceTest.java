@@ -1,5 +1,7 @@
 package com.hakandincturk.myMoney.service;
 
+import com.hakandincturk.dtos.tag.request.RenameTagRequestDto;
+import com.hakandincturk.core.exception.ConflictException;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -110,5 +112,36 @@ class TagServiceTest {
     assertTrue(tag.isRemoved());
     verify(transactionTagRepository, never()).saveAll(any());
     verify(tagRepository).save(tag);
+  }
+
+  @Test
+  @DisplayName("Etiket yeniden adlandırma - ad temizlenip kaydedilmeli, çakışma kontrolü etiketin kendisini dışlamalı")
+  void renameTag_shouldCheckDuplicateAndSaveCleanName() {
+    Tag tag = new Tag();
+    tag.setId(5L);
+    tag.setName("eski");
+    when(tagRules.checkUserTagExistAndGet(1L, 5L)).thenReturn(tag);
+
+    tagService.renameTag(1L, 5L, new RenameTagRequestDto("  Yeni   Ad "));
+
+    verify(tagRules).checkTagNameNotDuplicate(1L, "  Yeni   Ad ", 5L);
+    assertEquals("Yeni Ad", tag.getName());
+    verify(tagRepository).save(tag);
+  }
+
+  @Test
+  @DisplayName("Etiket yeniden adlandırma - aynı isimde etiket varsa kaydedilmemeli")
+  void renameTag_shouldNotSave_whenNameIsDuplicate() {
+    Tag tag = new Tag();
+    tag.setId(5L);
+    tag.setName("eski");
+    when(tagRules.checkUserTagExistAndGet(1L, 5L)).thenReturn(tag);
+    doThrow(new ConflictException("Bu isimde bir etiket zaten var"))
+        .when(tagRules).checkTagNameNotDuplicate(1L, "Market", 5L);
+
+    assertThrows(ConflictException.class, () -> tagService.renameTag(1L, 5L, new RenameTagRequestDto("Market")));
+
+    assertEquals("eski", tag.getName());
+    verify(tagRepository, never()).save(any());
   }
 }

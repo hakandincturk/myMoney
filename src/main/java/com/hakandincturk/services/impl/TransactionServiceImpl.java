@@ -2,7 +2,9 @@ package com.hakandincturk.services.impl;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -20,13 +22,17 @@ import com.hakandincturk.core.specs.TransactionSpecification;
 import com.hakandincturk.dtos.transaction.request.CreateTransactionRequestDto;
 import com.hakandincturk.dtos.transaction.request.TagTransactionsFilterRequestDto;
 import com.hakandincturk.dtos.transaction.request.TransactionFilterRequestDto;
+import com.hakandincturk.dtos.transaction.request.UpdateTransactionTagsRequestDto;
 import com.hakandincturk.dtos.transaction.response.ListTagTransactionsResponseDto;
 import com.hakandincturk.dtos.transaction.response.ListInstallments;
 import com.hakandincturk.dtos.transaction.response.ListMyTransactionsResponseDto;
+import com.hakandincturk.dtos.transaction.response.UpdateTransactionTagsResponseDto;
+import com.hakandincturk.dtos.tag.response.TransactionTagInfoDto;
 import com.hakandincturk.factories.AccountFactory;
 import com.hakandincturk.factories.TagFactory;
 import com.hakandincturk.factories.TransactionFactory;
 import com.hakandincturk.mappers.InstallmentMapper;
+import com.hakandincturk.mappers.TagMapper;
 import com.hakandincturk.mappers.TransactionTagMapper;
 import com.hakandincturk.mappers.TransactionMapper;
 import com.hakandincturk.models.Account;
@@ -63,6 +69,7 @@ public class TransactionServiceImpl implements TransactionService {
   private final TransactionMapper transactionMapper;
   private final InstallmentMapper installmentMapper;
   private final TransactionTagMapper transactionTagMapper;
+  private final TagMapper tagMapper;
 
   // Factories
   private final TransactionFactory transactionFactory;
@@ -85,16 +92,9 @@ public class TransactionServiceImpl implements TransactionService {
     Account account = transactionRules.getValidatedAccount(userId, body.getAccountId());
     Contact contact = transactionRules.getValidatedContact(userId, body.getContactId());
 
-    List<Tag> tags = new ArrayList<>();
-    if(body.getTag().getTagIds().size() > 0){
-      List<Tag> dbTags = tagRules.checkAllIdsAndGet(body.getTag().getTagIds());
-      tags.addAll(dbTags);
-    }
-
-    List<Tag> newTags = body.getTag().getNewTags().stream().map(tagName -> tagFactory.createTag(tagName, activeUser)).toList();
-    tagRepository.saveAll(newTags);
-    tags.addAll(newTags);
-
+    List<Long> tagIds = body.getTag() != null ? body.getTag().getTagIds() : null;
+    List<String> newTagNames = body.getTag() != null ? body.getTag().getNewTags() : null;
+    List<Tag> tags = this.resolveTags(userId, activeUser, tagIds, newTagNames);
 
     Transaction newTransaction = transactionFactory.createTransaction(body, activeUser, account, contact, tags);
     transactionRepository.save(newTransaction);
@@ -105,6 +105,43 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     eventPublisher.publishEvent(new TransactionCreatedEvent(newTransaction));
+  }
+
+  @Override
+  @Transactional
+  public UpdateTransactionTagsResponseDto updateTransactionTags(Long userId, Long transactionId, UpdateTransactionTagsRequestDto body) {
+    Transaction transaction = transactionRules.checkUserTransactionExistAndGet(userId, transactionId);
+
+    List<Tag> tags = this.resolveTags(userId, transaction.getUser(), body.getTagIds(), body.getNewTags());
+
+    List<TransactionTag> changedLinks = transactionFactory.syncTransactionTags(transaction, tags);
+    transactionTagRepository.saveAll(changedLinks);
+
+    List<TransactionTagInfoDto> tagInfos = tags.stream().map(tagMapper::toTransactionTagInfoDto).toList();
+    return new UpdateTransactionTagsResponseDto(transaction.getId(), tagInfos);
+  }
+
+  /**
+   * Turns the selected tag ids and typed tag names into the final tag list.
+   * Ids must belong to the user; a typed name matching an existing tag reuses it, so duplicates are never created.
+   * Only genuinely new tags are saved here.
+  */
+  private List<Tag> resolveTags(Long userId, Users user, List<Long> tagIds, List<String> newTagNames){
+    Map<Long, Tag> tagsById = new LinkedHashMap<>();
+    tagRules.checkAllUserTagIdsAndGet(userId, tagIds).forEach(tag -> tagsById.put(tag.getId(), tag));
+
+    if(newTagNames == null || newTagNames.isEmpty()){
+      return new ArrayList<>(tagsById.values());
+    }
+
+    List<Tag> existingUserTags = tagRepository.findAllByUserIdAndIsRemovedFalse(userId);
+    List<Tag> namedTags = tagFactory.resolveTagsByName(newTagNames, existingUserTags, user);
+
+    List<Tag> createdTags = namedTags.stream().filter(tag -> tag.getId() == null).toList();
+    tagRepository.saveAll(createdTags);
+
+    namedTags.forEach(tag -> tagsById.putIfAbsent(tag.getId(), tag));
+    return new ArrayList<>(tagsById.values());
   }
 
   @Override

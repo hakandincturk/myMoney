@@ -6,12 +6,15 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
 import com.hakandincturk.dtos.tag.request.FilterListUserTags;
+import com.hakandincturk.dtos.tag.request.RenameTagRequestDto;
 import com.hakandincturk.dtos.tag.response.ListUserTagsDto;
 import com.hakandincturk.dtos.tag.response.ListUserTagsWithTransactionCountDto;
 import com.hakandincturk.security.JwtAuthentication;
@@ -21,6 +24,7 @@ import com.hakandincturk.webapi.controllers.abstracts.TagController;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -69,6 +73,21 @@ public class TagControllerImpl extends BaseController implements TagController {
       Long userId = jwtAuth.getUserId();
       tagService.deleteTag(userId, tagId);
       return success("Etiket başarıyla silindi", null);
+    }
+    else {
+      return error("Kullanıcı verilerine ulaşılamadı");
+    }
+  }
+
+  @Override
+  @PutMapping(value = "/my/{tagId}")
+  @Operation(summary = "Rename tag", description = "Kullanıcıya ait etiketi yeniden adlandırır; aynı isimde başka etiket varsa hata döner")
+  public ApiResponse<?> renameTag(@PathVariable(name = "tagId") Long tagId, @Valid @RequestBody RenameTagRequestDto body) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if(auth instanceof JwtAuthentication jwtAuth){
+      Long userId = jwtAuth.getUserId();
+      tagService.renameTag(userId, tagId, body);
+      return success("Etiket yeniden adlandırıldı", null);
     }
     else {
       return error("Kullanıcı verilerine ulaşılamadı");

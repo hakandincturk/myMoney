@@ -15,4 +15,6 @@ public interface TagRepository extends JpaRepository<Tag, Long>, JpaSpecificatio
   Optional<Tag> findByIdAndIsRemovedFalse(Long id);
   Optional<Tag> findByIdAndUserIdAndIsRemovedFalse(Long id, Long userId);
   List<Tag> findAllByIdInAndIsRemovedFalse(List<Long> ids);
+  List<Tag> findAllByIdInAndUserIdAndIsRemovedFalse(List<Long> ids, Long userId);
+  List<Tag> findAllByUserIdAndIsRemovedFalse(Long userId);
 }

@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -73,6 +76,47 @@ public class TransactionFactory {
     }
 
     return installments;
+  }
+
+  /**
+   * Makes the transaction's active tag links match the target tags.
+   * Links to tags missing from the target are soft deleted (never removed from the collection, which would
+   * hard delete them through orphanRemoval); links for new target tags are added.
+   * @return Only the links that changed, for the caller to save
+  */
+  public List<TransactionTag> syncTransactionTags(Transaction transaction, List<Tag> targetTags){
+    if(transaction.getTransactionTags() == null){
+      transaction.setTransactionTags(new ArrayList<>());
+    }
+
+    Set<Long> targetTagIds = targetTags.stream().map(Tag::getId).collect(Collectors.toSet());
+    Set<Long> linkedTagIds = new HashSet<>();
+    List<TransactionTag> changedLinks = new ArrayList<>();
+
+    for (TransactionTag link : transaction.getTransactionTags()) {
+      if(link.isRemoved()){
+        continue;
+      }
+
+      Long tagId = link.getTag().getId();
+      if(!targetTagIds.contains(tagId) || linkedTagIds.contains(tagId)){
+        link.setRemoved(true);
+        changedLinks.add(link);
+        continue;
+      }
+
+      linkedTagIds.add(tagId);
+    }
+
+    for (Tag tag : targetTags) {
+      if(linkedTagIds.add(tag.getId())){
+        TransactionTag link = new TransactionTag(transaction, tag);
+        transaction.getTransactionTags().add(link);
+        changedLinks.add(link);
+      }
+    }
+
+    return changedLinks;
   }
 
   private List<TransactionTag> generateTransactionTags(Transaction transaction, List<Tag> tags){

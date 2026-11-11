@@ -21,6 +21,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.hakandincturk.dtos.transaction.response.UpdateTransactionTagsResponseDto;
+import com.hakandincturk.dtos.transaction.request.UpdateTransactionTagsRequestDto;
 import com.hakandincturk.core.enums.TransactionTypes;
 import com.hakandincturk.core.payload.ApiResponse;
 import com.hakandincturk.core.payload.PagedResponse;
@@ -129,5 +131,18 @@ class TransactionControllerTest {
     ApiResponse<PagedResponse<ListTagTransactionsResponseDto>> response = controller.listTagTransactions(5L, body);
 
     assertTrue(response.isType());
+  }
+
+  @Test
+  @DisplayName("İşlem etiketlerini güncelleme - başarılı")
+  void updateTransactionTags_shouldReturnUpdatedTags() {
+    UpdateTransactionTagsRequestDto body = new UpdateTransactionTagsRequestDto(List.of(3L), List.of());
+    UpdateTransactionTagsResponseDto result = new UpdateTransactionTagsResponseDto(40L, List.of());
+    when(transactionService.updateTransactionTags(USER_ID, 40L, body)).thenReturn(result);
+
+    ApiResponse<UpdateTransactionTagsResponseDto> response = controller.updateTransactionTags(40L, body);
+
+    assertTrue(response.isType());
+    assertSame(result, response.getData());
   }
 }
