@@ -1,6 +1,7 @@
 package com.hakandincturk.repositories;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -30,8 +31,13 @@ public interface InstallmentRepository extends JpaRepository<Installment, Long>,
   Optional<Installment> findByIdAndTransactionUserIdAndIsRemovedFalse(Long id, Long userId);
   List<Installment> findByIdInAndTransactionUserIdAndIsRemovedFalse(List<Long> ids, Long userId);
   List<Installment> findByTransaction_UserIdOrderByDebtDate(Long userId);
+  // Monthly summary inputs: each installment's transaction type is read right after loading, so the transaction
+  // is fetched in the same query instead of one extra query per transaction (N+1)
+  @EntityGraph(attributePaths = "transaction")
   List<Installment> findByTransaction_UserIdAndDebtDateBetweenAndIsRemovedFalse(Long userId, LocalDate starDate, LocalDate endDate);
+  @EntityGraph(attributePaths = "transaction")
   List<Installment> findByTransaction_UserIdAndTransactionTypeInAndDebtDateBetweenAndIsRemovedFalse(Long userId, List<TransactionTypes> type, LocalDate starDate, LocalDate endDate);
+  @EntityGraph(attributePaths = "transaction")
   List<Installment> findByTransaction_UserIdAndPaidDateBetweenAndIsPaidTrueAndIsRemovedFalse(Long userId, LocalDate starDate, LocalDate endDate);
   // start: 2025-08-01, end: 2025-08-31
   // Page<Installment> findByTransactionUserIdAndDebtDateBetweenAndIsRemovedFalse(Long userId, LocalDate start, LocalDate end, Pageable pageData);
@@ -166,6 +172,36 @@ public interface InstallmentRepository extends JpaRepository<Installment, Long>,
     @Param("userId") Long userId,
     @Param("types") List<TransactionTypes> types,
     @Param("fromDate") LocalDate fromDate,
+    @Param("skippedStatus") InstallmentStatuses skippedStatus
+  );
+
+  /**
+   * Dashboard: paid amounts grouped by the month they were paid in and by transaction type.
+   * Every row is paid, so the projection's paid flag is always true. Income/expense split is left
+   * to TransactionClassifier, the same as the debt-date query above.
+  */
+  @Query("""
+    SELECT new com.hakandincturk.repositories.projections.MonthlyTypeAmountProjection(
+      year(i.paidDate),
+      month(i.paidDate),
+      t.type,
+      i.isPaid,
+      sum(i.amount)
+    )
+    FROM Installment i
+    JOIN i.transaction t
+    WHERE t.user.id = :userId
+      AND i.isRemoved = false
+      AND t.isRemoved = false
+      AND i.status <> :skippedStatus
+      AND i.isPaid = true
+      AND i.paidDate BETWEEN :startDate AND :endDate
+    GROUP BY year(i.paidDate), month(i.paidDate), t.type, i.isPaid
+      """)
+  List<MonthlyTypeAmountProjection> sumPaidAmountsByPaidMonthAndType(
+    @Param("userId") Long userId,
+    @Param("startDate") LocalDate startDate,
+    @Param("endDate") LocalDate endDate,
     @Param("skippedStatus") InstallmentStatuses skippedStatus
   );
 
