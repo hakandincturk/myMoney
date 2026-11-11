@@ -1,6 +1,7 @@
 package com.hakandincturk.repositories;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -30,8 +31,13 @@ public interface InstallmentRepository extends JpaRepository<Installment, Long>,
   Optional<Installment> findByIdAndTransactionUserIdAndIsRemovedFalse(Long id, Long userId);
   List<Installment> findByIdInAndTransactionUserIdAndIsRemovedFalse(List<Long> ids, Long userId);
   List<Installment> findByTransaction_UserIdOrderByDebtDate(Long userId);
+  // Monthly summary inputs: each installment's transaction type is read right after loading, so the transaction
+  // is fetched in the same query instead of one extra query per transaction (N+1)
+  @EntityGraph(attributePaths = "transaction")
   List<Installment> findByTransaction_UserIdAndDebtDateBetweenAndIsRemovedFalse(Long userId, LocalDate starDate, LocalDate endDate);
+  @EntityGraph(attributePaths = "transaction")
   List<Installment> findByTransaction_UserIdAndTransactionTypeInAndDebtDateBetweenAndIsRemovedFalse(Long userId, List<TransactionTypes> type, LocalDate starDate, LocalDate endDate);
+  @EntityGraph(attributePaths = "transaction")
   List<Installment> findByTransaction_UserIdAndPaidDateBetweenAndIsPaidTrueAndIsRemovedFalse(Long userId, LocalDate starDate, LocalDate endDate);
   // start: 2025-08-01, end: 2025-08-31
   // Page<Installment> findByTransactionUserIdAndDebtDateBetweenAndIsRemovedFalse(Long userId, LocalDate start, LocalDate end, Pageable pageData);
